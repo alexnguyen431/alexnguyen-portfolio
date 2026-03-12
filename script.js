@@ -24,6 +24,21 @@
     localStorage.setItem('theme', next);
   });
 
+  const logoFlip = document.getElementById('logoFlip');
+  if (logoFlip) {
+    const toggleFlip = () => logoFlip.classList.toggle('flipped');
+    logoFlip.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleFlip();
+    });
+    logoFlip.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleFlip();
+      }
+    });
+  }
+
   const brands = {
     square:    { bg: '#000000', card: '#111111', text: '#ffffff', sub: '#aaaaaa', muted: '#666666', border: 'rgba(255,255,255,0.1)', tag: 'rgba(255,255,255,0.08)', placeholder: '#1a1a1a', placeholderText: '#444444' },
     block:     { bg: '#000000', card: '#111111', text: '#ffffff', sub: '#aaaaaa', muted: '#666666', border: 'rgba(255,255,255,0.1)', tag: 'rgba(255,255,255,0.08)', placeholder: '#1a1a1a', placeholderText: '#444444' },
@@ -313,11 +328,17 @@
       var next = getNextSection();
       if (!next) {
         fab.classList.add('fab-hidden');
+        fab.classList.remove('fab-levitate');
         return;
       }
       fab.classList.remove('fab-hidden');
       fab.href = '#' + next.section.id;
       if (fabLabel) fabLabel.textContent = next.section.label;
+      if (fabLabel && fabLabel.textContent === 'Selected Work') {
+        fab.classList.add('fab-levitate');
+      } else {
+        fab.classList.remove('fab-levitate');
+      }
     }
 
     fab.addEventListener('click', function(e) {
