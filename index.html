@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem('theme');
+        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var theme = (stored === 'light' || stored === 'dark') ? stored : (prefersLight ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alex Nguyen &bull; Staff Product Designer</title>
+  <meta name="description" content="Alex Nguyen is a Staff Product Designer based in Vancouver, Canada. Currently at Square/Block. Previously at Meta, Ogilvy, and startups.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <h1 class="sidebar-name">Alex Nguyen</h1>
+        <p class="sidebar-role">Product Designer in Vancouver 🇨🇦</p>
+        <a href="https://api.whatsapp.com/send?phone=447933301814" class="status-pill" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+          <span class="status-dot"></span>
+          I'm online now: chat to me!
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#work">Work</a>
+        <a href="#experience">Experience</a>
+        <a href="https://www.linkedin.com/in/alexnguyen3/" target="_blank" rel="noopener">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="mailto:alexnguyen431@gmail.com">Email<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="https://drive.google.com/file/d/169jcILZViYpPeYQcG0c7WqMi_fwMLMbd/view?usp=sharing" target="_blank" rel="noopener">CV<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </nav>
+
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </aside>
+
+    <main class="main">
+
+      <div class="main-hero">
+      <div class="main-marquee">
+        <div class="marquee-track">
+          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
+          <span class="marquee-dot"></span>
+        </div>
+      </div>
+
+      <div class="main-hero-content">
+        <p class="main-blurb main-blurb--loading" aria-live="polite">Hi, I'm Alex 👋 <br> I'm a product designer focused on complex, high-scale products. With experience at Block and Meta, I specialize in translating ambiguous problems into clear, scalable solutions — combining product thinking, experimentation, and execution to move the needle on outcomes that matter.</p>
+      </div>
+
+      </div>
+
+      <div class="work-section">
+        <div class="work-section-head" id="workCarouselControls">
+          <h2 class="section-title section-title--work fade-in" id="work">Selected Work</h2>
+          <div class="carousel-controls">
+            <button type="button" class="carousel-btn carousel-btn--prev" aria-label="Previous slide">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="carousel-btn carousel-btn--play" aria-label="Play carousel" aria-pressed="false" data-playing="false">
+              <svg class="carousel-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="carousel-icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+            </button>
+            <button type="button" class="carousel-btn carousel-btn--next" aria-label="Next slide">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="carousel carousel--work" id="workCarousel">
+        <div class="carousel-viewport">
+          <div class="carousel-track">
+            <div class="carousel-slide">
+              <div class="bento-card bento-card--meta fade-in" data-brand="meta">
+                <div class="bento-card-visual bento-card-visual--phones">
+                  <div class="phone-mockup"><img src="assets/meta-1.png?v=2" alt="Meta Shops — Cart" /></div>
+                  <div class="phone-mockup"><img src="assets/meta-2.png?v=2" alt="Meta Shops — Cart" /></div>
+                  <div class="phone-mockup"><img src="assets/meta-3.png?v=2" alt="Meta Shops — Product" /></div>
+                </div>
+                <div class="bento-card-body">
+                  <h3 class="bento-card-title">Meta Commerce: Shops Cart</h3>
+                  <p class="bento-card-sub">Meta &bull; 2021&ndash;2024</p>
+                  <p class="bento-card-desc">As Design Surface Lead for Commerce Cart, framed key product hypotheses and ran experiments that achieved a 300% lift on one target metric and 24% on another.</p>
+                  <div class="bento-card-stats">
+                    <span><strong>300%</strong> target lift</span>
+                    <span><strong>24%</strong> secondary lift</span>
+                    <span><strong>8.5%</strong> AOV lift</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <div class="bento-card bento-card--square fade-in" data-brand="square">
+                <div class="bento-card-visual bento-card-visual--phones">
+                  <div class="phone-mockup"><img src="assets/square-1.png" alt="Square Online — Checkout" /></div>
+                  <div class="phone-mockup"><img src="assets/square-2.png" alt="Square Online — Your order" /></div>
+                  <div class="phone-mockup"><img src="assets/square-3.png" alt="Square Online — Order tracking" /></div>
+                </div>
+                <div class="bento-card-body">
+                  <h3 class="bento-card-title">Square Online: Buyer Experience</h3>
+                  <p class="bento-card-sub">Square/Block &bull; 2024&ndash;2025</p>
+                  <p class="bento-card-desc">Led optimization of Cart, Checkout, Customer Accounts, and Square Pay: impacting over 14 million unique buyers and more than $1 billion in gross payment volume.</p>
+                  <div class="bento-card-stats">
+                    <span><strong>9%</strong> conversion rate</span>
+                    <span><strong>~20%</strong> conversion lift</span>
+                    <span><strong>$2m</strong> incremental revenue</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <div class="bento-card bento-card--cash fade-in" data-brand="cash">
+                <div class="bento-card-visual bento-card-visual--phones">
+                  <div class="phone-mockup"><img src="assets/cash-1.png?v=3" alt="Cash App — Cart" /></div>
+                  <div class="phone-mockup"><img src="assets/cash-2.png?v=3" alt="Cash App — Review and pay" /></div>
+                  <div class="phone-mockup"><img src="assets/cash-3.png?v=3" alt="Cash App — Order placed" /></div>
+                </div>
+                <div class="bento-card-body">
+                  <h3 class="bento-card-title">Cash App: Online Ordering Profiles</h3>
+                  <p class="bento-card-sub">Cash App / Block &bull; 2025&ndash;Present</p>
+                  <p class="bento-card-desc">Leading the design of Online Ordering Profiles lower funnel experience (Cart, Checkout, Order Confirmation), on Cash App (iOS, Android and Web).</p>
+                   <div class="bento-card-stats">
+                    <span><strong>0->1</strong> product</span>
+        
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <div class="bento-card bento-card--ogilvy fade-in" data-brand="ogilvy">
+                <div class="bento-card-visual bento-card-visual--video">
+                  <iframe src="https://www.youtube.com/embed/GvhdsoSRDWk?autoplay=1&mute=1&loop=1&playlist=GvhdsoSRDWk" title="Ogilvy Experience Design" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="bento-card-body">
+                  <h3 class="bento-card-title">Ogilvy: Experience Design</h3>
+                  <p class="bento-card-sub">Ogilvy &bull; 2019&ndash;2021</p>
+                  <p class="bento-card-desc">Projects for IBM &amp; Wimbledon, Formula 1, British Airways, American Express, Nestl&eacute; across UX, voice, and interaction design.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <section class="experience" id="experience">
+
+        <h2 class="section-title fade-in">Experience</h2>
+
+        <div class="exp-grid">
+
+          <div class="exp-block fade-in" data-brand="block">
+            <div class="exp-header">
+              <h3 class="exp-company">Block (Square/Cash App)</h3>
+              <span class="exp-date">Apr 2024 &ndash; Present</span>
+            </div>
+            <div class="exp-body">
+              <div class="exp-col">
+                <h4>Role</h4>
+                <p class="exp-role-primary">Staff Product Designer, Buyer</p>
+                <p class="exp-role-note">Mar 2025 &ndash; Present</p>
+                <p class="exp-role-secondary">Staff Product Designer, Checkout</p>
+                <p class="exp-role-note">Apr 2024 &ndash; Mar 2025</p>
+              </div>
+              <div class="exp-col">
+                <h4>Key Projects</h4>
+                <p><strong>Square Online Buyer Journey</strong>: Cart, Checkout, Customer Accounts, Square Pay optimization across 14M+ buyers and $1B+ GPV.</p>
+                <p><strong>OOFE</strong>: Late-funnel buyer experience for Online Ordering for Everyone, achieving ~20% higher conversion.</p>
+                <p><strong>AI-Powered Vision</strong>: Leading the buyer component of a new AI-powered Square Online experience.</p>
+              </div>
+              <div class="exp-col">
+                <h4>Scope</h4>
+                <div class="exp-tags">
+                  <span>Product Strategy</span>
+                  <span>UX Research</span>
+                  <span>UI Design</span>
+                  <span>Prototyping</span>
+                  <span>Design Systems</span>
+                  <span>AI Prototyping</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-block fade-in" data-brand="meta">
+            <div class="exp-header">
+              <h3 class="exp-company">Meta</h3>
+              <span class="exp-date">May 2021 &ndash; Apr 2024</span>
+            </div>
+            <div class="exp-body">
+              <div class="exp-col">
+                <h4>Role</h4>
+                <p class="exp-role-primary">Senior Product Designer, Lower Consideration (Shops)</p>
+                <p class="exp-role-note">Apr 2023&ndash;Apr 2024</p>
+                <p class="exp-role-secondary">Senior Product Designer, Commerce Relevance (Shops)</p>
+                <p class="exp-role-note">Apr 2022&ndash;Apr 2023</p>
+                <p class="exp-role-secondary">Product Designer, Creators-as-Marketers</p>
+                <p class="exp-role-note">May 2021&ndash;Apr 2022</p>
+                <p class="exp-role-note" style="margin-top:8px">Promoted L4&rarr;L5 in &lt;1 year</p>
+              </div>
+              <div class="exp-col">
+                <h4>Key Projects</h4>
+                <p><strong>Commerce Cart</strong>: Design Surface Lead. 300% lift on target metric, 24% on secondary. Modified design sprint methodology to reduce shipping risk.</p>
+                <p><strong>Commerce Relevance (Shops)</strong>: ML-derived signals from the Meta Social Commerce Graph integrated into Facebook &amp; Instagram shopping surfaces.</p>
+                <p><strong>Creators-as-Marketers</strong>: Built 0&rarr;1 analytics &amp; payments platform for creator-driven ROAS visibility.</p>
+              </div>
+              <div class="exp-col">
+                <h4>Scope</h4>
+                <div class="exp-tags">
+                  <span>Product Strategy</span>
+                  <span>UX Research</span>
+                  <span>UI Design</span>
+                  <span>Prototyping</span>
+                  <span>User Testing</span>
+                  <span>Design Sprints</span>
+                  <span>Cross-org Leadership</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-block fade-in" data-brand="ogilvy">
+            <div class="exp-header">
+              <h3 class="exp-company">Ogilvy</h3>
+              <span class="exp-date">Jan 2019 &ndash; May 2021</span>
+            </div>
+            <div class="exp-body">
+              <div class="exp-col">
+                <h4>Role</h4>
+                <p class="exp-role-primary">Product Designer</p>
+                <p class="exp-role-note">Jan 2019 &ndash; May 2021</p>
+                <p class="exp-role-secondary">Community Manager, Global XD</p>
+                <p class="exp-role-note">Jun 2020 &ndash; May 2021</p>
+              </div>
+              <div class="exp-col">
+                <h4>Key Projects</h4>
+                <p><strong>IBM &amp; Wimbledon</strong>: Interactive parallax mini-site (UX &amp; Interaction design)</p>
+                <p><strong>Formula 1</strong>: Alexa voice experience, CX journey mapping, accessibility reviews</p>
+                <p><strong>Nestl&eacute; / British Airways</strong>: Email decision engineering</p>
+                <p><strong>American Express</strong>: Airport lounge directory UX</p>
+                <p><strong>Ford</strong>: User testing</p>
+              </div>
+              <div class="exp-col">
+                <h4>Scope</h4>
+                <div class="exp-tags">
+                  <span>UX Research</span>
+                  <span>Interaction Design</span>
+                  <span>Voice UX</span>
+                  <span>Accessibility</span>
+                  <span>CX Mapping</span>
+                  <span>Community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-block fade-in" data-brand="drover">
+            <div class="exp-header">
+              <h3 class="exp-company">Drover</h3>
+              <span class="exp-date">Sep 2016 &ndash; Dec 2018</span>
+            </div>
+            <div class="exp-body">
+              <div class="exp-col">
+                <h4>Role</h4>
+                <p class="exp-role-primary">Product Designer</p>
+                <p class="exp-role-note">Sole UX Designer for 1+ year</p>
+              </div>
+              <div class="exp-col">
+                <h4>Key Projects</h4>
+                <p><strong>B2C Product Launch</strong>: Led UX from conception to launch. ~2000 concurrent bookings, usability score 70+.</p>
+                <p><strong>Design System</strong>: Built using Atomic Design principles with Sketch shared libraries and Zeplin handoff.</p>
+                <p><strong>Design Culture</strong>: Mentored junior designers, started &ldquo;Design Book Club&rdquo; initiative.</p>
+              </div>
+              <div class="exp-col">
+                <h4>Scope</h4>
+                <div class="exp-tags">
+                  <span>UX Design</span>
+                  <span>Visual Design</span>
+                  <span>Design Systems</span>
+                  <span>Brand</span>
+                  <span>Mentorship</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-block fade-in" data-brand="skimlinks">
+            <div class="exp-header">
+              <h3 class="exp-company">Skimlinks</h3>
+              <span class="exp-date">Nov 2013 &ndash; May 2016</span>
+            </div>
+            <div class="exp-body">
+              <div class="exp-col">
+                <h4>Role</h4>
+                <p class="exp-role-primary">Product Manager</p>
+                <p class="exp-role-note">Nov 2014 &ndash; May 2016</p>
+                <p class="exp-role-secondary">Client Services Sales Ops</p>
+                <p class="exp-role-note">Nov 2013 &ndash; Nov 2014</p>
+              </div>
+              <div class="exp-col">
+                <h4>Key Projects</h4>
+                <p><strong>Content Intelligence Platform</strong>: Front-end product owner of B2B e-commerce intelligence product.</p>
+                <p><strong>Website Relaunch</strong>: Managed skimlinks.com relaunch on time and on budget.</p>
+                <p><strong>Chrome Extension</strong>: Redesigned core UX of Skimlinks Editor based on customer feedback.</p>
+              </div>
+              <div class="exp-col">
+                <h4>Scope</h4>
+                <div class="exp-tags">
+                  <span>Product Management</span>
+                  <span>Analytics</span>
+                  <span>UX</span>
+                  <span>Client Services</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <h2 class="section-title fade-in" id="advisory">Advisory &amp; Side Ventures</h2>
+
+        <div class="edu-grid fade-in">
+          <div class="edu-item">
+            <h4>Healthtech 1</h4>
+            <p class="exp-role-primary">Investor</p>
+            <p class="exp-role-note">Sep 2023 &ndash; Present</p>
+          </div>
+          <div class="edu-item">
+            <h4>twenty--twenty</h4>
+            <p class="exp-role-primary">Design Advisor</p>
+            <p class="exp-role-note">Jul 2021 &ndash; Jun 2022</p>
+          </div>
+          <div class="edu-item">
+            <h4>DevMeetDesign.com</h4>
+            <p class="exp-role-primary">Founder</p>
+            <p class="exp-role-note">Oct 2012 &ndash; Apr 2016</p>
+          </div>
+        </div>
+
+        <h2 class="section-title fade-in" id="education">Education</h2>
+
+        <div class="edu-grid fade-in">
+          <div class="edu-item">
+            <h4>London Business School</h4>
+            <p class="exp-role-primary">Newton Venture Fellow</p>
+            <p class="exp-role-note">2021 &bull; Venture Capital</p>
+          </div>
+          <div class="edu-item">
+            <h4>University College London</h4>
+            <p class="exp-role-primary">MSc Technology Entrepreneurship</p>
+            <p class="exp-role-note">2013&ndash;2015 &bull; Distinction (Dean&rsquo;s List, ranked 2nd)</p>
+          </div>
+          <div class="edu-item">
+            <h4>Draper University</h4>
+            <p class="exp-role-primary">Entrepreneurship &amp; Innovation</p>
+            <p class="exp-role-note">2013 &bull; Silicon Valley</p>
+          </div>
+          <div class="edu-item">
+            <h4>University of York</h4>
+            <p class="exp-role-primary">BSc Accounting, Business Finance &amp; Management</p>
+            <p class="exp-role-note">2009&ndash;2012</p>
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="footer">
+        <p class="footer-copyright">&copy; 2026 Alex Nguyen</p>
+      </footer>
+
+    </main>
+  </div>
+
+  <a href="#work" class="fab fab-scroll" id="fabScroll" aria-label="Scroll to next section">
+    <span class="fab-label">Selected Work</span>
+    <svg class="fab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
