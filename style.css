@@ -1027,6 +1027,13 @@ a.status-pill:hover {
   line-height: 1;
 }
 
+/* Match title-to-content rhythm with carousel section headers */
+.experience > .section-title,
+#education.section-title {
+  line-height: 1;
+  margin-bottom: var(--space-md);
+}
+
 .exp-grid {
   display: grid;
   gap: var(--gap);
