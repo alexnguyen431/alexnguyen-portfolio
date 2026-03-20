@@ -59,6 +59,7 @@
 
       <nav class="sidebar-nav">
         <a href="#work">Work</a>
+        <a href="#side-projects">Side projects &amp; prototypes</a>
         <a href="#experience">Experience</a>
         <a href="https://www.linkedin.com/in/alexnguyen3/" target="_blank" rel="noopener">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a href="mailto:alexnguyen431@gmail.com">Email<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -231,9 +232,74 @@
         </div>
       </div>
 
-      <section class="experience" id="experience">
+      <section class="experience">
 
-        <h2 class="section-title fade-in">Experience</h2>
+        <div class="work-section work-section--side">
+          <div class="work-section-head" id="sideProjectsCarouselControls">
+            <h2 class="section-title section-title--work fade-in" id="side-projects">Side projects &amp; prototypes</h2>
+            <div class="carousel-controls">
+              <button type="button" class="carousel-btn carousel-btn--prev" aria-label="Previous slide">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button type="button" class="carousel-btn carousel-btn--play" aria-label="Play carousel" aria-pressed="false" data-playing="false">
+                <svg class="carousel-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="carousel-icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+              </button>
+              <button type="button" class="carousel-btn carousel-btn--next" aria-label="Next slide">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="carousel carousel--work fade-in" id="sideProjectsCarousel">
+            <div class="carousel-viewport">
+              <div class="carousel-track">
+                <div class="carousel-slide">
+                  <article class="bento-card side-project-card" data-side-project="scoutboard">
+                    <div class="bento-card-visual bento-card-visual--video">
+                      <iframe src="https://www.youtube.com/embed/HTPQmjoAiDI?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=HTPQmjoAiDI" title="Scoutboard" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="bento-card-body">
+                      <h3 class="bento-card-title">Scoutboard</h3>
+                      <p class="bento-card-sub">A live production app</p>
+                      <p class="bento-card-desc">A job search tracker with kanban and table views, ATS detection, and one-click import &mdash; built in a weekend by someone who needed it.</p>
+                      <a href="https://scoutboard.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Scoutboard<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                    </div>
+                  </article>
+                </div>
+                <div class="carousel-slide">
+                  <article class="bento-card side-project-card" data-side-project="whatsapp-memory">
+                    <div class="bento-card-visual bento-card-visual--video">
+                      <iframe src="https://www.youtube.com/embed/mJ8M4HthhVc?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=mJ8M4HthhVc" title="WhatsApp Collective Memory" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="bento-card-body">
+                      <h3 class="bento-card-title">WhatsApp Collective Memory</h3>
+                      <p class="bento-card-sub">Prototype</p>
+                      <p class="bento-card-desc">A relationship-aware shared memory layer for WhatsApp that lets Meta AI remember what matters to the people you talk to most.</p>
+                      <a href="https://collective-memory.vercel.app" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Collective Memory<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                    </div>
+                  </article>
+                </div>
+                <div class="carousel-slide">
+                  <article class="bento-card side-project-card side-project-card--future-proof" data-side-project="future-proof">
+                    <div class="bento-card-visual side-project-visual side-project-visual--future-proof">
+                      <div class="phone-mockup phone-mockup--single">
+                        <img src="assets/future-proof-newsletter.png" alt="Future Proof newsletter on iPhone" loading="lazy" />
+                      </div>
+                    </div>
+                    <div class="bento-card-body">
+                      <h3 class="bento-card-title">Future Proof</h3>
+                      <p class="bento-card-sub">Email newsletter</p>
+                      <p class="bento-card-desc">A signal-first newsletter for builders and operators&mdash;distilling tech, business, money, and health into ideas you can actually use to stay ahead.</p>
+                      <a href="https://future-proof.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Future Proof<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-title fade-in" id="experience">Experience</h2>
 
         <div class="exp-grid">
 
@@ -403,71 +469,6 @@
             </div>
           </div>
 
-        </div>
-
-        <div class="work-section work-section--side">
-          <div class="work-section-head" id="sideProjectsCarouselControls">
-            <h2 class="section-title section-title--work fade-in" id="side-projects">Side projects &amp; prototypes</h2>
-            <div class="carousel-controls">
-              <button type="button" class="carousel-btn carousel-btn--prev" aria-label="Previous slide">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-              <button type="button" class="carousel-btn carousel-btn--play" aria-label="Play carousel" aria-pressed="false" data-playing="false">
-                <svg class="carousel-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                <svg class="carousel-icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
-              </button>
-              <button type="button" class="carousel-btn carousel-btn--next" aria-label="Next slide">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="carousel carousel--work fade-in" id="sideProjectsCarousel">
-            <div class="carousel-viewport">
-              <div class="carousel-track">
-                <div class="carousel-slide">
-                  <article class="bento-card side-project-card" data-side-project="scoutboard">
-                    <div class="bento-card-visual bento-card-visual--video">
-                      <iframe src="https://www.youtube.com/embed/HTPQmjoAiDI?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=HTPQmjoAiDI" title="Scoutboard" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="bento-card-body">
-                      <h3 class="bento-card-title">Scoutboard</h3>
-                      <p class="bento-card-sub">A live production app</p>
-                      <p class="bento-card-desc">A job search tracker with kanban and table views, ATS detection, and one-click import &mdash; built in a weekend by someone who needed it.</p>
-                      <a href="https://scoutboard.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Scoutboard<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    </div>
-                  </article>
-                </div>
-                <div class="carousel-slide">
-                  <article class="bento-card side-project-card" data-side-project="whatsapp-memory">
-                    <div class="bento-card-visual bento-card-visual--video">
-                      <iframe src="https://www.youtube.com/embed/mJ8M4HthhVc?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=mJ8M4HthhVc" title="WhatsApp Collective Memory" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    <div class="bento-card-body">
-                      <h3 class="bento-card-title">WhatsApp Collective Memory</h3>
-                      <p class="bento-card-sub">Prototype</p>
-                      <p class="bento-card-desc">A relationship-aware shared memory layer for WhatsApp that lets Meta AI remember what matters to the people you talk to most.</p>
-                      <a href="https://collective-memory.vercel.app" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Collective Memory<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    </div>
-                  </article>
-                </div>
-                <div class="carousel-slide">
-                  <article class="bento-card side-project-card side-project-card--future-proof" data-side-project="future-proof">
-                    <div class="bento-card-visual side-project-visual side-project-visual--future-proof">
-                      <div class="phone-mockup phone-mockup--single">
-                        <img src="assets/future-proof-newsletter.png" alt="Future Proof newsletter on iPhone" loading="lazy" />
-                      </div>
-                    </div>
-                    <div class="bento-card-body">
-                      <h3 class="bento-card-title">Future Proof</h3>
-                      <p class="bento-card-sub">future-proof.xyz &bull; Sep 2024 &ndash; Present</p>
-                      <p class="bento-card-desc">A signal-first newsletter for builders and operators&mdash;distilling tech, business, money, and health into ideas you can actually use to stay ahead.</p>
-                      <a href="https://future-proof.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Future Proof<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-                    </div>
-                  </article>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <h2 class="section-title fade-in" id="education">Education</h2>

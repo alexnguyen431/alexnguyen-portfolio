@@ -303,8 +303,8 @@
     var fabLabel = fab.querySelector('.fab-label');
     var sections = [
       { id: 'work', label: 'Selected Work' },
-      { id: 'experience', label: 'Experience' },
       { id: 'side-projects', label: 'Side projects & prototypes' },
+      { id: 'experience', label: 'Experience' },
       { id: 'education', label: 'Education' }
     ];
 
