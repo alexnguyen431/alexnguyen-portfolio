@@ -128,12 +128,13 @@
     }, { passive: true });
   });
 
-  /* ----- Carousel (Selected Work) ----- */
-  const carouselEl = document.getElementById('workCarousel');
-  const controlsEl = document.getElementById('workCarouselControls');
+  /* ----- Carousels (Selected Work + Side projects) ----- */
+  function initCarousel(carouselEl, controlsEl, titleEl) {
+    if (!carouselEl) return;
 
-  if (carouselEl) {
     const vpEl = carouselEl.querySelector('.carousel-viewport');
+    if (!vpEl) return;
+
     vpEl.addEventListener('touchmove', function() { touchDidMove = true; }, { passive: true });
     const trackEl = carouselEl.querySelector('.carousel-track');
     const slideEls = carouselEl.querySelectorAll('.carousel-slide');
@@ -143,12 +144,12 @@
     const playBtn = ctrlRoot.querySelector('.carousel-btn--play');
 
     const count = slideEls.length;
+    if (count === 0) return;
+
     let current = 0;
     let timer = null;
     let wasPlayingBeforeHover = false;
     const INTERVAL = 30000;
-
-    var titleEl = document.getElementById('work');
 
     function go(i) {
       current = ((i % count) + count) % count;
@@ -202,20 +203,17 @@
       playBtn.getAttribute('data-playing') === 'true' ? stop() : play();
     });
 
-    if (vpEl) {
-      vpEl.addEventListener('mouseenter', function() {
-        wasPlayingBeforeHover = !!timer;
-        stop();
-      });
-      vpEl.addEventListener('mouseleave', function() {
-        if (wasPlayingBeforeHover) play();
-      });
-    }
+    vpEl.addEventListener('mouseenter', function() {
+      wasPlayingBeforeHover = !!timer;
+      stop();
+    });
+    vpEl.addEventListener('mouseleave', function() {
+      if (wasPlayingBeforeHover) play();
+    });
 
     requestAnimationFrame(function() { go(0); });
 
-    /* Start autoplay only when carousel is in view */
-    const observer = new IntersectionObserver(function(entries) {
+    var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           play();
@@ -287,6 +285,18 @@
     });
   }
 
+  initCarousel(
+    document.getElementById('workCarousel'),
+    document.getElementById('workCarouselControls'),
+    document.getElementById('work')
+  );
+
+  initCarousel(
+    document.getElementById('sideProjectsCarousel'),
+    document.getElementById('sideProjectsCarouselControls'),
+    document.getElementById('side-projects')
+  );
+
   /* ----- Floating action button (scroll hint) ----- */
   var fab = document.getElementById('fabScroll');
   if (fab) {
@@ -294,7 +304,7 @@
     var sections = [
       { id: 'work', label: 'Selected Work' },
       { id: 'experience', label: 'Experience' },
-      { id: 'advisory', label: 'Advisory & Side Ventures' },
+      { id: 'side-projects', label: 'Side projects & prototypes' },
       { id: 'education', label: 'Education' }
     ];
 
@@ -334,6 +344,7 @@
       fab.classList.remove('fab-hidden');
       fab.href = '#' + next.section.id;
       if (fabLabel) fabLabel.textContent = next.section.label;
+      fab.setAttribute('aria-label', 'Scroll to ' + next.section.label);
       if (fabLabel && fabLabel.textContent === 'Selected Work') {
         fab.classList.add('fab-levitate');
       } else {
