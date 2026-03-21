@@ -11,18 +11,75 @@
     root.setAttribute('data-theme', prefersLight ? 'light' : 'dark');
   }
 
-  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+  /* Legacy Safari / some in-app browsers: MQL has addListener, not addEventListener — a throw here aborts the whole script (mobile intro never finishes). */
+  const colorSchemeMql = window.matchMedia('(prefers-color-scheme: light)');
+  function syncThemeFromSystem() {
     if (localStorage.getItem('theme') !== 'light' && localStorage.getItem('theme') !== 'dark') {
-      root.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+      root.setAttribute('data-theme', colorSchemeMql.matches ? 'light' : 'dark');
     }
-  });
+  }
+  if (typeof colorSchemeMql.addEventListener === 'function') {
+    colorSchemeMql.addEventListener('change', syncThemeFromSystem);
+  } else if (typeof colorSchemeMql.addListener === 'function') {
+    colorSchemeMql.addListener(syncThemeFromSystem);
+  }
 
-  toggle.addEventListener('click', () => {
-    const current = root.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-  });
+  /* ----- Main blurb typewriter (runs early so a later error never blocks transition to full site) ----- */
+  const mqMobileIntro = window.matchMedia('(max-width: 768px)');
+  const reduceMotionIntro = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function finishMobileIntro() {
+    root.classList.add('mobile-intro-done');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        window.dispatchEvent(new Event('resize'));
+      });
+    });
+    setTimeout(function() {
+      window.dispatchEvent(new Event('resize'));
+    }, 2600);
+  }
+
+  const blurbEl = document.querySelector('.main-blurb');
+  if (blurbEl) {
+    const raw = blurbEl.innerHTML;
+    const source = raw.replace(/<br\s*\/?>/gi, '\n');
+    blurbEl.innerHTML = '';
+    blurbEl.classList.remove('main-blurb--loading');
+    blurbEl.classList.add('main-blurb--typing');
+
+    if (!mqMobileIntro.matches || reduceMotionIntro) {
+      finishMobileIntro();
+    }
+
+    let index = 0;
+    const CHAR_DELAY = 28;
+
+    function typeNext() {
+      if (index < source.length) {
+        index += 1;
+        blurbEl.innerHTML = source.slice(0, index).replace(/\n/g, '<br>');
+        setTimeout(typeNext, CHAR_DELAY);
+      } else {
+        blurbEl.classList.remove('main-blurb--typing');
+        /* Always finish when typing completes: avoids getting stuck if viewport crossed 768px during the animation (mq was true at start, false at end). */
+        setTimeout(finishMobileIntro, mqMobileIntro.matches && !reduceMotionIntro ? 500 : 0);
+      }
+    }
+    setTimeout(typeNext, CHAR_DELAY);
+  } else {
+    finishMobileIntro();
+  }
+
+  if (toggle) {
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+  }
 
   const logoFlip = document.getElementById('logoFlip');
   if (logoFlip) {
@@ -36,6 +93,66 @@
         e.preventDefault();
         toggleFlip();
       }
+    });
+  }
+
+  /* ----- Mobile nav drawer (burger) ----- */
+  const navBurger = document.getElementById('navBurger');
+  const navBackdrop = document.getElementById('navBackdrop');
+  const sidebarNav = document.getElementById('sidebarNav');
+  let navBackdropHideTimer = null;
+
+  if (navBurger && sidebarNav) {
+    function setMenuOpen(open) {
+      if (open) {
+        clearTimeout(navBackdropHideTimer);
+        if (navBackdrop) {
+          navBackdrop.hidden = false;
+          navBackdrop.setAttribute('aria-hidden', 'false');
+        }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            root.classList.add('nav-menu-open');
+          });
+        });
+        navBurger.setAttribute('aria-expanded', 'true');
+        navBurger.setAttribute('aria-label', 'Close menu');
+      } else {
+        root.classList.remove('nav-menu-open');
+        navBurger.setAttribute('aria-expanded', 'false');
+        navBurger.setAttribute('aria-label', 'Open menu');
+        if (navBackdrop) {
+          clearTimeout(navBackdropHideTimer);
+          navBackdropHideTimer = setTimeout(function() {
+            navBackdrop.hidden = true;
+            navBackdrop.setAttribute('aria-hidden', 'true');
+          }, 380);
+        }
+      }
+    }
+
+    navBurger.addEventListener('click', function() {
+      setMenuOpen(!root.classList.contains('nav-menu-open'));
+    });
+
+    if (navBackdrop) {
+      navBackdrop.addEventListener('click', function() {
+        setMenuOpen(false);
+      });
+    }
+
+    sidebarNav.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        setMenuOpen(false);
+      });
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') setMenuOpen(false);
+    });
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) setMenuOpen(false);
     });
   }
 
@@ -213,16 +330,20 @@
 
     requestAnimationFrame(function() { go(0); });
 
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          play();
-        } else {
-          stop();
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px' });
-    observer.observe(carouselEl);
+    if (typeof IntersectionObserver !== 'undefined') {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            play();
+          } else {
+            stop();
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px' });
+      observer.observe(carouselEl);
+    } else {
+      play();
+    }
 
     var resizeTimer;
     window.addEventListener('resize', function() {
@@ -366,29 +487,5 @@
       requestAnimationFrame(updateFab);
     });
     updateFab();
-  }
-
-  /* ----- Main blurb typewriter (ChatGPT-style loading) ----- */
-  const blurbEl = document.querySelector('.main-blurb');
-  if (blurbEl) {
-    const raw = blurbEl.innerHTML;
-    const source = raw.replace(/<br\s*\/?>/gi, '\n');
-    blurbEl.innerHTML = '';
-    blurbEl.classList.remove('main-blurb--loading');
-    blurbEl.classList.add('main-blurb--typing');
-
-    let index = 0;
-    const CHAR_DELAY = 28;
-
-    function typeNext() {
-      if (index < source.length) {
-        index += 1;
-        blurbEl.innerHTML = source.slice(0, index).replace(/\n/g, '<br>');
-        setTimeout(typeNext, CHAR_DELAY);
-      } else {
-        blurbEl.classList.remove('main-blurb--typing');
-      }
-    }
-    setTimeout(typeNext, CHAR_DELAY);
   }
 })();
