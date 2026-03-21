@@ -71,6 +71,9 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Match body so iOS / overscroll doesn’t show a hairline above the page */
+  background-color: var(--bg-primary);
+  overflow-x: hidden;
 }
 
 /* Extra space above section when scrolling to anchor */
@@ -88,6 +91,8 @@ body {
   line-height: 1.6;
   transition: background var(--transition-base), color var(--transition-base);
   overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 a {
@@ -115,6 +120,7 @@ h4 {
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* ==========================================
@@ -353,6 +359,16 @@ a.status-pill:hover {
   opacity: 1;
 }
 
+/* Mobile-only menu control (shown from 768px breakpoint below) */
+.nav-burger {
+  display: none;
+  box-sizing: border-box;
+}
+
+.nav-backdrop {
+  display: none;
+}
+
 .theme-toggle {
   display: flex;
   align-items: center;
@@ -366,6 +382,24 @@ a.status-pill:hover {
   color: var(--text-secondary);
   transition: color var(--transition-base), background var(--transition-base);
   margin-top: var(--space-sm);
+  flex-shrink: 0;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  font: inherit;
+}
+
+.theme-toggle svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Desktop: theme sits under nav links (nav block is already at bottom via margin-top: auto) */
+@media (min-width: 769px) {
+  .sidebar-nav .theme-toggle {
+    margin-top: var(--space-sm);
+    align-self: flex-start;
+  }
 }
 
 .theme-toggle:hover {
@@ -373,10 +407,18 @@ a.status-pill:hover {
   background: var(--bg-tag);
 }
 
-[data-theme="dark"] .icon-moon { display: none; }
-[data-theme="dark"] .icon-sun { display: block; }
-[data-theme="light"] .icon-sun { display: none; }
-[data-theme="light"] .icon-moon { display: block; }
+html[data-theme="dark"] .theme-toggle .icon-moon {
+  display: none;
+}
+html[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+html[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
+}
+html[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
 
 /* ==========================================
    MAIN
@@ -1301,22 +1343,433 @@ body.brand-active .status-pill {
     padding: var(--space-md);
   }
 
+  /* Burger: floating (viewport-fixed), same chrome as theme-toggle */
+  .nav-burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    position: fixed;
+    top: max(var(--space-md), env(safe-area-inset-top));
+    right: max(var(--space-md), env(safe-area-inset-right));
+    left: auto;
+    z-index: 300;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-primary);
+    border-radius: 50%;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color var(--transition-base), background var(--transition-base);
+  }
+
+  .nav-burger:hover {
+    color: var(--text-primary);
+    background: var(--bg-card-hover);
+  }
+
+  .nav-burger-bar {
+    display: block;
+    width: 15px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+    transform-origin: center;
+  }
+
+  html.nav-menu-open .nav-burger-bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  html.nav-menu-open .nav-burger-bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  html.nav-menu-open .nav-burger-bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s;
+  }
+
+  html.nav-menu-open .nav-backdrop:not([hidden]) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
   .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-top: var(--space-sm);
-    gap: 8px 16px;
-  }
-
-  .theme-toggle {
-    position: absolute;
-    top: var(--space-md);
-    right: var(--space-md);
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
     margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: max(var(--space-lg), env(safe-area-inset-top)) var(--space-md) var(--space-lg);
+    gap: 4px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(100vw - 2.5rem, 19rem);
+    max-width: calc(100vw - 2rem);
+    height: 100dvh;
+    height: 100vh;
+    max-height: 100dvh;
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-primary);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.2);
+    z-index: 210;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateX(100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.38s;
   }
 
+  html.nav-menu-open .sidebar-nav {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  html.nav-menu-open body {
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  .sidebar-nav a {
+    flex-shrink: 0;
+    white-space: normal;
+    padding: 14px 0;
+    font-size: 0.8125rem;
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  .sidebar-nav > a:last-of-type {
+    border-bottom: none;
+  }
+
+  /* Theme toggle inside drawer (bottom; align with burger side) */
+  .sidebar-nav .theme-toggle {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    margin-bottom: 0;
+    padding-top: var(--space-md);
+    align-self: flex-end;
+  }
+
+  /* Room for burger (right), same diameter as theme button */
+  .sidebar-top {
+    padding-right: calc(36px + var(--space-md));
+    padding-left: 0;
+  }
+
+  /* ----- Mobile intro: logo + blurb first, then full site (soft fades) ----- */
+  html {
+    /* Long, ease-out–biased curves = gentler fades */
+    --mobile-intro-fade-ease: cubic-bezier(0.12, 0.88, 0.32, 1);
+    --mobile-intro-fade-slow: cubic-bezier(0.08, 0.82, 0.22, 1);
+    --mobile-intro-fade-duration: 1.55s;
+    --mobile-intro-marquee-fade: 1.35s;
+    /* Light stagger after reveal; 0.5s pause is in JS after typewriter finishes */
+    --mobile-intro-delay: 0.18s;
+  }
+
+  @keyframes mobile-intro-reveal-soft {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes mobile-intro-reveal-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Intro blurb: ⅓ smaller than desktop (40px → ~26.67px) on mobile */
+  .main-blurb {
+    font-size: calc(40px * 2 / 3);
+    line-height: calc(40px * 2 / 3);
+    padding-top: calc(100px * 2 / 3);
+    padding-bottom: calc(100px * 2 / 3);
+    transition:
+      padding-top 1.55s var(--mobile-intro-fade-slow),
+      padding-bottom 1.55s var(--mobile-intro-fade-slow),
+      margin-bottom 1.55s var(--mobile-intro-fade-slow);
+  }
+
+  /* Intro: logo + “Product designer in Vancouver” (role); pill, burger, nav drawer, theme hidden until done */
+  html:not(.mobile-intro-done) .sidebar {
+    gap: var(--space-sm);
+  }
+
+  html:not(.mobile-intro-done) .sidebar-top .status-pill {
+    opacity: 0;
+    visibility: hidden;
+    max-height: 0;
+    overflow: hidden;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    pointer-events: none;
+    border-width: 0;
+  }
+
+  html:not(.mobile-intro-done) .nav-burger {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  html:not(.mobile-intro-done) .theme-toggle {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  html:not(.mobile-intro-done) .fab {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(12px);
+  }
+
+  html:not(.mobile-intro-done) .main {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding-top: max(var(--space-lg), env(safe-area-inset-top));
+    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+  }
+
+  html:not(.mobile-intro-done) .main > *:not(.main-hero) {
+    display: none;
+  }
+
+  html:not(.mobile-intro-done) .main-hero {
+    min-height: 0;
+    flex: 0 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  html:not(.mobile-intro-done) .main-marquee {
+    display: none;
+  }
+
+  /* Flush left: full-width intro column so typewriter starts from the left */
+  html:not(.mobile-intro-done) .main-hero .main-hero-content {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    max-width: none;
+    text-align: left;
+    align-self: stretch;
+  }
+
+  html:not(.mobile-intro-done) .main-blurb {
+    text-align: left;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  html.mobile-intro-done .main {
+    min-height: 0;
+  }
+
+  html.mobile-intro-done .sidebar-top .status-pill {
+    opacity: 1;
+    visibility: visible;
+    max-height: 80px;
+    margin-top: 12px;
+    padding: 6px 14px;
+    transition:
+      opacity var(--mobile-intro-fade-duration) var(--mobile-intro-fade-ease) calc(var(--mobile-intro-delay) + 0.1s),
+      max-height 1.1s var(--mobile-intro-fade-slow) calc(var(--mobile-intro-delay) + 0.08s),
+      margin-top 1s var(--mobile-intro-fade-slow) calc(var(--mobile-intro-delay) + 0.06s),
+      padding 0.9s var(--mobile-intro-fade-slow) calc(var(--mobile-intro-delay) + 0.06s),
+      visibility 0s linear calc(var(--mobile-intro-delay) + 0.1s);
+  }
+
+  html.mobile-intro-done .sidebar {
+    gap: var(--space-md);
+  }
+
+  html.mobile-intro-done .nav-burger {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 1.2s var(--mobile-intro-fade-ease) calc(var(--mobile-intro-delay) + 0.14s),
+      visibility 0s linear calc(var(--mobile-intro-delay) + 0.14s);
+  }
+
+  html.mobile-intro-done .theme-toggle {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 1.2s var(--mobile-intro-fade-ease) calc(var(--mobile-intro-delay) + 0.22s),
+      visibility 0s linear calc(var(--mobile-intro-delay) + 0.22s);
+  }
+
+  html.mobile-intro-done .fab {
+    transition:
+      opacity 1.25s var(--mobile-intro-fade-ease) calc(var(--mobile-intro-delay) + 0.28s),
+      transform 1.2s var(--mobile-intro-fade-ease) calc(var(--mobile-intro-delay) + 0.24s),
+      visibility 0s linear calc(var(--mobile-intro-delay) + 0.24s);
+  }
+
+  html.mobile-intro-done .fab:not(.fab-hidden) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero) {
+    animation: mobile-intro-reveal-soft var(--mobile-intro-fade-duration) var(--mobile-intro-fade-ease) both;
+    animation-delay: var(--mobile-intro-delay);
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero):nth-child(2) {
+    animation-delay: calc(var(--mobile-intro-delay) + 0.07s);
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero):nth-child(3) {
+    animation-delay: calc(var(--mobile-intro-delay) + 0.14s);
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero):nth-child(4) {
+    animation-delay: calc(var(--mobile-intro-delay) + 0.21s);
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero):nth-child(5) {
+    animation-delay: calc(var(--mobile-intro-delay) + 0.28s);
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero):nth-child(6) {
+    animation-delay: calc(var(--mobile-intro-delay) + 0.35s);
+  }
+
+  html.mobile-intro-done .main-marquee {
+    animation: mobile-intro-reveal-fade var(--mobile-intro-marquee-fade) var(--mobile-intro-fade-ease) both;
+    animation-delay: calc(var(--mobile-intro-delay) + 0.08s);
+  }
+
+  /* Experience + Education: horizontal snap “carousel” (mobile only) */
+  .experience .exp-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--gap);
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--space-md);
+    -webkit-overflow-scrolling: touch;
+    margin-left: calc(-1 * var(--space-md));
+    margin-right: calc(-1 * var(--space-md));
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+  }
+
+  .experience .exp-grid .exp-block {
+    flex: 0 0 min(84vw, 420px);
+    scroll-snap-align: start;
+    max-width: none;
+  }
+
+  .experience .edu-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--gap);
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--space-md);
+    -webkit-overflow-scrolling: touch;
+    margin-left: calc(-1 * var(--space-md));
+    margin-right: calc(-1 * var(--space-md));
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+  }
+
+  .experience .edu-grid .edu-item {
+    flex: 0 0 min(74vw, 300px);
+    scroll-snap-align: start;
+  }
+
+  /* Single-column stack rule from below is superseded by flex on mobile for edu */
   .edu-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: unset;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  html.mobile-intro-done .sidebar,
+  html.mobile-intro-done .sidebar-top .status-pill,
+  html.mobile-intro-done .nav-burger,
+  html.mobile-intro-done .theme-toggle,
+  html.mobile-intro-done .fab,
+  html.mobile-intro-done .main {
+    transition: none !important;
+  }
+
+  .sidebar-nav,
+  .nav-backdrop,
+  .nav-burger-bar {
+    transition: none !important;
+  }
+
+  html.mobile-intro-done .main > *:not(.main-hero),
+  html.mobile-intro-done .main-marquee {
+    animation: none !important;
+  }
+
+  .main-blurb {
+    transition: none !important;
   }
 }
 
