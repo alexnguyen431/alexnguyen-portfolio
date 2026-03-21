@@ -370,9 +370,9 @@ a.status-pill:hover {
 }
 
 .theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Grid centers more reliably than flex inside <button> on iOS/WebKit */
+  display: grid;
+  place-items: center;
   width: 36px;
   height: 36px;
   border: 1px solid var(--border-primary);
@@ -386,12 +386,16 @@ a.status-pill:hover {
   padding: 0;
   -webkit-appearance: none;
   appearance: none;
-  font: inherit;
+  /* Kill inherited text metrics: whitespace between SVGs + font: inherit otherwise add a strut and push icons down (esp. WebKit). */
+  font-size: 0;
+  line-height: 0;
 }
 
 .theme-toggle svg {
   display: block;
-  flex-shrink: 0;
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 16px;
 }
 
 /* Desktop: theme sits under nav links (nav block is already at bottom via margin-top: auto) */
@@ -1464,6 +1468,8 @@ body.brand-active .status-pill {
 
   .sidebar-nav > a:last-of-type {
     border-bottom: none;
+    /* Space before theme row (don’t use padding on the 36px circle — it crushes the icon) */
+    margin-bottom: var(--space-sm);
   }
 
   /* Theme toggle inside drawer (bottom; align with burger side) */
@@ -1472,7 +1478,8 @@ body.brand-active .status-pill {
     z-index: 1;
     margin-top: auto;
     margin-bottom: 0;
-    padding-top: var(--space-md);
+    /* Never use padding-top here: height is 36px border-box — ~24px padding leaves ~10px for the icon and it sits on the bottom edge. */
+    padding: 0;
     align-self: flex-end;
   }
 
