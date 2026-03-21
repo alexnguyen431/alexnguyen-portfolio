@@ -73,7 +73,9 @@ html {
   -moz-osx-font-smoothing: grayscale;
   /* Match body so iOS / overscroll doesn’t show a hairline above the page */
   background-color: var(--bg-primary);
+  /* hidden + clip: clip avoids the “other axis becomes auto” quirk that breaks position:sticky on .sidebar */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Extra space above section when scrolling to anchor */
@@ -91,6 +93,7 @@ body {
   line-height: 1.6;
   transition: background var(--transition-base), color var(--transition-base);
   overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100vh;
   min-height: 100dvh;
 }
