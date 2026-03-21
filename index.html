@@ -16,6 +16,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="preload" href="assets/profile-cursor.png" as="image" type="image/png">
   <title>Alex Nguyen &bull; Product Designer in Vancouver with 10+ years of experience at Meta and Block</title>
   <meta name="description" content="Alex Nguyen — Product Designer in Vancouver with 10+ years of experience at Meta and Block. Portfolio: complex products, Square/Block, Meta, Ogilvy, and startups.">
   <link rel="canonical" href="https://alexnguyen.online/">
@@ -33,12 +34,55 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Inter:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      try {
+        var m = window.matchMedia('(max-width: 768px)');
+        var r = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (!m.matches || r.matches) {
+          document.documentElement.classList.add('mobile-intro-done');
+        }
+      } catch (e) {
+        document.documentElement.classList.add('mobile-intro-done');
+      }
+    })();
+  </script>
+  <noscript>
+    <style>
+      @media (max-width: 768px) {
+        html .sidebar { display: block !important; }
+        html .main > *:not(.main-hero) { display: block !important; }
+        html .main-marquee { display: block !important; }
+        html .fab { display: inline-flex !important; }
+        html .main { min-height: 0 !important; display: block !important; }
+        html .nav-burger,
+        html .nav-backdrop { display: none !important; }
+        html .sidebar-nav {
+          position: static !important;
+          transform: none !important;
+          visibility: visible !important;
+          pointer-events: auto !important;
+          height: auto !important;
+          width: 100% !important;
+          max-width: none !important;
+          border: none !important;
+          box-shadow: none !important;
+          flex-direction: column !important;
+        }
+      }
+    </style>
+  </noscript>
 </head>
 <body>
 
   <div class="layout">
 
     <aside class="sidebar">
+      <button type="button" class="nav-burger" id="navBurger" aria-expanded="false" aria-controls="sidebarNav" aria-label="Open menu">
+        <span class="nav-burger-bar" aria-hidden="true"></span>
+        <span class="nav-burger-bar" aria-hidden="true"></span>
+        <span class="nav-burger-bar" aria-hidden="true"></span>
+      </button>
       <div class="sidebar-top">
         <div class="logo-flip" id="logoFlip" role="button" tabindex="0" aria-label="Toggle logo view">
           <div class="logo-flip-inner">
@@ -46,7 +90,7 @@
               <h1 class="sidebar-name">Alex Nguyen</h1>
             </div>
             <div class="logo-flip-back">
-              <img src="assets/profile-cursor.png" alt="Alex Nguyen" class="logo-flip-photo" />
+              <img src="assets/profile-cursor.png" alt="Alex Nguyen" class="logo-flip-photo" decoding="async" fetchpriority="high" />
             </div>
           </div>
         </div>
@@ -57,19 +101,20 @@
         </a>
       </div>
 
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" id="sidebarNav" aria-label="Site navigation">
         <a href="#work">Work</a>
         <a href="#side-projects">Side projects &amp; prototypes</a>
         <a href="#experience">Experience</a>
         <a href="https://www.linkedin.com/in/alexnguyen3/" target="_blank" rel="noopener">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a href="mailto:alexnguyen431@gmail.com">Email<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a href="https://drive.google.com/file/d/169jcILZViYpPeYQcG0c7WqMi_fwMLMbd/view?usp=sharing" target="_blank" rel="noopener">CV<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
       </nav>
 
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      </button>
+      <div class="nav-backdrop" id="navBackdrop" hidden aria-hidden="true"></div>
     </aside>
 
     <main class="main">
@@ -260,7 +305,7 @@
                       <h3 class="bento-card-title">Scoutboard</h3>
                       <p class="bento-card-sub">Live production app</p>
                       <p class="bento-card-desc">A job search tracker with kanban and table views, ATS detection, and one-click import &mdash; built in a weekend using Cursor and Claude.</p>
-                      <a href="https://scoutboard.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Scoutboard<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                      <a href="https://www.linkedin.com/posts/alexnguyen3_im-a-designer-and-i-built-a-full-stack-app-ugcPost-7439388996104781824-fZUo" class="side-project-link" target="_blank" rel="noopener noreferrer">Read more about Scoutboard<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
                     </div>
                   </article>
                 </div>
@@ -273,7 +318,7 @@
                       <h3 class="bento-card-title">WhatsApp Collective Memory</h3>
                       <p class="bento-card-sub">Prototype</p>
                       <p class="bento-card-desc">A relationship-aware shared memory layer for WhatsApp that lets Meta AI remember what matters to the people you talk to most &mdash; built in 24 hours using Claude.</p>
-                      <a href="https://collective-memory.vercel.app" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Collective Memory<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                      <a href="https://www.linkedin.com/posts/alexnguyen3_opentowork-ugcPost-7440555190736490496-ROST" class="side-project-link" target="_blank" rel="noopener noreferrer">Read more about Collective Memory<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
                     </div>
                   </article>
                 </div>
