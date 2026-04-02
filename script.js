@@ -559,11 +559,17 @@
     } else {
       function reachedBottom() {
         var doc = document.documentElement;
-        var scrollTop = window.scrollY || doc.scrollTop || 0;
+        var body = document.body;
+        var scrollTop = window.scrollY || doc.scrollTop || body.scrollTop || 0;
         var viewportH = window.innerHeight || doc.clientHeight || 0;
-        var docH = Math.max(doc.scrollHeight, doc.offsetHeight, doc.clientHeight);
-        // Trigger when within 40px of bottom (covers iOS bounce rounding)
-        return (scrollTop + viewportH) >= (docH - 40);
+        // Some browsers report different heights depending on overflow/layout; take the max.
+        var docH = Math.max(
+          doc.scrollHeight, doc.offsetHeight, doc.clientHeight,
+          body ? body.scrollHeight : 0,
+          body ? body.offsetHeight : 0
+        );
+        // Trigger when within ~120px of bottom (covers iOS bounce + rounding + sticky chrome)
+        return (scrollTop + viewportH) >= (docH - 120);
       }
 
       function maybeShowAtBottom() {
@@ -571,13 +577,23 @@
         if (reachedBottom()) showCallOverlay();
       }
 
+      var rafPending = false;
       window.addEventListener('scroll', function() {
-        // cheap guard; showCallOverlay itself is idempotent
-        maybeShowAtBottom();
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(function() {
+          rafPending = false;
+          maybeShowAtBottom();
+        });
       }, { passive: true });
       window.addEventListener('resize', maybeShowAtBottom);
       // In case they land deep-linked near the bottom
       setTimeout(maybeShowAtBottom, 0);
+      // Fallback: some mobile browsers can miss scroll events during momentum scroll.
+      var poll = setInterval(function() {
+        if (sessionStorage.getItem(CALL_SHOWN_KEY)) { clearInterval(poll); return; }
+        maybeShowAtBottom();
+      }, 750);
     }
 
     // Debug: see if clicks reach the right elements
