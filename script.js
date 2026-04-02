@@ -555,7 +555,27 @@
 
   if (callOverlay) {
     var callDelayMs = forceCallTest ? 2000 : 30000;
-    setTimeout(showCallOverlay, callDelayMs);
+    if (forceCallTest) {
+      setTimeout(showCallOverlay, callDelayMs);
+    } else {
+      // Use "active time on page" so timer doesn't feel longer due to background-tab throttling.
+      var elapsedMs = 0;
+      var lastTick = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+      var timer = setInterval(function() {
+        if (!callOverlay || sessionStorage.getItem(CALL_SHOWN_KEY)) {
+          clearInterval(timer);
+          return;
+        }
+        var now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+        var dt = now - lastTick;
+        lastTick = now;
+        if (document.visibilityState === 'visible') elapsedMs += dt;
+        if (elapsedMs >= callDelayMs) {
+          clearInterval(timer);
+          showCallOverlay();
+        }
+      }, 250);
+    }
 
     // Debug: see if clicks reach the right elements
     try {
