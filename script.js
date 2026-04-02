@@ -496,20 +496,18 @@
   var callScreenIncoming = document.getElementById('callScreenIncoming');
   var callScreenMessage = document.getElementById('callScreenMessage');
   var callCloseMsg = document.getElementById('callCloseMsg');
-  var CALL_SHOWN_KEY = 'call_overlay_shown';
   var forceCallTest = false;
   var callDebug = false;
   try {
     var qs = new URLSearchParams(window.location.search);
     forceCallTest = qs.has('calltest');
     callDebug = qs.has('calldebug');
-    if (forceCallTest || qs.has('callreset')) sessionStorage.removeItem(CALL_SHOWN_KEY);
   } catch (e) {}
 
   function showCallOverlay() {
     if (!callOverlay) return;
-    if (!forceCallTest && sessionStorage.getItem(CALL_SHOWN_KEY)) return;
-    sessionStorage.setItem(CALL_SHOWN_KEY, '1');
+    // Allow re-showing; only block if already visible.
+    if (callOverlay.classList.contains('call-visible')) return;
     callOverlay.classList.remove('call-closing');
     callOverlay.classList.remove('call-message-open');
     // Always start on the incoming screen
@@ -575,14 +573,14 @@
         var atBottom = (scrollTop + viewportH) >= (docH - 120);
         if (callDebug) {
           try {
-            console.log('[call-overlay] bottom-check', { scrollTop: Math.round(scrollTop), viewportH: Math.round(viewportH), docH: Math.round(docH), atBottom: atBottom, shown: !!sessionStorage.getItem(CALL_SHOWN_KEY) });
+            console.log('[call-overlay] bottom-check', { scrollTop: Math.round(scrollTop), viewportH: Math.round(viewportH), docH: Math.round(docH), atBottom: atBottom, visible: callOverlay && callOverlay.classList.contains('call-visible') });
           } catch (e) {}
         }
         return atBottom;
       }
 
       function maybeShowAtBottom() {
-        if (sessionStorage.getItem(CALL_SHOWN_KEY)) return;
+        if (callOverlay && callOverlay.classList.contains('call-visible')) return;
         if (reachedBottom()) showCallOverlay();
       }
 
@@ -600,7 +598,7 @@
       setTimeout(maybeShowAtBottom, 0);
       // Fallback: some mobile browsers can miss scroll events during momentum scroll.
       var poll = setInterval(function() {
-        if (sessionStorage.getItem(CALL_SHOWN_KEY)) { clearInterval(poll); return; }
+        if (callOverlay && callOverlay.classList.contains('call-visible')) return;
         maybeShowAtBottom();
       }, 750);
     }
