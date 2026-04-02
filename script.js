@@ -489,7 +489,7 @@
     updateFab();
   }
 
-  /* ----- Phone call overlay (appears after 30s on the page) ----- */
+  /* ----- Phone call overlay (bottom-of-page trigger; max once per cooldown) ----- */
   var callOverlay = document.getElementById('callOverlay');
   var callDecline = document.getElementById('callDecline');
   var callAccept = document.getElementById('callAccept');
@@ -504,10 +504,20 @@
     callDebug = qs.has('calldebug');
   } catch (e) {}
 
+  var CALL_OVERLAY_COOLDOWN_MS = 30000;
+  var lastCallOverlayActivationAt = 0;
+
   function showCallOverlay() {
     if (!callOverlay) return;
     // Allow re-showing; only block if already visible.
     if (callOverlay.classList.contains('call-visible')) return;
+    /* Bottom-trigger path: at most one activation every 30s (calltest bypasses for QA). */
+    if (!forceCallTest) {
+      var now = Date.now();
+      if (lastCallOverlayActivationAt > 0 && now - lastCallOverlayActivationAt < CALL_OVERLAY_COOLDOWN_MS) {
+        return;
+      }
+    }
     callOverlay.classList.remove('call-closing');
     callOverlay.classList.remove('call-message-open');
     // Always start on the incoming screen
@@ -526,6 +536,7 @@
         callOverlay.classList.add('call-visible');
       });
     });
+    lastCallOverlayActivationAt = Date.now();
     try { console.log('[call-overlay] show', { incomingHidden: !!(callScreenIncoming && callScreenIncoming.hidden), messageHidden: !!(callScreenMessage && callScreenMessage.hidden) }); } catch (e) {}
   }
 
