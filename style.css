@@ -4,7 +4,7 @@
 
 :root {
   --font-display: 'Gasoek One', Impact, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Spline Sans Mono', 'SF Mono', monospace;
 
   --space-xs: 0.5rem;
@@ -1145,7 +1145,7 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 }
 
 .exp-role-note {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body);
   font-size: 12px;
   margin-bottom: 32px;
   letter-spacing: 0.01em;
