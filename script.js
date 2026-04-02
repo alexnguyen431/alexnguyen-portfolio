@@ -554,7 +554,8 @@
   }
 
   if (callOverlay) {
-    setTimeout(showCallOverlay, 2000);
+    var callDelayMs = forceCallTest ? 2000 : 30000;
+    setTimeout(showCallOverlay, callDelayMs);
 
     // Debug: see if clicks reach the right elements
     try {
