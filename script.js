@@ -554,27 +554,30 @@
   }
 
   if (callOverlay) {
-    var callDelayMs = forceCallTest ? 2000 : 30000;
     if (forceCallTest) {
-      setTimeout(showCallOverlay, callDelayMs);
+      setTimeout(showCallOverlay, 2000);
     } else {
-      // Use "active time on page" so timer doesn't feel longer due to background-tab throttling.
-      var elapsedMs = 0;
-      var lastTick = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-      var timer = setInterval(function() {
-        if (!callOverlay || sessionStorage.getItem(CALL_SHOWN_KEY)) {
-          clearInterval(timer);
-          return;
-        }
-        var now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        var dt = now - lastTick;
-        lastTick = now;
-        if (document.visibilityState === 'visible') elapsedMs += dt;
-        if (elapsedMs >= callDelayMs) {
-          clearInterval(timer);
-          showCallOverlay();
-        }
-      }, 250);
+      function reachedBottom() {
+        var doc = document.documentElement;
+        var scrollTop = window.scrollY || doc.scrollTop || 0;
+        var viewportH = window.innerHeight || doc.clientHeight || 0;
+        var docH = Math.max(doc.scrollHeight, doc.offsetHeight, doc.clientHeight);
+        // Trigger when within 40px of bottom (covers iOS bounce rounding)
+        return (scrollTop + viewportH) >= (docH - 40);
+      }
+
+      function maybeShowAtBottom() {
+        if (sessionStorage.getItem(CALL_SHOWN_KEY)) return;
+        if (reachedBottom()) showCallOverlay();
+      }
+
+      window.addEventListener('scroll', function() {
+        // cheap guard; showCallOverlay itself is idempotent
+        maybeShowAtBottom();
+      }, { passive: true });
+      window.addEventListener('resize', maybeShowAtBottom);
+      // In case they land deep-linked near the bottom
+      setTimeout(maybeShowAtBottom, 0);
     }
 
     // Debug: see if clicks reach the right elements
