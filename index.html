@@ -565,6 +565,32 @@
     <svg class="fab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
   </a>
 
+  <!-- Phone call overlay -->
+  <div class="call-overlay" id="callOverlay" hidden>
+    <div class="call-dialog" id="callDialog">
+      <div class="call-screen call-screen--incoming" id="callScreenIncoming">
+        <div class="call-pill">
+          <img src="assets/profile-cursor.png" alt="Alex Nguyen" class="call-avatar" />
+          <div class="call-info">
+            <span class="call-label">Incoming call</span>
+            <span class="call-name">Alex Nguyen</span>
+          </div>
+          <div class="call-actions">
+            <button type="button" class="call-btn call-btn--decline" id="callDecline" aria-label="Decline"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+            <button type="button" class="call-btn call-btn--accept" id="callAccept" aria-label="Accept"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.91 15.91 0 006.59 6.59l2.2-2.2a1.06 1.06 0 011.05-.27 12.18 12.18 0 003.78.6 1.06 1.06 0 011.06 1.06v3.67a1.06 1.06 0 01-1.06 1.06A18.94 18.94 0 012.3 3.36 1.06 1.06 0 013.36 2.3h3.67a1.06 1.06 0 011.06 1.06c0 1.3.21 2.56.6 3.78a1.06 1.06 0 01-.27 1.05l-2.2 2.2z"/></svg></button>
+          </div>
+        </div>
+        <p class="call-note">Don't worry, it's not a real phone call. Just a fun easter egg 😊 Go ahead take the call!</p>
+      </div>
+      <div class="call-screen call-screen--message" id="callScreenMessage" hidden>
+        <div class="call-message-card">
+          <p class="call-message-text">Hey there! I see you're enjoying my portfolio. I'm currently open to opportunities so please feel free to reach out to me at <a href="mailto:alexnguyen431@gmail.com" class="call-message-email">alexnguyen431@gmail.com</a></p>
+        </div>
+        <button type="button" class="call-btn call-btn--close-msg" id="callCloseMsg" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

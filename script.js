@@ -488,4 +488,133 @@
     });
     updateFab();
   }
+
+  /* ----- Phone call overlay (appears after 30s on the page) ----- */
+  var callOverlay = document.getElementById('callOverlay');
+  var callDecline = document.getElementById('callDecline');
+  var callAccept = document.getElementById('callAccept');
+  var callScreenIncoming = document.getElementById('callScreenIncoming');
+  var callScreenMessage = document.getElementById('callScreenMessage');
+  var callCloseMsg = document.getElementById('callCloseMsg');
+  var CALL_SHOWN_KEY = 'call_overlay_shown';
+  var forceCallTest = false;
+  try {
+    forceCallTest = new URLSearchParams(window.location.search).has('calltest');
+    if (forceCallTest) sessionStorage.removeItem(CALL_SHOWN_KEY);
+  } catch (e) {}
+
+  function showCallOverlay() {
+    if (!callOverlay) return;
+    if (!forceCallTest && sessionStorage.getItem(CALL_SHOWN_KEY)) return;
+    sessionStorage.setItem(CALL_SHOWN_KEY, '1');
+    callOverlay.classList.remove('call-closing');
+    callOverlay.classList.remove('call-message-open');
+    // Always start on the incoming screen
+    if (callScreenIncoming) {
+      callScreenIncoming.hidden = false;
+      callScreenIncoming.style.display = '';
+      callScreenIncoming.classList.remove('call-exiting');
+    }
+    if (callScreenMessage) {
+      callScreenMessage.hidden = true;
+      callScreenMessage.style.display = 'none';
+    }
+    callOverlay.hidden = false;
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        callOverlay.classList.add('call-visible');
+      });
+    });
+    try { console.log('[call-overlay] show', { incomingHidden: !!(callScreenIncoming && callScreenIncoming.hidden), messageHidden: !!(callScreenMessage && callScreenMessage.hidden) }); } catch (e) {}
+  }
+
+  function hideCallOverlay() {
+    if (!callOverlay) return;
+    // Dialog out first…
+    callOverlay.classList.add('call-closing');
+    setTimeout(function() {
+      // …then backdrop fade
+      callOverlay.classList.remove('call-visible');
+    }, 320);
+    setTimeout(function() {
+      callOverlay.hidden = true;
+      callOverlay.classList.remove('call-closing');
+      callOverlay.classList.remove('call-message-open');
+      if (callScreenIncoming) {
+        callScreenIncoming.hidden = false;
+        callScreenIncoming.style.display = '';
+        callScreenIncoming.classList.remove('call-exiting');
+      }
+      if (callScreenMessage) {
+        callScreenMessage.hidden = true;
+        callScreenMessage.style.display = 'none';
+      }
+    }, 700);
+    try { console.log('[call-overlay] hide'); } catch (e) {}
+  }
+
+  if (callOverlay) {
+    setTimeout(showCallOverlay, 2000);
+
+    // Debug: see if clicks reach the right elements
+    try {
+      console.log('[call-overlay] init', {
+        overlay: !!callOverlay,
+        decline: !!callDecline,
+        accept: !!callAccept,
+        incoming: !!callScreenIncoming,
+        message: !!callScreenMessage,
+        closeMsg: !!callCloseMsg
+      });
+    } catch (e) {}
+    document.addEventListener('click', function(e) {
+      try { console.log('[doc click]', e.target); } catch (err) {}
+    }, true);
+    callOverlay.addEventListener('click', function(e) {
+      try { console.log('[overlay click]', { target: e.target, currentTarget: e.currentTarget }); } catch (err) {}
+    }, true);
+
+    if (callDecline) {
+      callDecline.addEventListener('click', function(e) {
+        try { console.log('[call-overlay] decline click', e.target); } catch (err) {}
+        hideCallOverlay();
+      });
+    }
+
+    if (callAccept) {
+      callAccept.addEventListener('click', function(e) {
+        try { console.log('[call-overlay] accept click', e.target); } catch (err) {}
+        if (callScreenMessage) {
+          callScreenMessage.hidden = false;
+          callScreenMessage.style.display = '';
+        }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            callOverlay.classList.add('call-message-open');
+          });
+        });
+        setTimeout(function() {
+          if (callScreenIncoming) {
+            callScreenIncoming.hidden = true;
+            callScreenIncoming.style.display = 'none';
+          }
+        }, 480);
+      });
+    }
+
+    if (callCloseMsg) {
+      callCloseMsg.addEventListener('click', function(e) {
+        try { console.log('[call-overlay] close message click', e.target); } catch (err) {}
+        hideCallOverlay();
+      });
+    }
+
+    callOverlay.addEventListener('click', function(e) {
+      if (e.target === callOverlay) hideCallOverlay();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') hideCallOverlay();
+    });
+  }
 })();
