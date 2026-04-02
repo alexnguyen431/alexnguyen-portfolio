@@ -558,6 +558,11 @@
     if (forceCallTest) {
       setTimeout(showCallOverlay, 2000);
     } else {
+      var isMobile = false;
+      try {
+        isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+      } catch (e) {}
+
       function reachedBottom() {
         var doc = document.documentElement;
         var body = document.body;
@@ -580,27 +585,49 @@
       }
 
       function maybeShowAtBottom() {
+        // Mobile has an intro state where most sections are hidden; don't trigger until full site is revealed.
+        if (isMobile && !document.documentElement.classList.contains('mobile-intro-done')) return;
         if (callOverlay && callOverlay.classList.contains('call-visible')) return;
         if (reachedBottom()) showCallOverlay();
       }
 
-      var rafPending = false;
-      window.addEventListener('scroll', function() {
-        if (rafPending) return;
-        rafPending = true;
-        requestAnimationFrame(function() {
-          rafPending = false;
+      function armBottomTrigger() {
+        var rafPending = false;
+        window.addEventListener('scroll', function() {
+          if (rafPending) return;
+          rafPending = true;
+          requestAnimationFrame(function() {
+            rafPending = false;
+            maybeShowAtBottom();
+          });
+        }, { passive: true });
+        window.addEventListener('resize', maybeShowAtBottom);
+        // In case they land deep-linked near the bottom
+        setTimeout(maybeShowAtBottom, 0);
+        // Fallback: some mobile browsers can miss scroll events during momentum scroll.
+        setInterval(function() {
+          if (callOverlay && callOverlay.classList.contains('call-visible')) return;
           maybeShowAtBottom();
-        });
-      }, { passive: true });
-      window.addEventListener('resize', maybeShowAtBottom);
-      // In case they land deep-linked near the bottom
-      setTimeout(maybeShowAtBottom, 0);
-      // Fallback: some mobile browsers can miss scroll events during momentum scroll.
-      var poll = setInterval(function() {
-        if (callOverlay && callOverlay.classList.contains('call-visible')) return;
-        maybeShowAtBottom();
-      }, 750);
+        }, 750);
+      }
+
+      if (isMobile && !document.documentElement.classList.contains('mobile-intro-done')) {
+        // Wait for the intro to finish revealing the full site, then start watching for bottom.
+        try {
+          var mo = new MutationObserver(function() {
+            if (document.documentElement.classList.contains('mobile-intro-done')) {
+              mo.disconnect();
+              armBottomTrigger();
+            }
+          });
+          mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        } catch (e) {
+          // If MutationObserver isn't available, just arm immediately (guard in maybeShowAtBottom prevents early trigger).
+          armBottomTrigger();
+        }
+      } else {
+        armBottomTrigger();
+      }
     }
 
     // Debug: see if clicks reach the right elements
