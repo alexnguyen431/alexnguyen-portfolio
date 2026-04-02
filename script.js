@@ -498,9 +498,12 @@
   var callCloseMsg = document.getElementById('callCloseMsg');
   var CALL_SHOWN_KEY = 'call_overlay_shown';
   var forceCallTest = false;
+  var callDebug = false;
   try {
-    forceCallTest = new URLSearchParams(window.location.search).has('calltest');
-    if (forceCallTest) sessionStorage.removeItem(CALL_SHOWN_KEY);
+    var qs = new URLSearchParams(window.location.search);
+    forceCallTest = qs.has('calltest');
+    callDebug = qs.has('calldebug');
+    if (forceCallTest || qs.has('callreset')) sessionStorage.removeItem(CALL_SHOWN_KEY);
   } catch (e) {}
 
   function showCallOverlay() {
@@ -569,7 +572,13 @@
           body ? body.offsetHeight : 0
         );
         // Trigger when within ~120px of bottom (covers iOS bounce + rounding + sticky chrome)
-        return (scrollTop + viewportH) >= (docH - 120);
+        var atBottom = (scrollTop + viewportH) >= (docH - 120);
+        if (callDebug) {
+          try {
+            console.log('[call-overlay] bottom-check', { scrollTop: Math.round(scrollTop), viewportH: Math.round(viewportH), docH: Math.round(docH), atBottom: atBottom, shown: !!sessionStorage.getItem(CALL_SHOWN_KEY) });
+          } catch (e) {}
+        }
+        return atBottom;
       }
 
       function maybeShowAtBottom() {
