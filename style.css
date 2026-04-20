@@ -1083,108 +1083,228 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   margin-bottom: var(--space-md);
 }
 
-.exp-grid {
-  display: grid;
+/* ----- Vertical timeline ----- */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   gap: var(--gap);
 }
 
-.exp-block {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  transition: background var(--transition-base);
+.timeline-item {
+  display: grid;
+  grid-template-columns: 11px 1fr;
+  align-items: stretch;
+  column-gap: var(--space-md);
+  position: relative;
 }
 
-.exp-header {
+.timeline-marker {
+  position: relative;
+  width: 11px;
+}
+
+/* Rail segment: runs the full item height + into the next gap */
+.timeline-marker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: calc(-1 * var(--gap));
+  left: 5px;
+  width: 1px;
+  background: var(--border-primary);
+}
+
+/* First item: rail starts at the dot, not the very top */
+.timeline-item:first-child .timeline-marker::before {
+  top: 52px;
+}
+
+/* Last item: rail ends at the dot, not extending past the card */
+.timeline-item:last-child .timeline-marker::before {
+  bottom: auto;
+  height: 54px;
+}
+
+.timeline-dot {
+  position: absolute;
+  top: 47px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 1px solid var(--text-tertiary);
+  z-index: 1;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+/* Subsequent items have a 1px border-top, so nudge the dot down by 1px */
+.timeline-item + .timeline-item .timeline-dot {
+  top: 48px;
+}
+
+.timeline-item--latest .timeline-dot {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+.timeline-card {
+  min-width: 0;
+  padding: var(--space-md) 0;
+}
+
+/* Divider between timeline items (line separator restored) */
+.timeline-item + .timeline-item .timeline-card {
+  border-top: 1px solid var(--border-primary);
+}
+
+.timeline-card-head {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  column-gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.timeline-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-md);
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  user-select: none;
 }
 
-.exp-company {
+.timeline-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.timeline-logo--revery { background: #5A3A2E; }
+.timeline-logo--block { background: #000000; }
+.timeline-logo--meta { background: #0866FF; }
+.timeline-logo--ogilvy { background: #E41C38; }
+.timeline-logo--drover { background: #252E5D; }
+.timeline-logo--skimlinks { background: #6F2C91; }
+
+.timeline-head-left {
+  min-width: 0;
+}
+
+.timeline-titles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.timeline-company {
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 24px;
+  font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0;
 }
 
-.exp-date {
-  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+.timeline-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 100px;
+  background: var(--bg-tag);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.timeline-role {
   font-size: 0.9375rem;
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
   color: var(--text-tertiary);
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.exp-body {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  gap: var(--space-lg);
+.timeline-desc {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-size: 0.9375rem;
+  margin: 0;
 }
 
-.exp-body .exp-col:last-child {
-  padding-right: var(--space-lg);
+.timeline-projects {
+  margin-top: var(--space-md);
 }
 
-.exp-col h4 {
+.timeline-section-label {
   font-family: var(--font-mono);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-tertiary);
-  margin-bottom: var(--space-sm);
+  margin: 0 0 var(--space-sm);
   font-weight: 600;
 }
 
-.exp-role-primary {
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
-.exp-role-note {
-  font-family: var(--font-body);
-  font-size: 12px;
-  margin-bottom: 32px;
-  letter-spacing: 0.01em;
-}
-
-.exp-role-secondary {
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
-/* Role names use theme primary text so they stay readable on dark cards */
-.exp-col .exp-role-primary,
-.exp-col .exp-role-note,
-.exp-col .exp-role-secondary {
-  color: var(--text-primary);
-}
-
-.exp-col p {
+.timeline-projects p {
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 8px;
+  font-size: 0.9375rem;
+  margin: 0 0 8px;
 }
 
-.exp-tags {
+.timeline-projects p:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-projects strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.timeline-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  list-style: none;
+  margin: var(--space-md) 0 0;
+  padding: 0;
 }
 
-.exp-tags span {
-  display: inline-block;
+.timeline-tags li {
   padding: 4px 12px;
   border-radius: 100px;
   background: var(--bg-tag);
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--text-secondary);
-  white-space: nowrap;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 /* ==========================================
@@ -1211,6 +1331,20 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   letter-spacing: -0.01em;
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
+}
+
+.edu-program {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.edu-meta {
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  margin: 0;
 }
 
 /* ==========================================
@@ -1300,7 +1434,7 @@ body.brand-active {
 }
 
 body.brand-active .sidebar,
-body.brand-active .exp-block,
+body.brand-active .timeline-card,
 body.brand-active .edu-item,
 body.brand-active .bento-card,
 body.brand-active .bento-card-visual {
@@ -1326,9 +1460,27 @@ body.brand-active .status-pill {
    ========================================== */
 
 @media (max-width: 1024px) {
-  .exp-body {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
+  .timeline-card-head {
+    grid-template-columns: 56px 1fr;
+    row-gap: 8px;
+  }
+
+  .timeline-date {
+    grid-column: 2;
+    padding-top: 0;
+    order: -1;
+  }
+
+  /*
+   * Header is 2 columns but has 3 children (logo, text, date pill).
+   * Without this, the pill auto-places in row 2 column 1 — the narrow logo track —
+   * so the background clips while text overflows.
+   */
+  .timeline-card-head .timeline-pill {
+    grid-column: 1 / -1;
+    justify-self: start;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -1703,29 +1855,65 @@ body.brand-active .status-pill {
     animation-delay: calc(var(--mobile-intro-delay) + 0.08s);
   }
 
-  /* Experience + Education: horizontal snap “carousel” (mobile only) */
-  .experience .exp-grid {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: var(--gap);
-    overflow-x: auto;
-    overflow-y: visible;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: var(--space-md);
-    -webkit-overflow-scrolling: touch;
-    margin-left: calc(-1 * var(--space-md));
-    margin-right: calc(-1 * var(--space-md));
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-    padding-bottom: 8px;
-    scrollbar-width: thin;
+  /* Timeline: tighten on mobile */
+  .experience .timeline-item {
+    grid-template-columns: 11px 1fr;
+    column-gap: var(--space-sm);
   }
 
-  .experience .exp-grid .exp-block {
-    flex: 0 0 min(84vw, 420px);
-    scroll-snap-align: start;
-    max-width: none;
+  .experience .timeline-card {
+    padding: var(--space-sm) 0;
+  }
+
+  .experience .timeline-card-head {
+    grid-template-columns: 44px 1fr;
+    column-gap: var(--space-sm);
+    row-gap: 6px;
+  }
+
+  .experience .timeline-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+  }
+
+  .experience .timeline-date {
+    grid-column: 2;
+    padding-top: 0;
+    order: -1;
+  }
+
+  .experience .timeline-tags li {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-align: center;
+  }
+
+  .experience .timeline-company {
+    font-size: 1rem;
+  }
+
+  .experience .timeline-role,
+  .experience .timeline-desc,
+  .experience .timeline-projects p {
+    font-size: 0.875rem;
+  }
+
+  .experience .timeline-dot {
+    top: 38px;
+  }
+
+  .experience .timeline-item + .timeline-item .timeline-dot {
+    top: 39px;
+  }
+
+  .experience .timeline-item:first-child .timeline-marker::before {
+    top: 38px;
+  }
+
+  .experience .timeline-item:last-child .timeline-marker::before {
+    height: 39px;
   }
 
   .experience .edu-grid {
