@@ -572,6 +572,63 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   filter: blur(0);
 }
 
+.reveal-word.blurb-brand-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+}
+
+.main-blurb-break {
+  display: block;
+  height: 0.36em;
+}
+
+.reveal-word.blurb-wave {
+  display: inline-block;
+}
+
+.blurb-wave-glyph {
+  display: inline-block;
+  transform-origin: 70% 70%;
+}
+
+.reveal-word.blurb-wave.is-visible .blurb-wave-glyph {
+  animation: wave-hand 2.6s ease-in-out infinite;
+}
+
+.blurb-brand-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12em;
+}
+
+.blurb-brand-logo {
+  width: auto;
+  height: 0.82em;
+  flex-shrink: 0;
+  display: block;
+  opacity: 0.9;
+  filter: var(--blurb-brand-logo-filter, none);
+}
+
+html[data-theme="dark"] .blurb-brand-logo {
+  --blurb-brand-logo-filter: invert(1);
+}
+
+body.brand-active .blurb-brand-logo {
+  --blurb-brand-logo-filter: invert(1);
+}
+
+@keyframes wave-hand {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+}
+
 @keyframes pulse-blurb {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 213, 75, 0.5); }
   50% { opacity: 0.7; box-shadow: 0 0 0 0.32em rgba(0, 213, 75, 0); }
@@ -1815,6 +1872,10 @@ body.brand-active .sidebar-nav a:hover {
   .main-blurb-availability {
     font-size: calc(40px * 2 / 3);
     line-height: calc(40px * 2 / 3);
+  }
+
+  .main-blurb-availability {
+    margin-bottom: calc(var(--space-md) * 4);
   }
 
   .main-blurb {

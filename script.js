@@ -44,39 +44,88 @@
   const availabilityEl = document.querySelector('.main-blurb-availability');
   const availabilityTextEl = availabilityEl ? availabilityEl.querySelector('.main-blurb-availability-text') : null;
   if (blurbEl) {
-    const raw = blurbEl.innerHTML;
-    const source = raw.replace(/<br\s*\/?>/gi, '\n');
+    const source = blurbEl.innerHTML;
     const availabilitySource = availabilityTextEl ? availabilityTextEl.textContent || '' : '';
     const WORD_DELAY = 110;
     const AVAILABILITY_DELAY = 95;
 
-    function buildRevealWords(targetEl, text) {
+    function buildRevealWords(targetEl, sourceMarkup) {
       if (!targetEl) return [];
 
       targetEl.innerHTML = '';
-      const lines = text.split('\n');
+      const template = document.createElement('template');
+      template.innerHTML = sourceMarkup;
       const words = [];
+      let pendingSpace = false;
 
-      lines.forEach(function(line, lineIndex) {
-        const trimmedLine = line.trim();
-        const lineWords = trimmedLine ? trimmedLine.split(/\s+/) : [];
-
-        lineWords.forEach(function(word, wordIndex) {
-          const wordEl = document.createElement('span');
-          wordEl.className = 'reveal-word';
-          wordEl.textContent = word;
-          targetEl.appendChild(wordEl);
-          words.push(wordEl);
-
-          if (wordIndex < lineWords.length - 1) {
-            targetEl.appendChild(document.createTextNode(' '));
-          }
-        });
-
-        if (lineIndex < lines.length - 1) {
-          targetEl.appendChild(document.createElement('br'));
+      function appendPendingSpace() {
+        if (!pendingSpace) return;
+        if (targetEl.lastChild && targetEl.lastChild.nodeName !== 'BR') {
+          targetEl.appendChild(document.createTextNode(' '));
         }
-      });
+        pendingSpace = false;
+      }
+
+      function appendRevealWord(text) {
+        if (!text) return;
+        appendPendingSpace();
+        const wordEl = document.createElement('span');
+        wordEl.className = 'reveal-word';
+        wordEl.textContent = text;
+        targetEl.appendChild(wordEl);
+        words.push(wordEl);
+      }
+
+      function processNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const segments = node.textContent.split(/(\s+)/);
+          segments.forEach(function(segment) {
+            if (!segment) return;
+            if (/^\s+$/.test(segment)) {
+              pendingSpace = !!targetEl.lastChild && targetEl.lastChild.nodeName !== 'BR';
+              return;
+            }
+            appendRevealWord(segment);
+          });
+          return;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+        if (node.tagName === 'BR') {
+          pendingSpace = false;
+          targetEl.appendChild(document.createElement('br'));
+          return;
+        }
+
+        if (node.classList.contains('main-blurb-break')) {
+          pendingSpace = false;
+          targetEl.appendChild(node.cloneNode(true));
+          return;
+        }
+
+        if (node.classList.contains('blurb-wave')) {
+          appendPendingSpace();
+          const waveEl = node.cloneNode(true);
+          waveEl.classList.add('reveal-word');
+          targetEl.appendChild(waveEl);
+          words.push(waveEl);
+          return;
+        }
+
+        if (node.classList.contains('blurb-brand-word')) {
+          appendPendingSpace();
+          const brandEl = node.cloneNode(true);
+          brandEl.classList.add('reveal-word');
+          targetEl.appendChild(brandEl);
+          words.push(brandEl);
+          return;
+        }
+
+        Array.from(node.childNodes).forEach(processNode);
+      }
+
+      Array.from(template.content.childNodes).forEach(processNode);
 
       return words;
     }
