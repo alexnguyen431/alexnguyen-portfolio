@@ -216,13 +216,15 @@ h4 {
 }
 
 .sidebar-role {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
   margin-top: 8px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  white-space: nowrap;
 }
 
 .sidebar-location {
@@ -295,13 +297,14 @@ a.status-pill:hover {
 
 .marquee-track > span,
 .marquee-track > a {
-  font-family: var(--font-mono);
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
   color: var(--text-tertiary);
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
-  letter-spacing: 0.06em;
+  letter-spacing: -0.02em;
 }
 
 .marquee-track > a {
@@ -351,15 +354,16 @@ a.status-pill:hover {
 }
 
 .sidebar-nav a {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
   color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: none;
+  letter-spacing: -0.02em;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   padding: 4px 0;
 }
 
@@ -798,6 +802,7 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 
 .carousel-slide .bento-card {
   height: 100%;
+  position: relative;
 }
 
 .carousel-slide .bento-card-body {
@@ -807,7 +812,12 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 }
 
 .carousel-slide .bento-card-title {
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: none;
+  letter-spacing: -0.02em;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -842,6 +852,45 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 
 .carousel-slide .bento-card-stats strong {
   font-size: 24px;
+}
+
+#workCarousel .case-study-pill {
+  position: absolute;
+  left: var(--case-study-pill-x, 50%);
+  top: var(--case-study-pill-y, calc(100% - var(--space-sm)));
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #0a0a0a;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, calc(-100% + 8px));
+  pointer-events: none;
+  will-change: left, top, opacity, transform;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+@media (hover: hover) {
+  #workCarousel .bento-card,
+  #workCarousel .bento-card * {
+    cursor: none;
+  }
+
+  #workCarousel .bento-card:hover .case-study-pill {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
 }
 
 /* Selected Work card themes (company colors) – scoped to carousel only */
@@ -976,7 +1025,6 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   font-size: 24px;
   overflow-wrap: break-word;
   word-wrap: break-word;
-  line-height: 1.2;
   color: var(--text-primary);
 }
 
@@ -1003,11 +1051,12 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   margin-top: 14px;
   padding: 10px 18px;
   border-radius: 100px;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: none;
+  letter-spacing: -0.02em;
   border: 1px solid var(--border-primary);
   background: var(--bg-tag);
   color: var(--text-primary);
@@ -1292,7 +1341,9 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: none;
   color: var(--text-primary);
   margin: 0;
 }
@@ -1458,10 +1509,12 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border-primary);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: none;
+  letter-spacing: -0.02em;
   text-decoration: none;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   transition: opacity var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
@@ -1701,7 +1754,7 @@ body.brand-active .sidebar-nav a:hover {
     flex-shrink: 0;
     white-space: normal;
     padding: 14px 0;
-    font-size: 0.8125rem;
+    font-size: 1rem;
     border-bottom: 1px solid var(--border-primary);
   }
 
@@ -2256,11 +2309,13 @@ body.brand-active .sidebar-nav a:hover {
 }
 
 .call-name {
-  font-family: var(--font-body);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 17px;
   color: #fff;
-  font-weight: 600;
-  line-height: 1.3;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: none;
 }
 
 .call-actions {

@@ -322,6 +322,38 @@
     }, { passive: true });
   });
 
+  const canHoverFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (canHoverFinePointer) {
+    document.querySelectorAll('#workCarousel .bento-card').forEach(function(card) {
+      const pill = card.querySelector('.case-study-pill');
+      if (!pill) return;
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function updateCaseStudyPillPosition(e) {
+        const rect = card.getBoundingClientRect();
+        const pillRect = pill.getBoundingClientRect();
+        const localX = e.clientX - rect.left;
+        const localY = e.clientY - rect.top;
+        const gutter = 18;
+        const minX = pillRect.width / 2 + gutter;
+        const maxX = rect.width - pillRect.width / 2 - gutter;
+        const minY = pillRect.height + gutter;
+        const maxY = rect.height - gutter;
+        const x = clamp(localX, minX, maxX);
+        const y = clamp(localY, minY, maxY);
+
+        card.style.setProperty('--case-study-pill-x', x + 'px');
+        card.style.setProperty('--case-study-pill-y', y + 'px');
+      }
+
+      card.addEventListener('mouseenter', updateCaseStudyPillPosition);
+      card.addEventListener('mousemove', updateCaseStudyPillPosition);
+    });
+  }
+
   /* ----- Carousels (Selected Work + Side projects) ----- */
   function initCarousel(carouselEl, controlsEl, titleEl) {
     if (!carouselEl) return;
