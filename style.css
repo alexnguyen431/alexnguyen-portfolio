@@ -5,7 +5,7 @@
 :root {
   --font-display: 'Gasoek One', Impact, sans-serif;
   --font-body: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Spline Sans Mono', 'SF Mono', monospace;
+  --font-mono: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 
   --space-xs: 0.5rem;
   --space-sm: 1rem;
@@ -57,8 +57,13 @@
   --marquee-text: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme="light"] .status-pill {
+[data-theme="light"] a.status-pill {
   background: #ffffff;
+  color: rgba(102, 102, 96, 1);
+}
+
+[data-theme="light"] .sidebar-nav a {
+  color: #666666;
 }
 
 /* ==========================================
@@ -207,16 +212,16 @@ h4 {
   line-height: 46px;
   height: fit-content;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.72px;
 }
 
 .sidebar-role {
-  font-family: "Spline Sans Mono";
+  font-family: Geist;
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
   margin-top: 8px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
@@ -234,10 +239,11 @@ h4 {
   padding: 6px 14px;
   border-radius: 100px;
   background: var(--bg-tag);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-family: Geist;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text-secondary);
-  letter-spacing: 0.02em;
+  letter-spacing: normal;
   white-space: nowrap;
   text-decoration: none;
   transition: background 0.2s ease, color 0.2s ease;
@@ -345,12 +351,12 @@ a.status-pill:hover {
 }
 
 .sidebar-nav a {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.5px;
   display: inline-flex;
   align-items: center;
   gap: 5px;
