@@ -24,7 +24,7 @@
     colorSchemeMql.addListener(syncThemeFromSystem);
   }
 
-  /* ----- Main blurb typewriter (runs early so a later error never blocks transition to full site) ----- */
+  /* ----- Main blurb word-by-word reveal (runs early so a later error never blocks transition to full site) ----- */
   const mqMobileIntro = window.matchMedia('(max-width: 768px)');
   const reduceMotionIntro = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -41,32 +41,109 @@
   }
 
   const blurbEl = document.querySelector('.main-blurb');
+  const availabilityEl = document.querySelector('.main-blurb-availability');
+  const availabilityTextEl = availabilityEl ? availabilityEl.querySelector('.main-blurb-availability-text') : null;
   if (blurbEl) {
     const raw = blurbEl.innerHTML;
     const source = raw.replace(/<br\s*\/?>/gi, '\n');
-    blurbEl.innerHTML = '';
+    const availabilitySource = availabilityTextEl ? availabilityTextEl.textContent || '' : '';
+    const WORD_DELAY = 110;
+    const AVAILABILITY_DELAY = 95;
+
+    function buildRevealWords(targetEl, text) {
+      if (!targetEl) return [];
+
+      targetEl.innerHTML = '';
+      const lines = text.split('\n');
+      const words = [];
+
+      lines.forEach(function(line, lineIndex) {
+        const trimmedLine = line.trim();
+        const lineWords = trimmedLine ? trimmedLine.split(/\s+/) : [];
+
+        lineWords.forEach(function(word, wordIndex) {
+          const wordEl = document.createElement('span');
+          wordEl.className = 'reveal-word';
+          wordEl.textContent = word;
+          targetEl.appendChild(wordEl);
+          words.push(wordEl);
+
+          if (wordIndex < lineWords.length - 1) {
+            targetEl.appendChild(document.createTextNode(' '));
+          }
+        });
+
+        if (lineIndex < lines.length - 1) {
+          targetEl.appendChild(document.createElement('br'));
+        }
+      });
+
+      return words;
+    }
+
+    function revealWords(wordEls, delay, onComplete) {
+      if (!wordEls.length) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      var wordIndex = 0;
+
+      function revealNextWord() {
+        if (wordIndex >= wordEls.length) {
+          if (onComplete) onComplete();
+          return;
+        }
+
+        var currentWordIndex = wordIndex;
+        requestAnimationFrame(function() {
+          wordEls[currentWordIndex].classList.add('is-visible');
+        });
+
+        wordIndex += 1;
+        setTimeout(revealNextWord, delay);
+      }
+
+      revealNextWord();
+    }
+
+    const blurbWords = buildRevealWords(blurbEl, source);
+    const availabilityWords = availabilityTextEl ? buildRevealWords(availabilityTextEl, availabilitySource) : [];
+
+    if (availabilityEl) {
+      availabilityEl.classList.remove('is-revealing');
+      availabilityEl.classList.remove('is-visible');
+    }
     blurbEl.classList.remove('main-blurb--loading');
-    blurbEl.classList.add('main-blurb--typing');
+    blurbEl.classList.add('main-blurb--revealing');
 
     if (!mqMobileIntro.matches || reduceMotionIntro) {
       finishMobileIntro();
     }
 
-    let index = 0;
-    const CHAR_DELAY = 28;
-
-    function typeNext() {
-      if (index < source.length) {
-        index += 1;
-        blurbEl.innerHTML = source.slice(0, index).replace(/\n/g, '<br>');
-        setTimeout(typeNext, CHAR_DELAY);
-      } else {
-        blurbEl.classList.remove('main-blurb--typing');
-        /* Always finish when typing completes: avoids getting stuck if viewport crossed 768px during the animation (mq was true at start, false at end). */
-        setTimeout(finishMobileIntro, mqMobileIntro.matches && !reduceMotionIntro ? 500 : 0);
+    function finishRevealSequence() {
+      blurbEl.classList.remove('main-blurb--revealing');
+      if (availabilityEl) {
+        availabilityEl.classList.remove('is-revealing');
+        availabilityEl.classList.add('is-visible');
       }
+      /* Always finish when reveal completes: avoids getting stuck if viewport crossed 768px during the animation (mq was true at start, false at end). */
+      setTimeout(finishMobileIntro, mqMobileIntro.matches && !reduceMotionIntro ? 500 : 0);
     }
-    setTimeout(typeNext, CHAR_DELAY);
+
+    function revealAvailability() {
+      if (!availabilityEl || !availabilityTextEl || !availabilitySource) {
+        finishRevealSequence();
+        return;
+      }
+
+      availabilityEl.classList.add('is-revealing');
+      revealWords(availabilityWords, AVAILABILITY_DELAY, finishRevealSequence);
+    }
+
+    revealWords(blurbWords, WORD_DELAY, function() {
+      setTimeout(revealAvailability, 120);
+    });
   } else {
     finishMobileIntro();
   }

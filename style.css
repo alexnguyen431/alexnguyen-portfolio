@@ -216,7 +216,7 @@ h4 {
 }
 
 .sidebar-role {
-  font-family: Geist;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -463,7 +463,7 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   /* Blurb + CTA centered in viewport (hero) */
   .main-hero .main-hero-content {
     position: absolute;
-    top: 46%;
+    top: calc(50% - 36px);
     left: 0;
     right: 0;
     transform: translateY(-50%);
@@ -475,29 +475,102 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   margin-right: auto;
 }
 .main-hero .main-blurb {
-  margin-bottom: var(--space-md);
+  margin-bottom: 0;
 }
 
 /* Hidden until typewriter starts (avoids flash of full text) */
 .main-blurb--loading {
   opacity: 0;
 }
-.main-blurb--typing {
+.main-blurb--revealing {
   opacity: 1;
 }
 
-.main-blurb {
+.main-blurb,
+.main-blurb-availability {
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 40px;
   font-weight: 700;
   line-height: 40px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.main-blurb {
   width: auto;
   text-align: left;
-  color: var(--text-primary);
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.main-blurb-availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: 0.62em;
   margin-bottom: var(--space-md);
-  letter-spacing: -0.02em;
-  padding-top: 100px;
-  padding-bottom: 100px;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity var(--transition-base), color var(--transition-base), transform var(--transition-base);
+}
+
+.main-blurb-availability:hover {
+  opacity: 0.8;
+}
+
+.main-blurb-availability.is-revealing,
+.main-blurb-availability.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.main-blurb-availability.is-visible {
+  pointer-events: auto;
+}
+
+.main-blurb-availability .status-dot {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.main-blurb-availability .status-dot {
+  width: 0.42em;
+  height: 0.42em;
+  animation: pulse-blurb 2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(0, 213, 75, 0.5);
+}
+
+.main-blurb-availability.is-revealing .status-dot,
+.main-blurb-availability.is-visible .status-dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.reveal-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.28em);
+  filter: blur(6px);
+  transition:
+    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-word.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+@keyframes pulse-blurb {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 213, 75, 0.5); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 0.32em rgba(0, 213, 75, 0); }
 }
 
 /* ==========================================
@@ -1452,6 +1525,11 @@ body.brand-active .status-pill {
   color: #0a0a0a;
 }
 
+body.brand-active .sidebar-nav a,
+body.brand-active .sidebar-nav a:hover {
+  color: var(--text-primary);
+}
+
 /* ==========================================
    ANIMATIONS
    ========================================== */
@@ -1680,11 +1758,15 @@ body.brand-active .status-pill {
   }
 
   /* Intro blurb: ⅓ smaller than desktop (40px → ~26.67px) on mobile */
-  .main-blurb {
+  .main-blurb,
+  .main-blurb-availability {
     font-size: calc(40px * 2 / 3);
     line-height: calc(40px * 2 / 3);
+  }
+
+  .main-blurb {
     padding-top: calc(100px * 2 / 3);
-    padding-bottom: calc(100px * 2 / 3);
+    padding-bottom: 0;
     transition:
       padding-top 1.55s var(--mobile-intro-fade-slow),
       padding-bottom 1.55s var(--mobile-intro-fade-slow),
@@ -1775,6 +1857,10 @@ body.brand-active .status-pill {
     padding-bottom: 0;
     margin-bottom: 0;
     width: 100%;
+  }
+
+  html:not(.mobile-intro-done) .main-blurb-availability {
+    margin-top: 0.68em;
   }
 
   html.mobile-intro-done .main {
