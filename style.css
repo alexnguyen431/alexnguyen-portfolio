@@ -147,6 +147,16 @@ h4 {
   overflow: hidden;
 }
 
+@media (min-width: 769px) {
+  .sidebar-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: center;
+    width: fit-content;
+  }
+}
+
 /* Logo flip card: text on front, photo on back */
 .logo-flip {
   display: inline-block;
@@ -217,7 +227,7 @@ h4 {
 
 .sidebar-role {
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 16px;
+  font-size: 16.5px;
   font-weight: 700;
   line-height: 1.1;
   color: var(--text-primary);
@@ -1834,6 +1844,9 @@ body.brand-active .sidebar-nav a:hover {
 
   /* Room for burger (right), same diameter as theme button */
   .sidebar-top {
+    align-items: flex-start;
+    align-self: stretch;
+    width: 100%;
     padding-right: calc(36px + var(--space-md));
     padding-left: 0;
   }
