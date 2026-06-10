@@ -32,6 +32,7 @@
   --content-reveal-stagger: 0.09s;
 
   --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --anchor-scroll-offset: calc(var(--site-header-height, 9rem) + 0.5rem);
 }
 
 [data-theme="dark"] {
@@ -93,6 +94,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--anchor-scroll-offset);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Match body so iOS / overscroll doesn’t show a hairline above the page */
@@ -102,11 +104,12 @@ html {
   overflow-x: clip;
 }
 
-/* Extra space above section when scrolling to anchor */
+/* Keep section titles below the fixed header when jumping to anchors */
+#work,
 #experience,
 #side-projects,
 #education {
-  scroll-margin-top: 30px;
+  scroll-margin-top: var(--anchor-scroll-offset);
 }
 
 #education,
@@ -2396,6 +2399,7 @@ html:not(.blurb-reveal-done) .section-rail {
   :root {
     --site-header-bar-pad-top: max(1.75rem, calc(env(safe-area-inset-top) + 1.5rem));
     --site-header-clearance: calc(var(--site-header-bar-pad-top) + 3.25rem);
+    --anchor-scroll-offset: calc(var(--site-header-clearance) + 0.35rem);
   }
 
   .site-header .section-rail {
@@ -4244,7 +4248,6 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 
 .asset-lightbox-item {
   flex: 0 0 auto;
-  height: min(72vh, 720px);
   margin: 0;
   border-radius: clamp(16px, 2vw, 24px);
   overflow: hidden;
@@ -4252,15 +4255,15 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-.asset-lightbox-item img,
-.asset-lightbox-item video {
+.asset-lightbox-item:not(.asset-lightbox-item--video):not(.asset-lightbox-item--flow) {
+  height: min(72vh, 720px);
+}
+
+.asset-lightbox-item:not(.asset-lightbox-item--video) img {
   display: block;
   height: 100%;
   width: auto;
   max-width: none;
-}
-
-.asset-lightbox-item:not(.asset-lightbox-item--flow):not(.asset-lightbox-item--video) img {
   object-fit: cover;
   background: #111;
 }
@@ -4270,15 +4273,17 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: auto;
   overflow: visible;
   background: #111;
 }
 
 .asset-lightbox-item--video video {
-  max-height: min(72vh, 720px);
-  max-width: min(42vw, 420px);
+  display: block;
   width: auto;
   height: auto;
+  max-height: min(72vh, 720px);
+  max-width: min(42vw, 420px);
   object-fit: contain;
   background: #111;
 }
@@ -4321,6 +4326,22 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 
 .asset-lightbox-unmute svg {
   flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .asset-lightbox-scroller {
+    padding-top: clamp(64px, 9vh, 80px);
+  }
+
+  .asset-lightbox-track {
+    min-height: 0;
+    align-items: center;
+  }
+
+  .asset-lightbox-item--video video {
+    max-width: min(82vw, 360px);
+    max-height: min(68vh, 640px);
+  }
 }
 
 .asset-lightbox-item--flow {

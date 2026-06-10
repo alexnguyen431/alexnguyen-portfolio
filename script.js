@@ -1398,9 +1398,16 @@
   var sectionRail = document.getElementById('sectionRail');
   var pageSections = [
     { id: 'work', label: 'Selected Work' },
-    { id: 'side-projects', label: 'Side projects & prototypes' },
+    { id: 'side-projects', label: 'Side projects & prototypes', shortLabel: 'Side projects' },
     { id: 'experience', label: 'Experience' }
   ];
+
+  function getFabSectionLabel(section) {
+    if (section.shortLabel && window.matchMedia('(max-width: 768px)').matches) {
+      return section.shortLabel;
+    }
+    return section.label;
+  }
 
   function getCurrentSectionIndex() {
     var vh = window.innerHeight;
@@ -1665,17 +1672,44 @@
     updateSiteHeaderTone();
   }
 
-  if (sectionRail) {
-    sectionRail.querySelectorAll('.section-rail__link[data-section]').forEach(function(link) {
+  function getAnchorScrollOffset() {
+    var header = document.querySelector('.site-header');
+    var headerHeight = header ? header.getBoundingClientRect().height : 0;
+    var extra = 8;
+    if (headerHeight > 0) return headerHeight + extra;
+
+    var rootStyles = getComputedStyle(document.documentElement);
+    var cssOffset = parseFloat(rootStyles.getPropertyValue('--anchor-scroll-offset'));
+    return Number.isFinite(cssOffset) ? cssOffset : 120;
+  }
+
+  function scrollToAnchor(target) {
+    if (!target) return;
+    var top = target.getBoundingClientRect().top + window.scrollY - getAnchorScrollOffset();
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
+  function bindAnchorLinks(rootEl) {
+    if (!rootEl) return;
+    rootEl.querySelectorAll('a[href^="#"]').forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (!href || href === '#') return;
+      var id = href.slice(1);
+      if (!id || !document.getElementById(id)) return;
+      if (link.dataset.anchorScrollBound === 'true') return;
+      link.dataset.anchorScrollBound = 'true';
+
       link.addEventListener('click', function(e) {
-        var id = link.getAttribute('data-section');
-        var target = id ? document.getElementById(id) : null;
+        var target = document.getElementById(id);
         if (!target) return;
         e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        scrollToAnchor(target);
       });
     });
   }
+
+  bindAnchorLinks(sectionRail);
+  bindAnchorLinks(document.getElementById('sidebarNav'));
 
   window.addEventListener('scroll', function() {
     requestAnimationFrame(updateScrollChrome);
@@ -1749,8 +1783,9 @@
       }
       fab.classList.remove('fab-hidden');
       fab.href = '#' + next.section.id;
-      if (fabLabel) fabLabel.textContent = next.section.label;
-      fab.setAttribute('aria-label', 'Scroll to ' + next.section.label);
+      var nextLabel = getFabSectionLabel(next.section);
+      if (fabLabel) fabLabel.textContent = nextLabel;
+      fab.setAttribute('aria-label', 'Scroll to ' + nextLabel);
       if (fabLabel && fabLabel.textContent === 'Selected Work') {
         fab.classList.add('fab-levitate');
       } else {
@@ -1762,7 +1797,7 @@
       var next = getNextSection();
       if (!next) return;
       e.preventDefault();
-      next.el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollToAnchor(next.el);
     });
 
     window.addEventListener('scroll', function() {
