@@ -13,6 +13,7 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="ea9a6261-e89d-4eda-878a-5b702aa92a39"></script>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -33,25 +34,46 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=hide-mobile-dot">
+  <style>
+    html:not(.blurb-reveal-done) .main > :not(.intro-screen) {
+      display: none !important;
+    }
+    html:not(.blurb-reveal-done) .intro-screen {
+      min-height: 100dvh !important;
+    }
+    html:not(.blurb-reveal-done) .fab,
+    html:not(.blurb-reveal-done) .scroll-progress,
+    html:not(.blurb-reveal-done) .section-rail {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  </style>
   <script>
     (function () {
       try {
-        var m = window.matchMedia('(max-width: 768px)');
         var r = window.matchMedia('(prefers-reduced-motion: reduce)');
-        if (!m.matches || r.matches) {
+        if (r.matches) {
           document.documentElement.classList.add('mobile-intro-done');
+          document.documentElement.classList.add('blurb-reveal-done');
         }
       } catch (e) {
         document.documentElement.classList.add('mobile-intro-done');
+        document.documentElement.classList.add('blurb-reveal-done');
       }
     })();
   </script>
   <noscript>
     <style>
+      html .main > *:not(.intro-screen) {
+        display: block !important;
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+      }
       @media (max-width: 768px) {
         html .sidebar { display: block !important; }
-        html .main > *:not(.main-hero) { display: block !important; }
         html .main-marquee { display: block !important; }
         html .fab { display: inline-flex !important; }
         html .main { min-height: 0 !important; display: block !important; }
@@ -75,7 +97,39 @@
 </head>
 <body>
 
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true">
+    <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+  </div>
+
   <div class="layout">
+
+    <header class="site-header">
+      <button type="button" class="header-nav-burger" id="headerNavBurger" aria-expanded="false" aria-controls="sectionRail" aria-label="Open menu" hidden>
+        <span class="header-nav-burger-bar" aria-hidden="true"></span>
+        <span class="header-nav-burger-bar" aria-hidden="true"></span>
+        <span class="header-nav-burger-bar" aria-hidden="true"></span>
+      </button>
+      <div class="header-nav-backdrop" id="headerNavBackdrop" hidden aria-hidden="true"></div>
+      <nav class="section-rail" id="sectionRail" aria-label="Site navigation" aria-hidden="true">
+        <div class="section-rail__sections">
+          <a href="#work" class="section-rail__link" data-section="work">Selected Work</a>
+          <a href="#side-projects" class="section-rail__link" data-section="side-projects">Side projects</a>
+          <a href="#experience" class="section-rail__link" data-section="experience">Experience</a>
+        </div>
+        <div class="section-rail__external">
+          <a href="https://www.linkedin.com/in/alexnguyen3/" class="section-rail__link section-rail__link--external" target="_blank" rel="noopener noreferrer">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a href="mailto:alexnguyen431@gmail.com" class="section-rail__link section-rail__link--external">Email<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a href="https://drive.google.com/file/d/169jcILZViYpPeYQcG0c7WqMi_fwMLMbd/view?usp=sharing" class="section-rail__link section-rail__link--external" target="_blank" rel="noopener noreferrer">CV<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </nav>
+      <div class="site-header-inner">
+        <h1 class="site-header-title">
+          <span class="site-header-name">Alex Nguyen</span>
+          <span class="site-header-sep" aria-hidden="true"> — </span>
+          <span class="site-header-role">Product Designer in Vancouver 🇨🇦</span>
+        </h1>
+      </div>
+    </header>
 
     <aside class="sidebar">
       <button type="button" class="nav-burger" id="navBurger" aria-expanded="false" aria-controls="sidebarNav" aria-label="Open menu">
@@ -112,75 +166,17 @@
 
     <main class="main">
 
-      <div class="main-hero">
-      <div class="main-marquee">
-        <div class="marquee-track">
-          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
-          <span class="marquee-dot"></span>
-          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
-          <span class="marquee-dot"></span>
+      <section class="intro-screen">
+        <div class="main-hero">
+          <div class="main-hero-content">
+            <p class="main-blurb main-blurb--loading" aria-live="polite">Hi, I'm Alex <span class="blurb-wave" role="img" aria-label="waving hand"><span class="blurb-wave-glyph" aria-hidden="true">👋</span></span><br><span class="main-blurb-break" aria-hidden="true"></span>I'm a product designer focused on crafting complex, high-scale products. With experience at <span class="blurb-brand-word"><span class="blurb-brand-logos"><img class="blurb-brand-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="" aria-hidden="true"><img class="blurb-brand-logo" src="https://cdn.simpleicons.org/square/000000" alt="" aria-hidden="true"></span><span>Block</span></span> and <span class="blurb-brand-word"><img class="blurb-brand-logo" src="https://cdn.simpleicons.org/meta/000000" alt="" aria-hidden="true"><span>Meta,</span></span> I specialize in translating ambiguous problems into clear, scalable solutions through product thinking, experimentation, and execution to move the needle on outcomes that matter.</p>
+            <a href="mailto:alexnguyen431@gmail.com" class="main-blurb-availability" aria-label="Email Alex Nguyen — I'm open to work, contact me">
+              <span class="status-dot"></span>
+              <span class="main-blurb-availability-text">I'm open to work - <span class="main-blurb-availability-contact">contact</span> me</span>
+            </a>
+          </div>
         </div>
-      </div>
-
-      <div class="main-hero-content">
-        <p class="main-blurb main-blurb--loading" aria-live="polite">Hi, I'm Alex <span class="blurb-wave" role="img" aria-label="waving hand"><span class="blurb-wave-glyph" aria-hidden="true">👋</span></span><br><span class="main-blurb-break" aria-hidden="true"></span>I'm a product designer focused on crafting complex, high-scale products. With experience at <span class="blurb-brand-word"><span class="blurb-brand-logos"><img class="blurb-brand-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="" aria-hidden="true"><img class="blurb-brand-logo" src="https://cdn.simpleicons.org/square/000000" alt="" aria-hidden="true"></span><span>Block</span></span> and <span class="blurb-brand-word"><img class="blurb-brand-logo" src="https://cdn.simpleicons.org/meta/000000" alt="" aria-hidden="true"><span>Meta,</span></span> I specialize in translating ambiguous problems into clear, scalable solutions through product thinking, experimentation, and execution to move the needle on outcomes that matter.</p>
-        <a href="https://api.whatsapp.com/send?phone=447933301814" class="main-blurb-availability" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-          <span class="status-dot"></span>
-          <span class="main-blurb-availability-text">I'm available for opportunities!</span>
-        </a>
-      </div>
-
-      </div>
+      </section>
 
       <div class="work-section">
         <div class="work-section-head" id="workCarouselControls">
@@ -204,18 +200,22 @@
             <div class="carousel-slide">
               <div class="bento-card bento-card--meta fade-in" data-brand="meta">
                 <span class="case-study-pill" aria-hidden="true">Reach out for full case study</span>
+                <div class="bento-card-header">
+                  <span class="bento-card-year-pill">2021 – 2024</span>
+                  <h3 class="bento-card-title">Meta Commerce:<br>Shops Cart</h3>
+                </div>
                 <div class="bento-card-visual bento-card-visual--phones">
-                  <div class="phone-mockup"><img src="assets/meta-1.png?v=2" alt="Meta Shops — Cart" /></div>
+                  <div class="phone-mockup phone-mockup--video">
+                    <video data-src="assets/meta-add-to-cart-walkthrough.mov" data-poster="assets/meta-1.png?v=2" poster="assets/meta-1.png?v=2" muted loop playsinline autoplay preload="metadata" aria-label="Meta Shops — Add to cart walkthrough"></video>
+                  </div>
                   <div class="phone-mockup"><img src="assets/meta-2.png?v=2" alt="Meta Shops — Cart" /></div>
                   <div class="phone-mockup"><img src="assets/meta-3.png?v=2" alt="Meta Shops — Product" /></div>
                 </div>
                 <div class="bento-card-body">
-                  <h3 class="bento-card-title">Meta Commerce: Shops Cart</h3>
-                  <p class="bento-card-sub">Meta &bull; 2021&ndash;2024</p>
                   <p class="bento-card-desc">As Design Surface Lead for Commerce Cart, framed key product hypotheses and ran experiments that achieved a 300% lift on one target metric and 24% on another.</p>
                   <div class="bento-card-stats">
-                    <span><strong>300%</strong> target lift</span>
-                    <span><strong>24%</strong> secondary lift</span>
+                    <span><strong>300%</strong> primary target lift</span>
+                    <span><strong>24%</strong> secondary target lift</span>
                     <span><strong>8.5%</strong> AOV lift</span>
                   </div>
                 </div>
@@ -224,14 +224,18 @@
             <div class="carousel-slide">
               <div class="bento-card bento-card--square fade-in" data-brand="square">
                 <span class="case-study-pill" aria-hidden="true">Reach out for full case study</span>
+                <div class="bento-card-header">
+                  <span class="bento-card-year-pill">2024 – 2025</span>
+                  <h3 class="bento-card-title">Square Online:<br>Buyer Experience</h3>
+                </div>
                 <div class="bento-card-visual bento-card-visual--phones">
-                  <div class="phone-mockup"><img src="assets/square-1.png" alt="Square Online — Checkout" /></div>
+                  <div class="phone-mockup phone-mockup--video">
+                    <video data-src="assets/square-oofe-cart-walkthrough.mov" data-poster="assets/square-1.png" poster="assets/square-1.png" muted loop playsinline autoplay preload="metadata" aria-label="Square Online — OOFE Cart walkthrough"></video>
+                  </div>
                   <div class="phone-mockup"><img src="assets/square-2.png" alt="Square Online — Your order" /></div>
                   <div class="phone-mockup"><img src="assets/square-3.png" alt="Square Online — Order tracking" /></div>
                 </div>
                 <div class="bento-card-body">
-                  <h3 class="bento-card-title">Square Online: Buyer Experience</h3>
-                  <p class="bento-card-sub">Square/Block &bull; 2024&ndash;2025</p>
                   <p class="bento-card-desc">Led the transformation of Square’s lower-funnel commerce experience across Cart, Checkout, Customer Accounts, and Square Pay, impacting 14M+ buyers and $1B+ GPV.</p>
                   <div class="bento-card-stats">
                     <span><strong>9%</strong> conversion rate</span>
@@ -244,18 +248,19 @@
             <div class="carousel-slide">
               <div class="bento-card bento-card--cash fade-in" data-brand="cash">
                 <span class="case-study-pill" aria-hidden="true">Reach out for full case study</span>
+                <div class="bento-card-header">
+                  <span class="bento-card-year-pill">2025 – 2026</span>
+                  <h3 class="bento-card-title">Cash App:<br>Online Ordering Profiles</h3>
+                </div>
                 <div class="bento-card-visual bento-card-visual--phones">
                   <div class="phone-mockup"><img src="assets/cash-1.png?v=3" alt="Cash App — Cart" /></div>
                   <div class="phone-mockup"><img src="assets/cash-2.png?v=3" alt="Cash App — Review and pay" /></div>
                   <div class="phone-mockup"><img src="assets/cash-3.png?v=3" alt="Cash App — Order placed" /></div>
                 </div>
                 <div class="bento-card-body">
-                  <h3 class="bento-card-title">Cash App: Online Ordering Profiles</h3>
-                  <p class="bento-card-sub">Cash App / Block &bull; 2025&ndash;2026</p>
                   <p class="bento-card-desc">Leading the design of Online Ordering Profiles lower funnel experience (Cart, Checkout, Order Confirmation), on Cash App (iOS, Android and Web).</p>
                    <div class="bento-card-stats">
                     <span><strong>0->1</strong> product</span>
-        
                   </div>
                 </div>
               </div>
@@ -263,12 +268,16 @@
             <div class="carousel-slide">
               <div class="bento-card bento-card--ogilvy fade-in" data-brand="ogilvy">
                 <span class="case-study-pill" aria-hidden="true">Reach out for full case study</span>
+                <div class="bento-card-header">
+                  <span class="bento-card-year-pill">2019 – 2021</span>
+                  <h3 class="bento-card-title">Ogilvy:<br>Experience Design</h3>
+                </div>
                 <div class="bento-card-visual bento-card-visual--video">
-                  <iframe src="https://www.youtube.com/embed/GvhdsoSRDWk?autoplay=1&mute=1&loop=1&playlist=GvhdsoSRDWk" title="Ogilvy Experience Design" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <div class="video-frame video-frame--cw">
+                    <video data-src="assets/ogilvy-ibm-wimbledon.mp4" muted loop playsinline autoplay preload="metadata" aria-label="Ogilvy — IBM Wimbledon"></video>
+                  </div>
                 </div>
                 <div class="bento-card-body">
-                  <h3 class="bento-card-title">Ogilvy: Experience Design</h3>
-                  <p class="bento-card-sub">Ogilvy &bull; 2019&ndash;2021</p>
                   <p class="bento-card-desc">Projects for IBM &amp; Wimbledon, Formula 1, British Airways, American Express, Nestl&eacute; across UX, voice, and interaction design.</p>
                 </div>
               </div>
@@ -280,7 +289,7 @@
 
       <div class="work-section work-section--side">
           <div class="work-section-head" id="sideProjectsCarouselControls">
-            <h2 class="section-title section-title--work fade-in" id="side-projects">Side projects &amp; prototypes</h2>
+            <h2 class="section-title section-title--work fade-in" id="side-projects"><span class="section-title__long">Side projects &amp; prototypes</span><span class="section-title__short">Side projects</span></h2>
             <div class="carousel-controls">
               <button type="button" class="carousel-btn carousel-btn--prev" aria-label="Previous slide">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -299,52 +308,65 @@
               <div class="carousel-track">
                 <div class="carousel-slide">
                   <article class="bento-card side-project-card" data-side-project="scoutboard">
+                    <h3 class="bento-card-title">Scoutboard</h3>
                     <div class="bento-card-visual bento-card-visual--video">
-                      <iframe src="https://www.youtube.com/embed/HTPQmjoAiDI?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=HTPQmjoAiDI" title="Scoutboard" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                      <div class="video-frame video-frame--ccw">
+                        <video data-src="assets/scoutboard.mp4" muted loop playsinline autoplay preload="metadata" aria-label="Scoutboard"></video>
+                      </div>
                     </div>
                     <div class="bento-card-body">
-                      <h3 class="bento-card-title">Scoutboard</h3>
                       <p class="bento-card-sub">Live production app</p>
                       <p class="bento-card-desc">A job search tracker with kanban and table views, ATS detection, and one-click import &mdash; built in a weekend using Cursor and Claude.</p>
-                      <a href="https://www.linkedin.com/posts/alexnguyen3_im-a-designer-and-i-built-a-full-stack-app-ugcPost-7439388996104781824-fZUo" class="side-project-link" target="_blank" rel="noopener noreferrer">Read more about Scoutboard<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                      <div class="side-project-links">
+                        <a href="https://scoutboard.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Scoutboard<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                        <a href="https://www.linkedin.com/posts/alexnguyen3_im-a-designer-and-i-built-a-full-stack-app-ugcPost-7439388996104781824-fZUo" class="side-project-read-more" target="_blank" rel="noopener noreferrer">Read more about Scoutboard</a>
+                      </div>
                     </div>
                   </article>
                 </div>
                 <div class="carousel-slide">
                   <article class="bento-card side-project-card" data-side-project="corporate-translate">
+                    <h3 class="bento-card-title">Corporate Translate</h3>
                     <div class="bento-card-visual bento-card-visual--video">
-                      <iframe src="https://www.youtube.com/embed/HAnWQUhf-Ng?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=HAnWQUhf-Ng" title="Corporate Translate" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                      <div class="video-frame video-frame--cw">
+                        <video data-src="assets/corporate-translate.mp4" muted loop playsinline autoplay preload="metadata" aria-label="Corporate Translate"></video>
+                      </div>
                     </div>
                     <div class="bento-card-body">
-                      <h3 class="bento-card-title">Corporate Translate</h3>
                       <p class="bento-card-sub">Live production app</p>
                       <p class="bento-card-desc">A satirical web app that translates between corporate speak and straight talk, built in 2 hours with Cursor and Claude.</p>
-                      <a href="https://www.corporatetranslate.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Corporate Translate<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                      <div class="side-project-links">
+                        <a href="https://www.corporatetranslate.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Corporate Translate<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                        <a href="https://www.linkedin.com/posts/alexnguyen3_corporate-speak-is-a-second-language-we-all-activity-7442253926441127936-UvGS?utm_source=share&amp;utm_medium=member_desktop&amp;rcm=ACoAAAhfP6UBfKBdph-FaVY4mGESi8c3Zxo_i-k" class="side-project-read-more" target="_blank" rel="noopener noreferrer">Read more about Corporate Translate</a>
+                      </div>
                     </div>
                   </article>
                 </div>
                 <div class="carousel-slide">
                   <article class="bento-card side-project-card" data-side-project="whatsapp-memory">
+                    <h3 class="bento-card-title">WhatsApp Collective Memory</h3>
                     <div class="bento-card-visual bento-card-visual--video">
-                      <iframe src="https://www.youtube.com/embed/mJ8M4HthhVc?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=mJ8M4HthhVc" title="WhatsApp Collective Memory" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                      <div class="video-frame video-frame--ccw">
+                        <video data-src="assets/collective-memory.mp4" muted loop playsinline autoplay preload="metadata" aria-label="WhatsApp Collective Memory"></video>
+                      </div>
                     </div>
                     <div class="bento-card-body">
-                      <h3 class="bento-card-title">WhatsApp Collective Memory</h3>
                       <p class="bento-card-sub">Prototype</p>
                       <p class="bento-card-desc">A relationship-aware shared memory layer for WhatsApp that lets Meta AI remember what matters to the people you talk to most &mdash; built in 24 hours using Claude.</p>
-                      <a href="https://www.linkedin.com/posts/alexnguyen3_opentowork-ugcPost-7440555190736490496-ROST" class="side-project-link" target="_blank" rel="noopener noreferrer">Read more about Collective Memory<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                      <div class="side-project-links">
+                        <a href="https://collective-memory.vercel.app" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Collective Memory<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                        <a href="https://www.linkedin.com/posts/alexnguyen3_opentowork-ugcPost-7440555190736490496-ROST" class="side-project-read-more" target="_blank" rel="noopener noreferrer">Read more about Collective Memory</a>
+                      </div>
                     </div>
                   </article>
                 </div>
                 <div class="carousel-slide">
                   <article class="bento-card side-project-card side-project-card--future-proof" data-side-project="future-proof">
+                    <h3 class="bento-card-title">Future Proof</h3>
                     <div class="bento-card-visual side-project-visual side-project-visual--future-proof">
-                      <div class="phone-mockup phone-mockup--single">
-                        <img src="assets/future-proof-newsletter.png" alt="Future Proof newsletter on iPhone" loading="lazy" />
-                      </div>
+                      <img src="assets/future-proof-newsletter.png?v=3" alt="Future Proof newsletter on iPhone" loading="lazy" />
                     </div>
                     <div class="bento-card-body">
-                      <h3 class="bento-card-title">Future Proof</h3>
                       <p class="bento-card-sub">Email newsletter</p>
                       <p class="bento-card-desc">A signal-first newsletter for builders and operators&mdash;distilling tech, business, money, and health into ideas you can actually use to stay ahead. Send out every Monday.</p>
                       <a href="https://future-proof.xyz" class="side-project-link" target="_blank" rel="noopener noreferrer">Visit Future Proof<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -355,6 +377,8 @@
             </div>
           </div>
       </div>
+
+
 
       <section class="experience">
 
@@ -622,6 +646,65 @@
 
       </section>
 
+      <div class="main-marquee">
+        <div class="marquee-track">
+          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://squareup.com" target="_blank" rel="noopener" data-brand="square"><img class="marquee-logo" src="https://cdn.simpleicons.org/square/000000" alt="Square">Square</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://block.xyz" target="_blank" rel="noopener" data-brand="block">Block</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://cash.app" target="_blank" rel="noopener" data-brand="cashapp"><img class="marquee-logo" src="https://cdn.simpleicons.org/cashapp/000000" alt="Cash App">Cash App</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://meta.com" target="_blank" rel="noopener" data-brand="meta"><img class="marquee-logo" src="https://cdn.simpleicons.org/meta/000000" alt="Meta">Meta</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://instagram.com" target="_blank" rel="noopener" data-brand="instagram"><img class="marquee-logo" src="https://cdn.simpleicons.org/instagram/000000" alt="Instagram">Instagram</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://facebook.com" target="_blank" rel="noopener" data-brand="facebook"><img class="marquee-logo" src="https://cdn.simpleicons.org/facebook/000000" alt="Facebook">Facebook</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://ogilvy.com" target="_blank" rel="noopener" data-brand="ogilvy">Ogilvy</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://en.wikipedia.org/wiki/Drover_(company)" target="_blank" rel="noopener" data-brand="drover">Drover</a>
+          <span class="marquee-dot"></span>
+          <a class="marquee-item" href="https://skimlinks.com" target="_blank" rel="noopener" data-brand="skimlinks">Skimlinks</a>
+          <span class="marquee-dot"></span>
+        </div>
+      </div>
+
       <footer class="footer">
         <p class="footer-copyright">&copy; 2026 Alex Nguyen</p>
       </footer>
@@ -660,6 +743,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=umami-events"></script>
 </body>
 </html>
