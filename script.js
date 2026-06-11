@@ -93,8 +93,8 @@
   if (blurbEl) {
     const source = blurbEl.innerHTML;
     const availabilitySource = availabilityTextEl ? availabilityTextEl.innerHTML || '' : '';
-    const WORD_DELAY = 110;
-    const AVAILABILITY_DELAY = 95;
+    const WORD_DELAY = 132;
+    const AVAILABILITY_DELAY = 112;
 
     function buildRevealWords(targetEl, sourceMarkup) {
       if (!targetEl) return [];
@@ -1320,12 +1320,12 @@
       }
     }
 
-    function settlePosition(animate) {
+    function settlePosition(animate, skipMedia) {
       if (!getMetrics().ready) {
         if (!root.classList.contains('blurb-reveal-done')) return;
         settlePosition._retries = (settlePosition._retries || 0) + 1;
         if (settlePosition._retries < 48) {
-          requestAnimationFrame(function() { settlePosition(animate); });
+          requestAnimationFrame(function() { settlePosition(animate, skipMedia); });
         }
         return;
       }
@@ -1333,7 +1333,10 @@
       normalizeLoopPosition(false);
       freeScrollOffset = 0;
       setTransform(current, animate === true);
-      applyCarouselMediaForCurrent();
+      // applyCarouselMediaForCurrent() starts decoding the visible video. On
+      // mobile we skip it during the reveal so the fade isn't stuttered by
+      // decode work, then run it once the fade has finished.
+      if (!skipMedia) applyCarouselMediaForCurrent();
     }
 
     var WORK_CAROUSEL_TARGET_HEIGHT = 710;
@@ -1445,26 +1448,39 @@
       if (wasPlayingBeforeHover) play();
     });
 
-    function runCarouselLayoutPass() {
+    function runCarouselLayoutPass(skipMedia) {
       settlePosition._retries = 0;
       equalizeCarouselCardHeights._retries = 0;
-      settlePosition(false);
+      settlePosition(false, skipMedia);
       equalizeCarouselCardHeights();
+      if (skipMedia) return;
       loadNearbyCarouselMedia(slideEls, current, 2);
       loadVisibleCarouselMedia(vpEl, slideEls);
     }
 
     current = hasLoop ? realCount : 0;
 
+    // On mobile, hold off all video decode until the content-reveal fade has
+    // finished so the IntersectionObservers below don't load media mid-fade.
+    var mediaRevealReady = !mqMobileIntro.matches;
+
     window.addEventListener('blurb-reveal-complete', function() {
-      // Run synchronously: this fires while the revealed sections are at
-      // opacity 0 (first frame of content-reveal-in), so settling the track
-      // position and equalizing card heights now keeps the layout stable for
-      // the entire fade-in. A trailing pass catches late media/layout.
-      runCarouselLayoutPass();
+      var deferMedia = mqMobileIntro.matches;
+      // Settle position + card heights synchronously while the revealed
+      // sections are still at opacity 0 (first frame of content-reveal-in), so
+      // the layout is stable for the whole fade. On mobile, skip the video
+      // decode here and run it after the fade so it doesn't stutter the
+      // animation; desktop can afford to load immediately.
+      runCarouselLayoutPass(deferMedia);
       requestAnimationFrame(function() {
-        requestAnimationFrame(runCarouselLayoutPass);
+        requestAnimationFrame(function() { runCarouselLayoutPass(deferMedia); });
       });
+      if (deferMedia) {
+        setTimeout(function() {
+          mediaRevealReady = true;
+          runCarouselLayoutPass(false);
+        }, 1200);
+      }
     }, { once: true });
 
     window.addEventListener('load', function() {
@@ -1484,7 +1500,7 @@
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
             play();
-            loadVisibleCarouselMedia(vpEl, slideEls);
+            if (mediaRevealReady) loadVisibleCarouselMedia(vpEl, slideEls);
           } else {
             stop();
           }
@@ -1494,6 +1510,7 @@
 
       if (typeof IntersectionObserver !== 'undefined') {
         var slideMediaObserver = new IntersectionObserver(function(entries) {
+          if (!mediaRevealReady) return;
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
               ensureCarouselSlideMediaPlaying(entry.target);
