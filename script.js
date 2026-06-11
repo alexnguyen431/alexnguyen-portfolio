@@ -232,12 +232,15 @@
 
     function scheduleSiteReveal() {
       blurbEl.classList.remove('main-blurb--revealing');
-      var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 200 : 280);
+      var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 160 : 280);
       setTimeout(finishBlurbReveal, contentPause);
     }
 
     function revealAvailability() {
-      if (!availabilityEl || !availabilityTextEl || !availabilitySource) return;
+      if (!availabilityEl || !availabilityTextEl || !availabilitySource) {
+        scheduleSiteReveal();
+        return;
+      }
 
       availabilityEl.classList.add('is-revealing');
       revealWords(
@@ -245,6 +248,7 @@
         AVAILABILITY_DELAY,
         function() {
           availabilityEl.classList.add('is-visible');
+          scheduleSiteReveal();
         },
         function(wordEl) {
           if (!wordEl.classList.contains('main-blurb-availability-contact')) return;
@@ -262,7 +266,6 @@
     }
 
     revealWords(blurbWords, WORD_DELAY, function() {
-      scheduleSiteReveal();
       setTimeout(revealAvailability, 120);
     });
   } else {
@@ -1446,9 +1449,11 @@
     current = hasLoop ? realCount : 0;
 
     window.addEventListener('blurb-reveal-complete', function() {
-      requestAnimationFrame(function() {
-        requestAnimationFrame(runCarouselLayoutPass);
-      });
+      setTimeout(function() {
+        requestAnimationFrame(function() {
+          requestAnimationFrame(runCarouselLayoutPass);
+        });
+      }, 120);
     }, { once: true });
 
     window.addEventListener('load', function() {
