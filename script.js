@@ -539,7 +539,8 @@
       var i = elements.length;
       while (i--) {
         var card = elements[i].closest('.carousel-slide .bento-card, .carousel-slide .side-project-card');
-        if (card && carouselEl.contains(card)) return card;
+        if (!card || !carouselEl.contains(card)) continue;
+        return card;
       }
       return null;
     }
@@ -739,7 +740,6 @@
       slide.querySelectorAll('video').forEach(function(video) {
         video.setAttribute('data-poster', posterUrl);
         video.setAttribute('poster', posterUrl);
-        replaceCloneMediaWithPoster(video);
       });
       slide.querySelectorAll('.video-frame-poster, .phone-mockup-poster').forEach(function(img) {
         if (!img.getAttribute('src')) img.src = posterUrl;
@@ -813,13 +813,15 @@
       if (poster) {
         cloneVideo.setAttribute('data-poster', poster);
         cloneVideo.setAttribute('poster', poster);
-        replaceCloneMediaWithPoster(cloneVideo);
-        continue;
       }
 
       var src = origVideo.getAttribute('src') || origVideo.getAttribute('data-src');
-      if (src && !cloneVideo.getAttribute('data-src')) {
-        cloneVideo.setAttribute('data-src', src);
+      if (src) {
+        if (!cloneVideo.getAttribute('data-src')) {
+          cloneVideo.setAttribute('data-src', src);
+        }
+        cloneVideo.removeAttribute('data-loaded');
+        cloneVideo.removeAttribute('src');
       }
     }
   }
@@ -829,15 +831,48 @@
     if (frame) frame.classList.add('is-playing');
   }
 
+  function restartCarouselVideo(video) {
+    if (!video) return;
+    var url = video.getAttribute('data-src');
+    if (!url && !video.src) return;
+    if (video.getAttribute('data-loaded') !== 'true') return;
+
+    video.muted = true;
+    if (video.ended) {
+      video.currentTime = 0;
+    }
+
+    var playAttempt = video.play();
+    if (playAttempt && typeof playAttempt.catch === 'function') {
+      playAttempt.catch(function() {
+        try {
+          video.load();
+        } catch (err) {}
+        video.play().catch(function() {});
+      });
+    }
+  }
+
   function resumeCarouselSlideMedia(slide) {
-    if (!slide || slide.classList.contains('carousel-slide--clone')) return;
-    slide.querySelectorAll('video[data-loaded="true"]').forEach(function(video) {
-      if (video.paused) video.play().catch(function() {});
+    if (!slide) return;
+    slide.querySelectorAll('video').forEach(restartCarouselVideo);
+  }
+
+  function pauseCarouselSlideMedia(slide) {
+    if (!slide) return;
+    slide.querySelectorAll('video').forEach(function(video) {
+      if (!video.paused) video.pause();
     });
   }
 
+  function ensureCarouselSlideMediaPlaying(slide) {
+    if (!slide) return;
+    loadCarouselSlideMedia(slide);
+    resumeCarouselSlideMedia(slide);
+  }
+
   function loadCarouselSlideMedia(slide) {
-    if (!slide || slide.classList.contains('carousel-slide--clone')) return;
+    if (!slide) return;
     slide.querySelectorAll('iframe[data-src]').forEach(function(iframe) {
       var url = iframe.getAttribute('data-src');
       if (!url || iframe.getAttribute('data-loaded') === 'true') return;
@@ -871,7 +906,6 @@
   function loadVisibleCarouselMedia(vpEl, slideEls) {
     var vpRect = vpEl.getBoundingClientRect();
     slideEls.forEach(function(slide) {
-      if (slide.classList.contains('carousel-slide--clone')) return;
       var rect = slide.getBoundingClientRect();
       var visibleWidth = Math.min(rect.right, vpRect.right) - Math.max(rect.left, vpRect.left);
       if (visibleWidth > rect.width * 0.12) {
@@ -943,6 +977,9 @@
       const clone = slide.cloneNode(true);
       clone.classList.add('carousel-slide--clone');
       clone.setAttribute('aria-hidden', 'true');
+      clone.querySelectorAll('[data-carousel-hover-bound]').forEach(function(el) {
+        el.removeAttribute('data-carousel-hover-bound');
+      });
       syncCloneMediaFromOriginal(clone, slide);
       clone.querySelectorAll('iframe').forEach(function(el) {
         var frame = el.closest('.phone-mockup--video, .video-frame');
@@ -1007,8 +1044,70 @@
       return metrics.contentLeft - index * metrics.step;
     }
 
+    function isCarouselWheelSnap() {
+      return window.matchMedia('(max-width: 768px)').matches;
+    }
+
+    function getVisualTransform() {
+      if (!trackEl) return 0;
+      return new DOMMatrixReadOnly(getComputedStyle(trackEl).transform).m41;
+    }
+
+    function syncCurrentFromVisualPosition() {
+      var metrics = getMetrics();
+      if (!metrics.ready) return;
+
+      var visualTx = getVisualTransform();
+      var rawIndex = (metrics.contentLeft - visualTx) / metrics.step;
+      rawIndex = Math.max(0, Math.min(count - 1, rawIndex));
+      var newCurrent = wrapCarouselIndex(Math.round(rawIndex));
+
+      if (newCurrent !== current) {
+        current = newCurrent;
+      }
+
+      if (!isCarouselWheelSnap()) {
+        freeScrollOffset = getTransform(current) - visualTx;
+      } else {
+        freeScrollOffset = 0;
+      }
+    }
+
+    function clampFreeScrollOffset() {
+      if (isCarouselWheelSnap() || !getMetrics().ready) return;
+
+      var maxOffset = getTransform(current) - getTransform(count - 1);
+      var minOffset = getTransform(current) - getTransform(0);
+      if (maxOffset < minOffset) {
+        var tmp = maxOffset;
+        maxOffset = minOffset;
+        minOffset = tmp;
+      }
+      freeScrollOffset = Math.max(minOffset, Math.min(maxOffset, freeScrollOffset));
+    }
+
+    function reconcileFreeScrollPosition() {
+      if (!hasLoop || isCarouselWheelSnap()) return;
+
+      syncCurrentFromVisualPosition();
+      clampFreeScrollOffset();
+      normalizeLoopPosition(true);
+
+      trackEl.style.transition = 'none';
+      trackEl.style.transform = 'translate3d(' + (getTransform(current) - freeScrollOffset) + 'px, 0, 0)';
+      void trackEl.offsetHeight;
+      trackEl.style.transition = '';
+      applyCarouselMediaForCurrent();
+      if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
+    }
+
     function setTransform(index, animate) {
       var tx = getTransform(index);
+      if (animate !== false) {
+        freeScrollOffset = 0;
+      } else if (!isCarouselWheelSnap()) {
+        tx -= freeScrollOffset;
+      }
       if (animate === false) trackEl.style.transition = 'none';
       trackEl.style.transform = 'translate3d(' + tx + 'px, 0, 0)';
       if (animate === false) {
@@ -1017,42 +1116,91 @@
       }
     }
 
-    function finishCarouselTransition() {
-      isAnimating = false;
+    function applyCarouselMediaForCurrent() {
+      var realIdx = getRealSlideIndex(current);
+      var activeSlide = slideEls[current] || originalSlides[realIdx];
+      var activeIsClone = !!(activeSlide && activeSlide.classList.contains('carousel-slide--clone'));
+
+      originalSlides.forEach(function(slide, slideIdx) {
+        if (!activeIsClone && slideIdx === realIdx) {
+          ensureCarouselSlideMediaPlaying(slide);
+        } else {
+          pauseCarouselSlideMedia(slide);
+        }
+      });
+
+      if (activeIsClone) {
+        ensureCarouselSlideMediaPlaying(activeSlide);
+      }
+    }
+
+    function ensureCarouselMediaAtIndex() {
+      normalizeLoopPosition(false);
+      applyCarouselMediaForCurrent();
+    }
+
+    function completeCarouselStep() {
       if (normalizeFallbackTimer) {
         clearTimeout(normalizeFallbackTimer);
         normalizeFallbackTimer = null;
       }
+      if (!isAnimating) return;
+      isAnimating = false;
+      freeScrollOffset = 0;
+      syncCurrentFromVisualPosition();
+      normalizeLoopPosition(false);
       loadCarouselMediaAround(current, 2);
-      normalizeLoopPosition();
-      loadCarouselSlideMedia(slideEls[current]);
-      resumeCarouselSlideMedia(slideEls[current]);
+      applyCarouselMediaForCurrent();
       loadVisibleCarouselMedia(vpEl, slideEls);
       if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
-      requestAnimationFrame(updateSiteHeaderTone);
+      requestAnimationFrame(function() {
+        normalizeLoopPosition(false);
+        applyCarouselMediaForCurrent();
+        loadVisibleCarouselMedia(vpEl, slideEls);
+        if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
+        updateSiteHeaderTone();
+      });
     }
 
-    function normalizeLoopPosition() {
+    function finishCarouselTransition() {
+      completeCarouselStep();
+    }
+
+    function normalizeLoopPosition(preserveVisual, preserveTxOverride) {
       if (!hasLoop) return false;
+      var metrics = getMetrics();
+      var txAdjust = 0;
       var shifted = false;
-      if (current >= realCount * 2) {
+      while (current >= realCount * 2) {
         current -= realCount;
+        if (metrics.ready) txAdjust += realCount * metrics.step;
         shifted = true;
-      } else if (current < realCount) {
+      }
+      while (current < realCount) {
         current += realCount;
+        if (metrics.ready) txAdjust -= realCount * metrics.step;
         shifted = true;
       }
       if (!shifted) return false;
+
+      if (preserveVisual && !isCarouselWheelSnap() && metrics.ready) {
+        var preserveTx = preserveTxOverride != null ? preserveTxOverride : getVisualTransform();
+        preserveTx += txAdjust;
+        freeScrollOffset = getTransform(current) - preserveTx;
+        clampFreeScrollOffset();
+      } else {
+        freeScrollOffset = 0;
+      }
+
       trackEl.style.transition = 'none';
-      trackEl.style.transform = 'translate3d(' + getTransform(current) + 'px, 0, 0)';
+      var tx = getTransform(current);
+      if (!isCarouselWheelSnap() && preserveVisual) {
+        tx -= freeScrollOffset;
+      }
+      trackEl.style.transform = 'translate3d(' + tx + 'px, 0, 0)';
       void trackEl.offsetHeight;
+      trackEl.style.transition = '';
       if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          trackEl.style.transition = '';
-          if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
-        });
-      });
       return true;
     }
 
@@ -1077,6 +1225,7 @@
       if (!getMetrics().ready) return;
       if (animate && isAnimating) return;
 
+      freeScrollOffset = 0;
       current = wrapCarouselIndex(i);
 
       loadCarouselMediaAround(current, 3);
@@ -1084,9 +1233,14 @@
       if (animate) {
         isAnimating = true;
         if (normalizeFallbackTimer) clearTimeout(normalizeFallbackTimer);
-        normalizeFallbackTimer = setTimeout(finishCarouselTransition, TRANSITION_MS);
-      } else if (typeof vpEl._scheduleCarouselHoverSync === 'function') {
-        vpEl._scheduleCarouselHoverSync();
+        normalizeFallbackTimer = setTimeout(completeCarouselStep, TRANSITION_MS + 60);
+      } else {
+        normalizeLoopPosition(false);
+        ensureCarouselMediaAtIndex();
+        loadVisibleCarouselMedia(vpEl, slideEls);
+        if (typeof vpEl._scheduleCarouselHoverSync === 'function') {
+          vpEl._scheduleCarouselHoverSync();
+        }
       }
     }
 
@@ -1095,8 +1249,13 @@
         requestAnimationFrame(function() { settlePosition(animate); });
         return;
       }
+      normalizeLoopPosition(false);
+      freeScrollOffset = 0;
       setTransform(current, animate === true);
+      applyCarouselMediaForCurrent();
     }
+
+    var WORK_CAROUSEL_TARGET_HEIGHT = 710;
 
     function equalizeCarouselCardHeights() {
       var allCards = trackEl.querySelectorAll('.carousel-slide .bento-card');
@@ -1109,6 +1268,12 @@
         return;
       }
 
+      if (trackEl.id === 'workCarousel' && typeof window.applyWorkCarouselTargetHeight === 'function') {
+        window.applyWorkCarouselTargetHeight();
+      } else if (trackEl.id === 'workCarousel' && typeof window.layoutPhoneScrollCards === 'function') {
+        window.layoutPhoneScrollCards();
+      }
+
       var maxHeight = 0;
       originalSlides.forEach(function(slide) {
         var card = slide.querySelector('.bento-card');
@@ -1119,14 +1284,25 @@
       if (maxHeight <= 0) return;
 
       var heightPx = Math.ceil(maxHeight) + 'px';
+      if (trackEl.id === 'workCarousel' && maxHeight < WORK_CAROUSEL_TARGET_HEIGHT) {
+        heightPx = WORK_CAROUSEL_TARGET_HEIGHT + 'px';
+      }
       allCards.forEach(function(card) {
         card.style.minHeight = heightPx;
       });
+
+      if (typeof window.layoutSquarePhoneScroll === 'function') {
+        requestAnimationFrame(window.layoutSquarePhoneScroll);
+      }
+    }
+
+    if (trackEl.id === 'workCarousel') {
+      window.equalizeWorkCarouselCardHeights = equalizeCarouselCardHeights;
     }
 
     if (hasLoop) {
       trackEl.addEventListener('transitionend', function(e) {
-        if (e.target !== trackEl || e.propertyName !== 'transform') return;
+        if (e.target !== trackEl || e.propertyName.indexOf('transform') === -1 || !isAnimating) return;
         finishCarouselTransition();
       });
     }
@@ -1220,11 +1396,11 @@
         var slideMediaObserver = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
-              loadCarouselSlideMedia(entry.target);
+              ensureCarouselSlideMediaPlaying(entry.target);
             }
           });
         }, { root: vpEl, threshold: 0.15 });
-        slideEls.forEach(function(slide) {
+        originalSlides.forEach(function(slide) {
           slideMediaObserver.observe(slide);
         });
       }
@@ -1238,9 +1414,11 @@
       resizeTimer = setTimeout(function() {
         if (root.classList.contains('blurb-reveal-done')) layoutWorkPeek();
         isAnimating = false;
+        normalizeLoopPosition(false);
         settlePosition(false);
         equalizeCarouselCardHeights();
         loadNearbyCarouselMedia(slideEls, current, 2);
+        ensureCarouselMediaAtIndex();
         loadVisibleCarouselMedia(vpEl, slideEls);
         if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
       }, 100);
@@ -1311,12 +1489,49 @@
     });
 
     var wheelDragOffset = 0;
+    var freeScrollOffset = 0;
     var wheelEndTimer = null;
     var isWheelScrolling = false;
     var wheelCommittedSteps = 0;
     var WHEEL_END_MS = 140;
     var WHEEL_SNAP_RATIO = 0.2;
     var WHEEL_COMMIT_RATIO = 0.72;
+
+    function syncCurrentForFreeScroll() {
+      var metrics = getMetrics();
+      if (!metrics.ready) return;
+
+      var visualTx = getTransform(current) - freeScrollOffset;
+      var loopSpan = hasLoop ? realCount * metrics.step : 0;
+      var minTx = getTransform(count - 1);
+      var maxTx = getTransform(0);
+
+      if (hasLoop && loopSpan > 0) {
+        while (visualTx < minTx - 1) {
+          visualTx += loopSpan;
+        }
+        while (visualTx > maxTx + 1) {
+          visualTx -= loopSpan;
+        }
+      }
+
+      var rawIndex = (metrics.contentLeft - visualTx) / metrics.step;
+      rawIndex = Math.max(0, Math.min(count - 1, rawIndex));
+      var newCurrent = Math.round(rawIndex);
+
+      if (newCurrent !== current) {
+        current = newCurrent;
+        applyCarouselMediaForCurrent();
+      }
+
+      freeScrollOffset = getTransform(current) - visualTx;
+
+      if (hasLoop && (current >= realCount * 2 || current < realCount)) {
+        normalizeLoopPosition(true, visualTx);
+      }
+
+      loadCarouselMediaAround(current, 3);
+    }
 
     function normalizeWheelDelta(e) {
       var deltaX = e.deltaX;
@@ -1335,20 +1550,45 @@
         clearTimeout(normalizeFallbackTimer);
         normalizeFallbackTimer = null;
       }
+      if (isCarouselWheelSnap()) {
+        setTransform(current, false);
+        return;
+      }
+
+      var metrics = getMetrics();
+      if (metrics.ready) {
+        var visualTx = getVisualTransform();
+        var rawIndex = (metrics.contentLeft - visualTx) / metrics.step;
+        rawIndex = Math.max(0, Math.min(count - 1, rawIndex));
+        current = Math.round(rawIndex);
+        freeScrollOffset = getTransform(current) - visualTx;
+        if (hasLoop && (current >= realCount * 2 || current < realCount)) {
+          normalizeLoopPosition(true, visualTx);
+        }
+      }
       setTransform(current, false);
     }
 
     function applyWheelTransform() {
       var metrics = getMetrics();
       if (!metrics.ready) return;
-      var maxRemainder = metrics.step * 0.95;
-      wheelDragOffset = Math.max(-maxRemainder, Math.min(maxRemainder, wheelDragOffset));
-      var tx = getTransform(current) - wheelDragOffset;
+      var tx;
+
+      if (isCarouselWheelSnap()) {
+        var maxRemainder = metrics.step * 0.95;
+        wheelDragOffset = Math.max(-maxRemainder, Math.min(maxRemainder, wheelDragOffset));
+        tx = getTransform(current) - wheelDragOffset;
+      } else {
+        tx = getTransform(current) - freeScrollOffset;
+      }
+
       trackEl.style.transition = 'none';
       trackEl.style.transform = 'translate3d(' + tx + 'px, 0, 0)';
     }
 
     function commitWheelSteps() {
+      if (!isCarouselWheelSnap()) return false;
+
       var metrics = getMetrics();
       if (!metrics.ready) return false;
 
@@ -1370,8 +1610,10 @@
         clearTimeout(normalizeFallbackTimer);
         normalizeFallbackTimer = null;
       }
+      normalizeLoopPosition(false);
       setTransform(current, false);
       loadCarouselMediaAround(current, 3);
+      ensureCarouselMediaAtIndex();
       loadVisibleCarouselMedia(vpEl, slideEls);
       return true;
     }
@@ -1380,6 +1622,17 @@
       wheelEndTimer = null;
       if (!isWheelScrolling) return;
       isWheelScrolling = false;
+
+      if (!isCarouselWheelSnap()) {
+        wheelDragOffset = 0;
+        wheelCommittedSteps = 0;
+        trackEl.style.transition = '';
+        syncCurrentForFreeScroll();
+        ensureFreeScrollShowsOriginals();
+        loadVisibleCarouselMedia(vpEl, slideEls);
+        if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
+        return;
+      }
 
       var metrics = getMetrics();
       if (!metrics.ready) {
@@ -1433,9 +1686,18 @@
         snapCarouselToCurrentInstant();
       }
 
-      wheelDragOffset += delta;
-      commitWheelSteps();
+      if (isCarouselWheelSnap()) {
+        wheelDragOffset += delta;
+        commitWheelSteps();
+      } else {
+        freeScrollOffset += delta;
+      }
       applyWheelTransform();
+      if (!isCarouselWheelSnap()) {
+        syncCurrentForFreeScroll();
+        applyWheelTransform();
+        if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
+      }
       loadVisibleCarouselMedia(vpEl, slideEls);
 
       if (wheelEndTimer) clearTimeout(wheelEndTimer);
@@ -1454,6 +1716,465 @@
     document.getElementById('sideProjectsCarouselControls'),
     document.getElementById('side-projects')
   );
+
+  (function initCardVisualScroll() {
+    var SQUARE_DESKTOP_ASPECT = 2592 / 2054;
+    var CASH_CART_DESKTOP_ASPECT = 2898 / 1874;
+    var CASH_CHECKOUT_DESKTOP_ASPECT = 2898 / 1896;
+    var PHONE_MOCKUP_ASPECT = 1024 / 475;
+
+    function getDesktopAspect(desktop) {
+      if (desktop.closest('.bento-card--cash')) {
+        var video = desktop.querySelector('video');
+        var src = video ? (video.getAttribute('data-src') || video.getAttribute('src') || '') : '';
+        if (src.indexOf('cart-walkthrough') !== -1) return CASH_CART_DESKTOP_ASPECT;
+        return CASH_CHECKOUT_DESKTOP_ASPECT;
+      }
+      return SQUARE_DESKTOP_ASPECT;
+    }
+
+    function getScrollCardPad(cardStyle) {
+      if (!cardStyle) return 16;
+      return parseFloat(cardStyle.paddingLeft)
+        || parseFloat(cardStyle.paddingTop)
+        || 16;
+    }
+
+    function getCardGutterPad(card) {
+      if (!card) return 16;
+      var style = getComputedStyle(card);
+      if (card.matches('.bento-card--square, .bento-card--cash')) {
+        var cols = style.gridTemplateColumns.trim().split(/\s+/);
+        var gutter = parseFloat(cols[0]);
+        if (!Number.isNaN(gutter) && gutter >= 8) return gutter;
+      }
+      return getScrollCardPad(style);
+    }
+
+    function syncScrollTrackGutter(track) {
+      var card = track.closest('.bento-card');
+      var gutter = getCardGutterPad(card);
+      if (card) card.style.setProperty('--scroll-gutter', gutter + 'px');
+      track.style.paddingLeft = gutter + 'px';
+      track.style.paddingRight = gutter + 'px';
+      return gutter;
+    }
+
+    function getReferencePhoneWidth() {
+      var refPhone = document.querySelector(
+        '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--meta .bento-card-visual--phones .phone-mockup'
+      );
+      if (!refPhone) {
+        refPhone = document.querySelector(
+          '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--cash .cash-phone-row .phone-mockup'
+        );
+      }
+      if (!refPhone) return 0;
+
+      var width = refPhone.getBoundingClientRect().width;
+      return width >= 8 ? width : 0;
+    }
+
+    function measureStandardPhoneWidth(row, viewport) {
+      var phones = row.querySelectorAll('.phone-mockup');
+      if (!phones.length) return 0;
+
+      var phoneW = getReferencePhoneWidth();
+      var track = row.closest('.phones-scroll-track');
+      var trackStyle = track ? getComputedStyle(track) : null;
+      var trackPadL = trackStyle ? parseFloat(trackStyle.paddingLeft) || 0 : 0;
+      var trackPadR = trackStyle ? parseFloat(trackStyle.paddingRight) || 0 : 0;
+
+      if (phoneW < 8) {
+        var effectiveWidth = Math.max(0, viewport.clientWidth - trackPadL - trackPadR);
+
+        row.style.width = effectiveWidth + 'px';
+        phones.forEach(function(phone) {
+          phone.style.flex = '1 1 0';
+          phone.style.width = '';
+          phone.style.maxWidth = 'min(36%, max(64px, 30cqi))';
+        });
+
+        phoneW = phones[0].getBoundingClientRect().width;
+        row.style.width = '';
+      }
+
+      if (phoneW < 8) return 0;
+
+      phones.forEach(function(phone) {
+        phone.style.flex = '0 0 auto';
+        phone.style.width = phoneW + 'px';
+        phone.style.maxWidth = 'none';
+      });
+
+      return phoneW;
+    }
+
+    function getPhoneOuterHeight(phone) {
+      if (!phone) return 0;
+
+      var style = getComputedStyle(phone);
+      var borderTop = parseFloat(style.borderTopWidth) || 0;
+      var borderBottom = parseFloat(style.borderBottomWidth) || 0;
+      var borderLeft = parseFloat(style.borderLeftWidth) || 0;
+      var borderRight = parseFloat(style.borderRightWidth) || 0;
+      var rect = phone.getBoundingClientRect();
+      var width = parseFloat(phone.style.width) || rect.width;
+
+      if (width < 8) return 0;
+
+      var innerWidth = Math.max(0, width - borderLeft - borderRight);
+      var calculated = Math.round(innerWidth * PHONE_MOCKUP_ASPECT + borderTop + borderBottom);
+      var measured = Math.round(rect.height);
+
+      if (measured >= 8) return Math.max(calculated, measured);
+      return calculated;
+    }
+
+    function sizeDesktopWalkthrough(desktop, targetOuterHeight) {
+      var desktopStyle = getComputedStyle(desktop);
+      var borderTop = parseFloat(desktopStyle.borderTopWidth) || 0;
+      var borderBottom = parseFloat(desktopStyle.borderBottomWidth) || 0;
+      var borderLeft = parseFloat(desktopStyle.borderLeftWidth) || 0;
+      var borderRight = parseFloat(desktopStyle.borderRightWidth) || 0;
+      var innerHeight = Math.max(0, targetOuterHeight - borderTop - borderBottom);
+      var desktopAspect = getDesktopAspect(desktop);
+      var outerWidth = Math.round(innerHeight * desktopAspect + borderLeft + borderRight);
+
+      desktop.style.aspectRatio = 'auto';
+      desktop.style.boxSizing = 'border-box';
+      desktop.style.height = targetOuterHeight + 'px';
+      desktop.style.minHeight = targetOuterHeight + 'px';
+      desktop.style.maxHeight = targetOuterHeight + 'px';
+      desktop.style.width = outerWidth + 'px';
+      desktop.style.minWidth = outerWidth + 'px';
+      desktop.style.maxWidth = outerWidth + 'px';
+      desktop.style.flexBasis = outerWidth + 'px';
+      desktop.style.flexShrink = '0';
+    }
+
+    function syncScrollViewportHeight(viewport) {
+      var track = viewport.querySelector('.phones-scroll-track');
+      if (!track) return;
+
+      var visualStyle = getComputedStyle(viewport);
+      var padTop = parseFloat(visualStyle.paddingTop) || 0;
+      var padBottom = parseFloat(visualStyle.paddingBottom) || 0;
+      var targetHeight = Math.ceil(track.getBoundingClientRect().height + padTop + padBottom);
+
+      viewport.style.minHeight = '0';
+      viewport.style.height = targetHeight + 'px';
+    }
+
+    function layoutDesktopWalkthroughs(track, row) {
+      var desktops = track.querySelectorAll('.phone-mockup--desktop-walkthrough');
+      if (!desktops.length) return;
+
+      var targetHeight = 0;
+      row.querySelectorAll('.phone-mockup').forEach(function(phone) {
+        targetHeight = Math.max(targetHeight, getPhoneOuterHeight(phone));
+      });
+
+      if (targetHeight < 8) return;
+
+      track.style.setProperty('--scroll-phone-height', targetHeight + 'px');
+      desktops.forEach(function(desktop) {
+        sizeDesktopWalkthrough(desktop, targetHeight);
+      });
+    }
+
+    function layoutPhoneScrollCards() {
+      document.querySelectorAll('.bento-card--square .phones-scroll-track, .bento-card--cash .phones-scroll-track').forEach(function(track) {
+        var row = track.querySelector('.phones-scroll-row');
+        var desktops = track.querySelectorAll('.phone-mockup--desktop-walkthrough');
+        var viewport = track.closest('.bento-card-visual--scroll-x');
+        if (!row || !viewport) return;
+
+        syncScrollTrackGutter(track);
+
+        if (!measureStandardPhoneWidth(row, viewport)) return;
+
+        layoutDesktopWalkthroughs(track, row);
+        syncScrollViewportHeight(viewport);
+
+        var card = viewport.closest('.bento-card, .side-project-card');
+        if (!card || !card.matches(':hover')) {
+          viewport.scrollLeft = 0;
+        }
+        updateScrollOverflowState(viewport);
+      });
+    }
+
+    function measureWorkCarouselMaxCardHeight() {
+      var maxHeight = 0;
+      document.querySelectorAll('#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card').forEach(function(card) {
+        maxHeight = Math.max(maxHeight, card.offsetHeight);
+      });
+      return maxHeight;
+    }
+
+    function applyWorkCarouselTargetHeight() {
+      var carousel = document.getElementById('workCarousel');
+      if (!carousel) return;
+
+      var TARGET = 710;
+      carousel.style.setProperty('--work-scroll-media-pad-extra', '0px');
+      layoutPhoneScrollCards();
+
+      var maxHeight = measureWorkCarouselMaxCardHeight();
+      if (maxHeight > 0 && maxHeight < TARGET) {
+        var extraPerSide = Math.ceil((TARGET - maxHeight) / 2);
+        carousel.style.setProperty('--work-scroll-media-pad-extra', extraPerSide + 'px');
+        layoutPhoneScrollCards();
+      }
+    }
+
+    window.applyWorkCarouselTargetHeight = applyWorkCarouselTargetHeight;
+
+    function canViewportScrollX(viewport) {
+      return viewport.scrollWidth > viewport.clientWidth + 1;
+    }
+
+    function getViewportMaxScroll(viewport) {
+      return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    }
+
+    function smoothScrollViewport(viewport, target) {
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reducedMotion && viewport.scrollTo) {
+        viewport.scrollTo({ left: target, behavior: 'smooth' });
+        return;
+      }
+      viewport.scrollLeft = target;
+    }
+
+    function updateScrollOverflowState(viewport) {
+      viewport.classList.toggle(
+        'bento-card-visual--scroll-x-overflow',
+        canViewportScrollX(viewport)
+      );
+    }
+
+    function bindSquareHoverScrollJump(viewport) {
+      var card = viewport.closest('.bento-card, .side-project-card');
+      if (!card) return;
+
+      card.addEventListener('mouseenter', function() {
+        layoutPhoneScrollCards();
+        updateScrollOverflowState(viewport);
+        if (!canViewportScrollX(viewport)) return;
+        viewport.classList.add('is-hover-scroll-active');
+        smoothScrollViewport(viewport, getViewportMaxScroll(viewport));
+      });
+
+      card.addEventListener('mouseleave', function() {
+        viewport.classList.remove('is-hover-scroll-active');
+        if (!canViewportScrollX(viewport)) return;
+        smoothScrollViewport(viewport, 0);
+      });
+    }
+
+    function createCashHoverAutoScroll(viewport) {
+      var card = viewport.closest('.bento-card, .side-project-card');
+      if (!card) return null;
+
+      var rafId = null;
+      var lastFrameTime = null;
+      var userTookOver = false;
+      var AUTO_SCROLL_DURATION_SEC = 13;
+
+      function stop() {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        lastFrameTime = null;
+        viewport.classList.remove('is-hover-scroll-active');
+      }
+
+      function userTakeover() {
+        if (userTookOver) return;
+        userTookOver = true;
+        stop();
+      }
+
+      function tick(timestamp) {
+        if (!lastFrameTime) lastFrameTime = timestamp;
+        var elapsedSec = (timestamp - lastFrameTime) / 1000;
+        lastFrameTime = timestamp;
+
+        if (!canViewportScrollX(viewport)) {
+          stop();
+          return;
+        }
+
+        var maxScroll = getViewportMaxScroll(viewport);
+        if (viewport.scrollLeft >= maxScroll - 0.5) {
+          viewport.scrollLeft = maxScroll;
+          stop();
+          return;
+        }
+
+        var speed = maxScroll / AUTO_SCROLL_DURATION_SEC;
+        viewport.scrollLeft = Math.min(maxScroll, viewport.scrollLeft + speed * elapsedSec);
+        rafId = requestAnimationFrame(tick);
+      }
+
+      function beginAutoScroll() {
+        stop();
+        viewport.scrollLeft = 0;
+        viewport.classList.add('is-hover-scroll-active');
+        lastFrameTime = null;
+        rafId = requestAnimationFrame(tick);
+      }
+
+      function start() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        userTookOver = false;
+
+        if (typeof window.layoutPhoneScrollCards === 'function') {
+          window.layoutPhoneScrollCards();
+        }
+        updateScrollOverflowState(viewport);
+
+        if (!canViewportScrollX(viewport)) {
+          requestAnimationFrame(function() {
+            if (typeof window.layoutPhoneScrollCards === 'function') {
+              window.layoutPhoneScrollCards();
+            }
+            updateScrollOverflowState(viewport);
+            if (!userTookOver && canViewportScrollX(viewport)) beginAutoScroll();
+          });
+          return;
+        }
+
+        beginAutoScroll();
+      }
+
+      card.addEventListener('mouseenter', start);
+
+      card.addEventListener('mouseleave', function() {
+        stop();
+        userTookOver = false;
+        if (!canViewportScrollX(viewport)) return;
+        smoothScrollViewport(viewport, 0);
+      });
+
+      return { userTakeover: userTakeover };
+    }
+
+    function bindViewportManualScroll(viewport, onUserTakeover) {
+      updateScrollOverflowState(viewport);
+
+      viewport.addEventListener('mousedown', function(e) {
+        if (!canViewportScrollX(viewport)) return;
+        if (onUserTakeover) onUserTakeover();
+        e.stopPropagation();
+      });
+
+      viewport.addEventListener('touchstart', function(e) {
+        if (!canViewportScrollX(viewport)) return;
+        if (onUserTakeover) onUserTakeover();
+        e.stopPropagation();
+      }, { passive: true });
+
+      viewport.addEventListener('wheel', function(e) {
+        if (!canViewportScrollX(viewport)) return;
+
+        var deltaX = e.deltaX;
+        if (e.deltaMode === 1) deltaX *= 16;
+        else if (e.deltaMode === 2) deltaX *= viewport.clientWidth;
+
+        if (!deltaX && e.shiftKey) {
+          deltaX = e.deltaY;
+          if (e.deltaMode === 1) deltaX *= 16;
+          else if (e.deltaMode === 2) deltaX *= viewport.clientWidth;
+        }
+
+        if (!deltaX) return;
+
+        var atLeft = viewport.scrollLeft <= 0;
+        var atRight = viewport.scrollLeft >= viewport.scrollWidth - viewport.clientWidth - 1;
+        if ((deltaX < 0 && atLeft) || (deltaX > 0 && atRight)) return;
+
+        if (onUserTakeover) onUserTakeover();
+        e.stopPropagation();
+        e.preventDefault();
+        viewport.scrollLeft += deltaX;
+      }, { passive: false });
+    }
+
+    document.querySelectorAll('.bento-card-visual--scroll-x').forEach(function(viewport) {
+      var isClone = viewport.closest('.carousel-slide--clone');
+      var isSquare = viewport.closest('.bento-card--square');
+      var isCash = viewport.closest('.bento-card--cash');
+
+      if (isClone) {
+        bindViewportManualScroll(viewport, null);
+        return;
+      }
+
+      if (isSquare && canHoverFinePointer) {
+        bindSquareHoverScrollJump(viewport);
+      }
+
+      var cashAutoScroll = null;
+      if (isCash && canHoverFinePointer) {
+        cashAutoScroll = createCashHoverAutoScroll(viewport);
+      }
+
+      bindViewportManualScroll(viewport, cashAutoScroll ? cashAutoScroll.userTakeover : null);
+    });
+
+    window.addEventListener('resize', function() {
+      document.querySelectorAll('.bento-card-visual--scroll-x').forEach(updateScrollOverflowState);
+    });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      document.querySelectorAll('.bento-card--square .phones-scroll-track, .bento-card--cash .phones-scroll-track').forEach(function(track) {
+        var observer = new ResizeObserver(layoutPhoneScrollCards);
+        observer.observe(track);
+        var viewport = track.closest('.bento-card-visual--scroll-x');
+        if (viewport) observer.observe(viewport);
+      });
+
+      var refPhone = document.querySelector(
+        '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--meta .bento-card-visual--phones .phone-mockup'
+      );
+      if (refPhone) {
+        new ResizeObserver(layoutPhoneScrollCards).observe(refPhone);
+      }
+    }
+
+    window.addEventListener('resize', layoutPhoneScrollCards);
+    window.addEventListener('load', layoutPhoneScrollCards);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(layoutPhoneScrollCards);
+    }
+
+    document.querySelectorAll('.bento-card--square video, .bento-card--cash video').forEach(function(video) {
+      video.addEventListener('loadeddata', layoutPhoneScrollCards);
+    });
+
+    requestAnimationFrame(function() {
+      requestAnimationFrame(layoutPhoneScrollCards);
+    });
+
+    window.layoutPhoneScrollCards = layoutPhoneScrollCards;
+    window.layoutSquarePhoneScroll = layoutPhoneScrollCards;
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      var phoneScrollLayoutObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) layoutPhoneScrollCards();
+        });
+      }, { threshold: 0.01 });
+
+      document.querySelectorAll('.bento-card--square, .bento-card--cash').forEach(function(card) {
+        phoneScrollLayoutObserver.observe(card);
+      });
+    }
+  })();
 
   /* ----- Scroll progress + section rail ----- */
   var scrollProgressBar = document.getElementById('scrollProgressBar');
@@ -2127,6 +2848,183 @@
     document.addEventListener('mousemove', function(e) {
       if (!active) return;
       setPosition(e.clientX, e.clientY);
+    });
+  })();
+
+  (function initHoverRainEffects() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var ANIMATION_NAME = 'media-rain-fall';
+    var PROFILE_SRC = 'assets/profile-cursor.png';
+    var FLAG = '\uD83C\uDDE8\uD83C\uDDE6';
+    var RAIN_MS = 3000;
+    var SPAWN_MS = 48;
+    var BURST_COUNT = 36;
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function pickTier(tiers) {
+      var roll = Math.random();
+      if (roll < 0.35) return tiers[0];
+      if (roll < 0.7) return tiers[1];
+      return tiers[2];
+    }
+
+    function styleDrop(drop, tier) {
+      var size = rand(tier.size[0], tier.size[1]);
+      var duration = rand(tier.duration[0], tier.duration[1]);
+      var opacity = rand(tier.opacity[0], tier.opacity[1]);
+
+      drop.style.left = rand(-4, window.innerWidth + 4) + 'px';
+      drop.style.setProperty('--drift', rand(-48, 48) + 'px');
+      drop.style.setProperty('--spin', rand(-220, 220) + 'deg');
+      drop.style.setProperty('--drop-opacity', opacity.toFixed(2));
+      drop.style.animationDuration = duration + 's';
+      drop.style.animationDelay = rand(0, 0.45) + 's';
+      drop.style.zIndex = String(tier.zIndex);
+
+      return { size: size, duration: duration };
+    }
+
+    function createRainEffect(config) {
+      var layer = null;
+      var spawnTimer = null;
+      var stopTimer = null;
+      var cleanupTimer = null;
+      var raining = false;
+      var dropCount = 0;
+
+      function getLayer() {
+        if (layer) return layer;
+        layer = document.createElement('div');
+        layer.className = 'media-rain-layer';
+        layer.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(layer);
+        return layer;
+      }
+
+      function spawnDrop() {
+        if (dropCount >= config.maxDrops) return;
+
+        var tier = pickTier(config.tiers);
+        var drop = config.buildDrop(tier, rand, styleDrop);
+        getLayer().appendChild(drop);
+        dropCount += 1;
+
+        drop.addEventListener('animationend', function(e) {
+          if (e.animationName !== ANIMATION_NAME) return;
+          drop.remove();
+          dropCount = Math.max(0, dropCount - 1);
+          maybeRemoveLayer();
+        });
+      }
+
+      function spawnWave(count) {
+        for (var i = 0; i < count; i += 1) {
+          spawnDrop();
+        }
+      }
+
+      function maybeRemoveLayer() {
+        if (raining || !layer || layer.childElementCount > 0) return;
+        layer.classList.remove('is-active');
+        var node = layer;
+        layer = null;
+        window.setTimeout(function() {
+          node.remove();
+        }, 400);
+      }
+
+      function stopSpawning() {
+        raining = false;
+        if (spawnTimer) {
+          clearInterval(spawnTimer);
+          spawnTimer = null;
+        }
+        if (stopTimer) {
+          clearTimeout(stopTimer);
+          stopTimer = null;
+        }
+        if (cleanupTimer) {
+          clearTimeout(cleanupTimer);
+        }
+        cleanupTimer = setTimeout(maybeRemoveLayer, 6000);
+      }
+
+      function startRain() {
+        getLayer().classList.add('is-active');
+        if (cleanupTimer) {
+          clearTimeout(cleanupTimer);
+          cleanupTimer = null;
+        }
+
+        if (raining) {
+          if (stopTimer) clearTimeout(stopTimer);
+          stopTimer = setTimeout(stopSpawning, RAIN_MS);
+          spawnWave(14);
+          return;
+        }
+
+        raining = true;
+        spawnWave(BURST_COUNT);
+        spawnTimer = setInterval(function() {
+          if (!raining) return;
+          spawnWave(Math.random() < 0.35 ? 3 : 2);
+        }, SPAWN_MS);
+        stopTimer = setTimeout(stopSpawning, RAIN_MS);
+      }
+
+      document.querySelectorAll(config.trigger).forEach(function(el) {
+        el.addEventListener('mouseenter', startRain);
+      });
+    }
+
+    var flagTiers = [
+      { size: [12, 22], duration: [1.6, 2.4], opacity: [0.55, 0.75], zIndex: 3 },
+      { size: [24, 40], duration: [2.2, 3.2], opacity: [0.7, 0.88], zIndex: 2 },
+      { size: [44, 76], duration: [3, 4.6], opacity: [0.82, 0.98], zIndex: 1 }
+    ];
+
+    var profileTiers = [
+      { size: [20, 34], duration: [1.6, 2.4], opacity: [0.55, 0.75], zIndex: 3 },
+      { size: [36, 54], duration: [2.2, 3.2], opacity: [0.7, 0.88], zIndex: 2 },
+      { size: [56, 88], duration: [3, 4.6], opacity: [0.82, 0.98], zIndex: 1 }
+    ];
+
+    createRainEffect({
+      trigger: '.vancouver-flag-rain',
+      maxDrops: 220,
+      tiers: flagTiers,
+      buildDrop: function(tier, randFn, applyStyle) {
+        var drop = document.createElement('span');
+        drop.className = 'media-rain-drop vancouver-flag-rain-drop';
+        var styled = applyStyle(drop, tier);
+        drop.style.fontSize = styled.size + 'px';
+        drop.textContent = FLAG;
+        return drop;
+      }
+    });
+
+    createRainEffect({
+      trigger: '.alex-profile-rain',
+      maxDrops: 180,
+      tiers: profileTiers,
+      buildDrop: function(tier, randFn, applyStyle) {
+        var drop = document.createElement('span');
+        drop.className = 'media-rain-drop alex-profile-rain-drop';
+        var styled = applyStyle(drop, tier);
+        drop.style.width = styled.size + 'px';
+        drop.style.height = styled.size + 'px';
+        var img = document.createElement('img');
+        img.src = PROFILE_SRC;
+        img.alt = '';
+        img.decoding = 'async';
+        drop.appendChild(img);
+        return drop;
+      }
     });
   })();
 
