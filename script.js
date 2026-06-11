@@ -79,7 +79,7 @@
         window.dispatchEvent(new Event('blurb-reveal-complete'));
       });
 
-      var chromeDelay = reduceMotionIntro ? 0 : (isMobileIntro ? 180 : 220);
+      var chromeDelay = reduceMotionIntro ? 0 : (isMobileIntro ? 100 : 220);
       setTimeout(finishMobileIntro, chromeDelay);
     }, prepDuration);
   }
@@ -234,7 +234,7 @@
         availabilityEl.classList.remove('is-revealing');
         availabilityEl.classList.add('is-visible');
       }
-      var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 380 : 280);
+      var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 200 : 280);
       setTimeout(finishBlurbReveal, contentPause);
     }
 
@@ -1307,9 +1307,14 @@
 
     function settlePosition(animate) {
       if (!getMetrics().ready) {
-        requestAnimationFrame(function() { settlePosition(animate); });
+        if (!root.classList.contains('blurb-reveal-done')) return;
+        settlePosition._retries = (settlePosition._retries || 0) + 1;
+        if (settlePosition._retries < 48) {
+          requestAnimationFrame(function() { settlePosition(animate); });
+        }
         return;
       }
+      settlePosition._retries = 0;
       normalizeLoopPosition(false);
       freeScrollOffset = 0;
       setTransform(current, animate === true);
@@ -1319,15 +1324,21 @@
     var WORK_CAROUSEL_TARGET_HEIGHT = 710;
 
     function equalizeCarouselCardHeights() {
+      if (!root.classList.contains('blurb-reveal-done')) return;
+
       var allCards = trackEl.querySelectorAll('.carousel-slide .bento-card');
       allCards.forEach(function(card) {
         card.style.minHeight = '';
       });
 
       if (!getMetrics().ready) {
-        requestAnimationFrame(equalizeCarouselCardHeights);
+        equalizeCarouselCardHeights._retries = (equalizeCarouselCardHeights._retries || 0) + 1;
+        if (equalizeCarouselCardHeights._retries < 48) {
+          requestAnimationFrame(equalizeCarouselCardHeights);
+        }
         return;
       }
+      equalizeCarouselCardHeights._retries = 0;
 
       if (trackEl.id === 'workCarousel' && typeof window.applyWorkCarouselTargetHeight === 'function') {
         window.applyWorkCarouselTargetHeight();
@@ -1419,29 +1430,32 @@
       if (wasPlayingBeforeHover) play();
     });
 
+    function runCarouselLayoutPass() {
+      settlePosition._retries = 0;
+      equalizeCarouselCardHeights._retries = 0;
+      settlePosition(false);
+      equalizeCarouselCardHeights();
+      loadNearbyCarouselMedia(slideEls, current, 2);
+      loadVisibleCarouselMedia(vpEl, slideEls);
+    }
+
     current = hasLoop ? realCount : 0;
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        settlePosition(false);
-        equalizeCarouselCardHeights();
-        loadNearbyCarouselMedia(slideEls, current, 2);
-        loadVisibleCarouselMedia(vpEl, slideEls);
-      });
-    });
 
     window.addEventListener('blurb-reveal-complete', function() {
       requestAnimationFrame(function() {
-        settlePosition(false);
-        equalizeCarouselCardHeights();
-        loadNearbyCarouselMedia(slideEls, current, 2);
-        loadVisibleCarouselMedia(vpEl, slideEls);
+        requestAnimationFrame(runCarouselLayoutPass);
       });
     }, { once: true });
 
-    window.addEventListener('load', equalizeCarouselCardHeights);
+    window.addEventListener('load', function() {
+      if (!root.classList.contains('blurb-reveal-done')) return;
+      equalizeCarouselCardHeights();
+    });
     carouselEl.querySelectorAll('img').forEach(function(img) {
       if (!img.complete) {
-        img.addEventListener('load', equalizeCarouselCardHeights, { once: true });
+        img.addEventListener('load', function() {
+          if (root.classList.contains('blurb-reveal-done')) equalizeCarouselCardHeights();
+        }, { once: true });
       }
     });
 
