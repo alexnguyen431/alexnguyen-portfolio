@@ -645,7 +645,9 @@
   bindBrandHovers();
 
   /* ----- Intro peek: Selected Work cards visible at bottom of first viewport ----- */
-  function layoutWorkPeek() {
+  var lockedWorkPeekLayout = null;
+
+  function layoutWorkPeek(force) {
     if (!root.classList.contains('blurb-reveal-done')) {
       root.style.setProperty('--work-peek', '0px');
       return;
@@ -655,20 +657,42 @@
     var workSection = document.querySelector('.main > .work-section:not(.work-section--side)');
     if (!intro || !workSection) return;
 
+    var viewportHeight = window.innerHeight;
+    var viewportWidth = window.innerWidth;
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    if (!force && lockedWorkPeekLayout && isMobile) {
+      var heightDelta = Math.abs(viewportHeight - lockedWorkPeekLayout.height);
+      var widthChanged = viewportWidth !== lockedWorkPeekLayout.width;
+      if (!widthChanged && heightDelta < 140) {
+        root.style.setProperty('--work-card-peek', lockedWorkPeekLayout.cardPeek + 'px');
+        root.style.setProperty('--work-peek', lockedWorkPeekLayout.peek + 'px');
+        return;
+      }
+    }
+
     var head = workSection.querySelector('.work-section-head');
     var headStyle = head ? getComputedStyle(head) : null;
     var headHeight = head ? head.offsetHeight : 0;
     var headMargin = headStyle ? parseFloat(headStyle.marginBottom) || 0 : 0;
     var cardPeek = Math.round(
-      Math.min(Math.max(window.innerHeight * 0.11, 56), 112)
+      Math.min(Math.max(viewportHeight * 0.11, 56), 112)
     );
+    var peek = headHeight + headMargin + cardPeek;
+
+    lockedWorkPeekLayout = {
+      height: viewportHeight,
+      width: viewportWidth,
+      cardPeek: cardPeek,
+      peek: peek
+    };
 
     root.style.setProperty('--work-card-peek', cardPeek + 'px');
-    root.style.setProperty('--work-peek', (headHeight + headMargin + cardPeek) + 'px');
+    root.style.setProperty('--work-peek', peek + 'px');
   }
 
   function runLayoutWorkPeek() {
-    layoutWorkPeek();
+    layoutWorkPeek(true);
     requestAnimationFrame(function() {
       window.dispatchEvent(new Event('resize'));
     });
@@ -683,7 +707,16 @@
   window.addEventListener('resize', function() {
     if (!root.classList.contains('blurb-reveal-done')) return;
     clearTimeout(layoutWorkPeek._timer);
-    layoutWorkPeek._timer = setTimeout(layoutWorkPeek, 100);
+    layoutWorkPeek._timer = setTimeout(function() {
+      layoutWorkPeek(false);
+    }, 100);
+  });
+
+  window.addEventListener('orientationchange', function() {
+    clearTimeout(layoutWorkPeek._orientationTimer);
+    layoutWorkPeek._orientationTimer = setTimeout(function() {
+      layoutWorkPeek(true);
+    }, 150);
   });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function() {
@@ -703,6 +736,11 @@
     if (!carouselEl || !cardKey || !posterUrl) return;
     carouselEl.querySelectorAll('.carousel-slide--clone').forEach(function(slide) {
       if (getCarouselCardKey(slide) !== cardKey) return;
+      slide.querySelectorAll('video').forEach(function(video) {
+        video.setAttribute('data-poster', posterUrl);
+        video.setAttribute('poster', posterUrl);
+        replaceCloneMediaWithPoster(video);
+      });
       slide.querySelectorAll('.video-frame-poster, .phone-mockup-poster').forEach(function(img) {
         if (!img.getAttribute('src')) img.src = posterUrl;
       });
@@ -751,13 +789,39 @@
     }
 
     var poster = el.getAttribute('data-poster') || el.getAttribute('poster');
+    if (!poster) return;
+
     var isPhone = frame.classList.contains('phone-mockup--video');
     var img = document.createElement('img');
     img.alt = '';
     img.setAttribute('aria-hidden', 'true');
     img.className = isPhone ? 'phone-mockup-poster' : 'video-frame-poster';
-    if (poster) img.src = poster;
+    img.src = poster;
     el.replaceWith(img);
+  }
+
+  function syncCloneMediaFromOriginal(clone, original) {
+    var origVideos = original.querySelectorAll('video');
+    var cloneVideos = clone.querySelectorAll('video');
+    var i = cloneVideos.length;
+    while (i--) {
+      var cloneVideo = cloneVideos[i];
+      var origVideo = origVideos[i];
+      if (!origVideo) continue;
+
+      var poster = origVideo.getAttribute('data-poster') || origVideo.getAttribute('poster');
+      if (poster) {
+        cloneVideo.setAttribute('data-poster', poster);
+        cloneVideo.setAttribute('poster', poster);
+        replaceCloneMediaWithPoster(cloneVideo);
+        continue;
+      }
+
+      var src = origVideo.getAttribute('src') || origVideo.getAttribute('data-src');
+      if (src && !cloneVideo.getAttribute('data-src')) {
+        cloneVideo.setAttribute('data-src', src);
+      }
+    }
   }
 
   function markVideoFramePlaying(mediaEl) {
@@ -879,11 +943,8 @@
       const clone = slide.cloneNode(true);
       clone.classList.add('carousel-slide--clone');
       clone.setAttribute('aria-hidden', 'true');
-      clone.querySelectorAll('iframe, video').forEach(function(el) {
-        if (el.tagName === 'VIDEO') {
-          replaceCloneMediaWithPoster(el);
-          return;
-        }
+      syncCloneMediaFromOriginal(clone, slide);
+      clone.querySelectorAll('iframe').forEach(function(el) {
         var frame = el.closest('.phone-mockup--video, .video-frame');
         var poster = el.getAttribute('data-poster') || el.getAttribute('poster');
         if (frame && poster) {
@@ -962,6 +1023,7 @@
         clearTimeout(normalizeFallbackTimer);
         normalizeFallbackTimer = null;
       }
+      loadCarouselMediaAround(current, 2);
       normalizeLoopPosition();
       loadCarouselSlideMedia(slideEls[current]);
       resumeCarouselSlideMedia(slideEls[current]);
@@ -1017,8 +1079,8 @@
 
       current = wrapCarouselIndex(i);
 
+      loadCarouselMediaAround(current, 3);
       setTransform(current, animate);
-      loadCarouselMediaAround(current, 2);
       if (animate) {
         isAnimating = true;
         if (normalizeFallbackTimer) clearTimeout(normalizeFallbackTimer);

@@ -3837,8 +3837,7 @@ body,
   background: var(--bg-primary);
   transition:
     background 0.4s ease,
-    color 0.4s ease,
-    min-height 0.85s var(--content-reveal-ease);
+    color 0.4s ease;
 }
 
 html.blurb-reveal-done .intro-screen {
