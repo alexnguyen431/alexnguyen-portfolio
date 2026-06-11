@@ -591,15 +591,24 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   stroke-dashoffset: 1;
 }
 
+@keyframes availability-underline-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 .main-blurb-availability-contact.is-underline-drawn .main-blurb-availability-underline path {
   stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.75s cubic-bezier(0.33, 1, 0.38, 1);
+  animation: availability-underline-draw 0.75s cubic-bezier(0.33, 1, 0.38, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .main-blurb-availability-underline path {
     stroke-dashoffset: 0;
-    transition: none;
+    animation: none;
   }
 }
 

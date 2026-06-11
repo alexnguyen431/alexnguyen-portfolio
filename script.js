@@ -192,7 +192,7 @@
       return words;
     }
 
-    function revealWords(wordEls, delay, onComplete) {
+    function revealWords(wordEls, delay, onComplete, onWordVisible) {
       if (!wordEls.length) {
         if (onComplete) onComplete();
         return;
@@ -207,8 +207,10 @@
         }
 
         var currentWordIndex = wordIndex;
+        var currentWord = wordEls[currentWordIndex];
         requestAnimationFrame(function() {
-          wordEls[currentWordIndex].classList.add('is-visible');
+          currentWord.classList.add('is-visible');
+          if (onWordVisible) onWordVisible(currentWord, currentWordIndex);
         });
 
         wordIndex += 1;
@@ -228,37 +230,39 @@
     blurbEl.classList.remove('main-blurb--loading');
     blurbEl.classList.add('main-blurb--revealing');
 
-    function finishRevealSequence() {
+    function scheduleSiteReveal() {
       blurbEl.classList.remove('main-blurb--revealing');
-      if (availabilityEl) {
-        availabilityEl.classList.remove('is-revealing');
-        availabilityEl.classList.add('is-visible');
-      }
       var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 200 : 280);
       setTimeout(finishBlurbReveal, contentPause);
     }
 
     function revealAvailability() {
-      if (!availabilityEl || !availabilityTextEl || !availabilitySource) {
-        finishRevealSequence();
-        return;
-      }
+      if (!availabilityEl || !availabilityTextEl || !availabilitySource) return;
 
       availabilityEl.classList.add('is-revealing');
-      revealWords(availabilityWords, AVAILABILITY_DELAY, function() {
-        var contactEl = availabilityTextEl.querySelector('.main-blurb-availability-contact');
-        if (contactEl && !reduceMotionIntro) {
+      revealWords(
+        availabilityWords,
+        AVAILABILITY_DELAY,
+        function() {
+          availabilityEl.classList.add('is-visible');
+        },
+        function(wordEl) {
+          if (!wordEl.classList.contains('main-blurb-availability-contact')) return;
+          if (reduceMotionIntro) {
+            wordEl.classList.add('is-underline-drawn');
+            return;
+          }
           requestAnimationFrame(function() {
-            contactEl.classList.add('is-underline-drawn');
+            requestAnimationFrame(function() {
+              wordEl.classList.add('is-underline-drawn');
+            });
           });
-        } else if (contactEl) {
-          contactEl.classList.add('is-underline-drawn');
         }
-        finishRevealSequence();
-      });
+      );
     }
 
     revealWords(blurbWords, WORD_DELAY, function() {
+      scheduleSiteReveal();
       setTimeout(revealAvailability, 120);
     });
   } else {
