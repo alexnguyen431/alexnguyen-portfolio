@@ -3670,9 +3670,9 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   :root {
     --carousel-visible: 1;
     --carousel-edge-pad: 0;
-    --content-reveal-duration: 1s;
-    --content-reveal-delay: 0.28s;
-    --content-reveal-stagger: 0.05s;
+    --content-reveal-duration: 0.85s;
+    --content-reveal-delay: 0.08s;
+    --content-reveal-stagger: 0.04s;
     --site-reveal-prep-duration: 0.95s;
   }
 
@@ -3735,16 +3735,25 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     display: inline;
   }
 
+  #workCarousel .carousel-slide .bento-card {
+    grid-template-rows: auto auto auto;
+    align-content: start;
+  }
+
+  #workCarousel .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) {
+    grid-template-rows: auto auto auto;
+  }
+
   #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) {
     --work-phone-stage-height: clamp(188px, 48vw, 248px);
   }
 
   #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) .bento-card-body {
-    min-height: clamp(4.75rem, 20cqi, 6.5rem);
+    min-height: 0;
   }
 
   #workCarousel .bento-card-header {
-    min-height: clamp(3.5rem, 16cqi, 5rem);
+    min-height: 0;
   }
 
   #workCarousel .carousel-slide .bento-card-visual--video,

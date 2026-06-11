@@ -67,8 +67,11 @@
     if (root.classList.contains('blurb-reveal-done')) return;
     if (root.classList.contains('site-reveal-prep')) return;
 
-    root.classList.add('site-reveal-prep');
-    var prepDuration = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 900 : 720);
+    var isMobileIntro = mqMobileIntro.matches;
+    var prepDuration = reduceMotionIntro ? 0 : (isMobileIntro ? 0 : 520);
+    if (prepDuration > 0) {
+      root.classList.add('site-reveal-prep');
+    }
 
     setTimeout(function() {
       root.classList.add('blurb-reveal-done');
@@ -76,7 +79,7 @@
         window.dispatchEvent(new Event('blurb-reveal-complete'));
       });
 
-      var chromeDelay = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 420 : 260);
+      var chromeDelay = reduceMotionIntro ? 0 : (isMobileIntro ? 180 : 220);
       setTimeout(finishMobileIntro, chromeDelay);
     }, prepDuration);
   }
@@ -231,7 +234,7 @@
         availabilityEl.classList.remove('is-revealing');
         availabilityEl.classList.add('is-visible');
       }
-      var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 720 : 280);
+      var contentPause = reduceMotionIntro ? 0 : (mqMobileIntro.matches ? 380 : 280);
       setTimeout(finishBlurbReveal, contentPause);
     }
 
@@ -1342,6 +1345,10 @@
       if (maxHeight <= 0) return;
 
       var isMobileCarousel = window.matchMedia('(max-width: 768px)').matches;
+      if (trackEl.id === 'workCarousel' && isMobileCarousel) {
+        var mobileCap = Math.round(window.innerHeight * 0.78);
+        maxHeight = Math.min(maxHeight, mobileCap);
+      }
       var heightPx = Math.ceil(maxHeight) + 'px';
       if (trackEl.id === 'workCarousel' && !isMobileCarousel && maxHeight < WORK_CAROUSEL_TARGET_HEIGHT) {
         heightPx = WORK_CAROUSEL_TARGET_HEIGHT + 'px';
