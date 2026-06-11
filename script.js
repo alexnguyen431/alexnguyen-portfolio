@@ -75,9 +75,12 @@
 
     setTimeout(function() {
       root.classList.add('blurb-reveal-done');
-      requestAnimationFrame(function() {
-        window.dispatchEvent(new Event('blurb-reveal-complete'));
-      });
+      // Dispatch synchronously so listeners settle the carousel (position +
+      // equalized card heights) in this same frame, before the browser paints
+      // the first frame of the content-reveal fade. That way the fade plays
+      // over already-settled content instead of revealing a layout that then
+      // jumps into place mid-animation.
+      window.dispatchEvent(new Event('blurb-reveal-complete'));
 
       var chromeDelay = reduceMotionIntro ? 0 : (isMobileIntro ? 100 : 220);
       setTimeout(finishMobileIntro, chromeDelay);
@@ -1454,11 +1457,14 @@
     current = hasLoop ? realCount : 0;
 
     window.addEventListener('blurb-reveal-complete', function() {
-      setTimeout(function() {
-        requestAnimationFrame(function() {
-          requestAnimationFrame(runCarouselLayoutPass);
-        });
-      }, 120);
+      // Run synchronously: this fires while the revealed sections are at
+      // opacity 0 (first frame of content-reveal-in), so settling the track
+      // position and equalizing card heights now keeps the layout stable for
+      // the entire fade-in. A trailing pass catches late media/layout.
+      runCarouselLayoutPass();
+      requestAnimationFrame(function() {
+        requestAnimationFrame(runCarouselLayoutPass);
+      });
     }, { once: true });
 
     window.addEventListener('load', function() {
