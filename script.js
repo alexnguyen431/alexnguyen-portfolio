@@ -249,18 +249,6 @@
         function() {
           availabilityEl.classList.add('is-visible');
           scheduleSiteReveal();
-        },
-        function(wordEl) {
-          if (!wordEl.classList.contains('main-blurb-availability-contact')) return;
-          if (reduceMotionIntro) {
-            wordEl.classList.add('is-underline-drawn');
-            return;
-          }
-          requestAnimationFrame(function() {
-            requestAnimationFrame(function() {
-              wordEl.classList.add('is-underline-drawn');
-            });
-          });
         }
       );
     }

@@ -570,48 +570,6 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   white-space: nowrap;
 }
 
-.main-blurb-availability-underline {
-  position: absolute;
-  left: -0.02em;
-  right: -0.04em;
-  bottom: -0.18em;
-  width: calc(100% + 0.06em);
-  height: 0.32em;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.main-blurb-availability-underline path {
-  stroke: currentColor;
-  stroke-width: 1.35;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-
-@keyframes availability-underline-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.main-blurb-availability-contact.is-underline-drawn .main-blurb-availability-underline path {
-  stroke-dashoffset: 0;
-  animation: availability-underline-draw 0.75s cubic-bezier(0.33, 1, 0.38, 1) forwards;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .main-blurb-availability-underline path {
-    stroke-dashoffset: 0;
-    animation: none;
-  }
-}
-
 .main-blurb-availability.is-revealing,
 .main-blurb-availability.is-visible {
   opacity: 1;
