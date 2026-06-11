@@ -33,14 +33,27 @@
   <meta name="twitter:image" content="https://alexnguyen.online/android-chrome-512x512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=cash-no-shadow-v1">
+  <link rel="stylesheet" href="style.css?v=mobile-polish-v9">
+  <script>
+    (function () {
+      try {
+        var vh = window.innerHeight || 800;
+        var vw = window.innerWidth || 1200;
+        var cardPeek = Math.round(Math.min(Math.max(vh * 0.11, 56), 112));
+        var headEstimate = vw <= 768 ? 80 : 96;
+        document.documentElement.style.setProperty('--work-card-peek', cardPeek + 'px');
+        document.documentElement.style.setProperty('--work-peek', (headEstimate + cardPeek) + 'px');
+      } catch (e) {}
+    })();
+  </script>
   <style>
     html:not(.blurb-reveal-done) .main > :not(.intro-screen) {
       display: none !important;
     }
     html:not(.blurb-reveal-done) .intro-screen {
-      min-height: 100dvh !important;
+      min-height: calc(100dvh - var(--work-peek)) !important;
     }
     html:not(.blurb-reveal-done) .fab,
     html:not(.blurb-reveal-done) .scroll-progress,
@@ -833,6 +846,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=carousel-loop-hover-v5"></script>
+  <script src="script.js?v=mobile-polish-v9"></script>
 </body>
 </html>
