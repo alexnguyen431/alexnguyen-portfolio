@@ -579,9 +579,6 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   height: 0.32em;
   overflow: visible;
   pointer-events: none;
-  transform: scaleX(0);
-  transform-origin: left center;
-  will-change: transform;
 }
 
 .main-blurb-availability-underline path {
@@ -590,17 +587,28 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
 }
 
-.main-blurb-availability-contact.is-underline-drawn .main-blurb-availability-underline {
-  transform: scaleX(1);
-  transition: transform 0.6s cubic-bezier(0.33, 1, 0.38, 1);
+@keyframes availability-underline-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.main-blurb-availability-contact.is-underline-drawn .main-blurb-availability-underline path {
+  stroke-dashoffset: 0;
+  animation: availability-underline-draw 0.75s cubic-bezier(0.33, 1, 0.38, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .main-blurb-availability-underline {
-    transform: scaleX(1);
-    transition: none;
+  .main-blurb-availability-underline path {
+    stroke-dashoffset: 0;
+    animation: none;
   }
 }
 
@@ -649,23 +657,6 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
-}
-
-/* iOS Safari repaints blur() filters on the main thread; dozens of word
-   transitions starve the typewriter + content-reveal timers. Drop blur and
-   persistent will-change on mobile so only cheap opacity/transform animate. */
-@media (max-width: 768px) {
-  .reveal-word {
-    filter: none;
-    transition:
-      opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: auto;
-  }
-
-  .reveal-word.is-visible {
-    filter: none;
-  }
 }
 
 .reveal-word.blurb-brand-word {

@@ -985,6 +985,11 @@
 
   function loadNearbyCarouselMedia(slideEls, centerIndex, range) {
     var span = range == null ? 2 : range;
+    // Mobile shows one slide and pauses the rest, so eagerly setting src on
+    // neighbours just floods the device's limited video decoders (each .mov is
+    // expensive) and stalls the post-blurb reveal for ~10s. Only the visible
+    // slide needs media up front; neighbours load on swipe.
+    if (mqMobileIntro.matches) span = 0;
     for (var i = centerIndex - span; i <= centerIndex + span; i++) {
       if (i >= 0 && i < slideEls.length) {
         loadCarouselSlideMedia(slideEls[i]);
@@ -1072,7 +1077,16 @@
       trackEl.appendChild(afterFrag);
     }
 
-    originalSlides.forEach(loadCarouselSlideMedia);
+    // Desktop can comfortably decode every slide's video up front. Mobile
+    // cannot: setting src on all ~13 .mov clips at once saturates the phone's
+    // video decoders and blocks the main thread, which is what made the rest of
+    // the site take ~10s to appear after the blurb. On mobile load only the
+    // first (visible) slide; the others load on swipe / when scrolled into view.
+    if (mqMobileIntro.matches) {
+      if (originalSlides[0]) loadCarouselSlideMedia(originalSlides[0]);
+    } else {
+      originalSlides.forEach(loadCarouselSlideMedia);
+    }
 
     const slideEls = trackEl.querySelectorAll('.carousel-slide');
     const count = slideEls.length;
@@ -1281,6 +1295,9 @@
 
     function loadCarouselMediaAround(index, range) {
       var span = range == null ? 3 : range;
+      // See loadNearbyCarouselMedia: on mobile only load the slide in view to
+      // avoid saturating the decoder. Neighbours load when navigated to.
+      if (mqMobileIntro.matches) span = 0;
       for (var offset = -span; offset <= span; offset++) {
         var idx = wrapCarouselIndex(index + offset);
         loadCarouselSlideMedia(slideEls[idx]);
