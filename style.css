@@ -706,15 +706,6 @@ body.brand-active .blurb-brand-logo {
   --blurb-brand-logo-filter: invert(1);
 }
 
-/* Intro blurb always sits on a light surface, even in dark mode — don't invert
-   the black CDN icons or they disappear against the white intro background. */
-html[data-theme="dark"] .intro-screen .blurb-brand-logo,
-body.brand-active .intro-screen .blurb-brand-logo,
-.intro-screen .blurb-brand-logo {
-  --blurb-brand-logo-filter: none;
-  filter: none;
-}
-
 @keyframes wave-hand {
   0%, 100% { transform: rotate(0deg); }
   10% { transform: rotate(14deg); }
