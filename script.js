@@ -53,11 +53,22 @@
 
   function finishMobileIntro() {
     root.classList.add('mobile-intro-done');
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
+    if (mqMobileIntro.matches) {
+      // The resize listeners run a full synchronous carousel relayout
+      // (offsetHeight over every slide + getBoundingClientRect). Firing it
+      // mid-fade stuttered the content reveal on real phones, and the layout is
+      // already settled synchronously at reveal, so hold this finalizing pass
+      // until the fade has finished.
+      setTimeout(function() {
         window.dispatchEvent(new Event('resize'));
+      }, 1250);
+    } else {
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          window.dispatchEvent(new Event('resize'));
+        });
       });
-    });
+    }
     setTimeout(function() {
       window.dispatchEvent(new Event('resize'));
     }, 2600);

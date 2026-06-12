@@ -3643,6 +3643,17 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     --site-reveal-prep-duration: 0.95s;
   }
 
+  /* During the intro reveal only a peek of the first section (Selected Work)
+     is on screen; side projects, the long experience list and footer are all
+     below the fold. Animating their tall layers at the same time stutters the
+     fade on phones, so only the first section animates - the rest just appear
+     (still off-screen, so the difference is invisible). */
+  html.blurb-reveal-done .main > *:not(.intro-screen):not(:nth-child(2)) {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
   /* Align work carousels with header gutter (site title + burger) */
   .work-section .carousel,
   .carousel {
