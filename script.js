@@ -36,7 +36,7 @@
   function getEmailClickLocation(link) {
     if (link.classList.contains('main-blurb-availability')) return 'blurb';
     if (link.classList.contains('call-message-email')) return 'call-overlay';
-    if (link.closest('.section-rail')) return 'header-nav';
+    if (link.closest('.fab-nav')) return 'fab-nav';
     if (link.closest('.sidebar-nav')) return 'sidebar';
     return 'other';
   }
@@ -328,10 +328,7 @@
   const navBurger = document.getElementById('navBurger');
   const navBackdrop = document.getElementById('navBackdrop');
   const sidebarNav = document.getElementById('sidebarNav');
-  const headerNavBurger = document.getElementById('headerNavBurger');
-  const headerNavBackdrop = document.getElementById('headerNavBackdrop');
   let navBackdropHideTimer = null;
-  let headerNavBackdropHideTimer = null;
 
   function bindNavDrawer(options) {
     var burger = options.burger;
@@ -349,9 +346,6 @@
         if (backdrop) {
           backdrop.hidden = false;
           backdrop.setAttribute('aria-hidden', 'false');
-        }
-        if (openClass === 'header-nav-open') {
-          stabilizeMobileSectionRail();
         }
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
@@ -409,18 +403,6 @@
       openClass: 'nav-menu-open',
       backdropTimer: { id: navBackdropHideTimer },
       closeAbove: 768
-    });
-  }
-
-  var headerSectionRail = document.getElementById('sectionRail');
-  if (headerNavBurger && headerSectionRail) {
-    bindNavDrawer({
-      burger: headerNavBurger,
-      backdrop: headerNavBackdrop,
-      panel: headerSectionRail,
-      openClass: 'header-nav-open',
-      backdropTimer: { id: headerNavBackdropHideTimer },
-      closeAbove: 1024
     });
   }
 
@@ -2376,21 +2358,14 @@
     }
   })();
 
-  /* ----- Scroll progress + section rail ----- */
+  /* ----- Scroll progress + FAB nav ----- */
   var scrollProgressBar = document.getElementById('scrollProgressBar');
-  var sectionRail = document.getElementById('sectionRail');
+  var fabNav = document.getElementById('fabNav');
   var pageSections = [
     { id: 'work', label: 'Selected Work' },
-    { id: 'side-projects', label: 'Side projects & prototypes', shortLabel: 'Side projects' },
+    { id: 'side-projects', label: 'Side projects & prototypes', shortLabel: 'Side Projects' },
     { id: 'experience', label: 'Experience' }
   ];
-
-  function getFabSectionLabel(section) {
-    if (section.shortLabel && window.matchMedia('(max-width: 768px)').matches) {
-      return section.shortLabel;
-    }
-    return section.label;
-  }
 
   function getCurrentSectionIndex() {
     var vh = window.innerHeight;
@@ -2427,82 +2402,24 @@
     scrollProgressBar.style.width = (progress * 100) + '%';
   }
 
-  var sectionRailHasRevealed = false;
-  var sectionRailRevealTimers = [];
-
-  function isMobileHeaderNav() {
-    return window.matchMedia('(max-width: 1024px)').matches;
-  }
-
-  function clearSectionRailRevealTimers() {
-    sectionRailRevealTimers.forEach(function(id) {
-      clearTimeout(id);
-    });
-    sectionRailRevealTimers = [];
-  }
-
-  function stabilizeMobileSectionRail() {
-    if (!sectionRail || !isMobileHeaderNav()) return;
-    clearSectionRailRevealTimers();
-    sectionRail.classList.remove('is-revealing');
-    sectionRail.classList.add('is-visible');
-    sectionRail.setAttribute('aria-hidden', 'false');
-    sectionRailHasRevealed = true;
-  }
-
-  function revealSectionRail() {
-    if (!sectionRail) return;
-    sectionRail.setAttribute('aria-hidden', 'false');
-    if (headerNavBurger) headerNavBurger.hidden = false;
-
-    if (isMobileHeaderNav()) {
-      stabilizeMobileSectionRail();
-      return;
-    }
-
-    if (sectionRail.classList.contains('is-visible')) return;
-    if (sectionRailHasRevealed) {
-      sectionRail.classList.add('is-visible');
-      return;
-    }
-    sectionRailHasRevealed = true;
-    sectionRail.classList.add('is-revealing');
-    sectionRailRevealTimers.push(window.setTimeout(function() {
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          sectionRail.classList.add('is-visible');
-          sectionRailRevealTimers.push(window.setTimeout(function() {
-            sectionRail.classList.remove('is-revealing');
-          }, 900));
-        });
-      });
-    }, 140));
-  }
-
-  function hideSectionRail() {
-    if (!sectionRail) return;
-    sectionRail.classList.remove('is-visible', 'is-revealing');
-    sectionRail.setAttribute('aria-hidden', 'true');
-    if (headerNavBurger) headerNavBurger.hidden = true;
-    root.classList.remove('header-nav-open');
-  }
-
-  function updateSectionRail() {
-    if (!sectionRail) return;
-    var showRail = hasReachedWorkSection();
-    if (!showRail) {
-      hideSectionRail();
-      sectionRail.querySelectorAll('.section-rail__link[data-section]').forEach(function(link) {
+  function updateFabNav() {
+    if (!fabNav) return;
+    var showNav = hasReachedWorkSection();
+    if (!showNav) {
+      fabNav.classList.add('fab-hidden');
+      fabNav.setAttribute('aria-hidden', 'true');
+      fabNav.querySelectorAll('.fab-nav__link[data-section]').forEach(function(link) {
         link.classList.remove('is-active');
         link.removeAttribute('aria-current');
       });
       return;
     }
 
-    revealSectionRail();
+    fabNav.classList.remove('fab-hidden');
+    fabNav.setAttribute('aria-hidden', 'false');
 
     var activeIndex = getCurrentSectionIndex();
-    sectionRail.querySelectorAll('.section-rail__link[data-section]').forEach(function(link) {
+    fabNav.querySelectorAll('.fab-nav__link[data-section]').forEach(function(link) {
       var sectionId = link.getAttribute('data-section');
       var isActive = activeIndex >= 0 && pageSections[activeIndex].id === sectionId;
       link.classList.toggle('is-active', isActive);
@@ -2589,12 +2506,7 @@
     return false;
   }
 
-  function sampleNeedsLightHeaderText(x, y) {
-    if (!siteHeaderTitle) return false;
-    var prev = siteHeaderTitle.style.pointerEvents;
-    siteHeaderTitle.style.pointerEvents = 'none';
-    var el = document.elementFromPoint(x, y);
-    siteHeaderTitle.style.pointerEvents = prev || 'auto';
+  function evaluateLightTextForElement(el) {
     if (!el) return false;
 
     if (el.closest('.experience, .work-section--side, .intro-screen')) {
@@ -2603,6 +2515,22 @@
 
     if (nodeNeedsLightHeaderText(el)) return true;
     return hasDarkSurfaceBehind(el);
+  }
+
+  function sampleNeedsLightTextAt(x, y, ignoreNodes, evaluator) {
+    var ignores = ignoreNodes || [];
+    var evaluate = evaluator || evaluateLightTextForElement;
+    var saved = ignores.map(function(node) {
+      return { node: node, pointerEvents: node.style.pointerEvents };
+    });
+    ignores.forEach(function(node) {
+      node.style.pointerEvents = 'none';
+    });
+    var el = document.elementFromPoint(x, y);
+    saved.forEach(function(item) {
+      item.node.style.pointerEvents = item.pointerEvents || '';
+    });
+    return evaluate(el);
   }
 
   function updateSiteHeaderTone() {
@@ -2626,7 +2554,7 @@
     var useLightText = false;
     for (var i = 0; i < sampleXs.length; i++) {
       var y = rect.top + rect.height * 0.5;
-      if (sampleNeedsLightHeaderText(sampleXs[i], y)) {
+      if (sampleNeedsLightTextAt(sampleXs[i], y, [siteHeaderTitle])) {
         useLightText = true;
         break;
       }
@@ -2651,7 +2579,7 @@
 
   function updateScrollChrome() {
     updateScrollProgress();
-    updateSectionRail();
+    updateFabNav();
     updateSiteHeaderTone();
   }
 
@@ -2691,7 +2619,7 @@
     });
   }
 
-  bindAnchorLinks(sectionRail);
+  bindAnchorLinks(fabNav);
   bindAnchorLinks(document.getElementById('sidebarNav'));
 
   var scrollChromeRaf = false;
@@ -2703,7 +2631,7 @@
       requestAnimationFrame(function() {
         scrollChromeRaf = false;
         updateScrollProgress();
-        updateSectionRail();
+        updateFabNav();
         // Header-tone sampling does elementFromPoint x3 + style reads, which is
         // too heavy to run every scroll frame on mobile. Throttle it during the
         // scroll and settle it once scrolling pauses.
@@ -2764,63 +2692,6 @@
   window.addEventListener('load', fitFooterCopyright);
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(fitFooterCopyright);
-  }
-
-  /* ----- Floating action button (scroll hint) ----- */
-  var fab = document.getElementById('fabScroll');
-  if (fab) {
-    var fabLabel = fab.querySelector('.fab-label');
-    var sections = pageSections;
-
-    function getNextSection() {
-      var currentIndex = getCurrentSectionIndex();
-      var nextIndex = currentIndex + 1;
-      if (nextIndex >= sections.length) return null;
-      var section = sections[nextIndex];
-      var el = document.getElementById(section.id);
-      if (!el) return null;
-      return { el: el, section: section };
-    }
-
-    function updateFab() {
-      var next = getNextSection();
-      if (!next) {
-        fab.classList.add('fab-hidden');
-        fab.classList.remove('fab-levitate');
-        return;
-      }
-      fab.classList.remove('fab-hidden');
-      fab.href = '#' + next.section.id;
-      var nextLabel = getFabSectionLabel(next.section);
-      if (fabLabel) fabLabel.textContent = nextLabel;
-      fab.setAttribute('aria-label', 'Scroll to ' + nextLabel);
-      if (fabLabel && fabLabel.textContent === 'Selected Work') {
-        fab.classList.add('fab-levitate');
-      } else {
-        fab.classList.remove('fab-levitate');
-      }
-    }
-
-    fab.addEventListener('click', function(e) {
-      var next = getNextSection();
-      if (!next) return;
-      e.preventDefault();
-      scrollToAnchor(next.el);
-    });
-
-    var fabRaf = false;
-    window.addEventListener('scroll', function() {
-      if (fabRaf) return;
-      fabRaf = true;
-      requestAnimationFrame(function() {
-        fabRaf = false;
-        updateFab();
-      });
-    }, { passive: true });
-    window.addEventListener('resize', function() {
-      requestAnimationFrame(updateFab);
-    });
-    updateFab();
   }
 
   window.addEventListener('blurb-reveal-complete', function() {

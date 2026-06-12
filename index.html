@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=mobile-polish-v41">
+  <link rel="stylesheet" href="style.css?v=mobile-polish-v51">
   <script>
     (function () {
       try {
@@ -56,8 +56,7 @@
       min-height: calc(100svh - var(--work-peek)) !important;
     }
     html:not(.blurb-reveal-done) .fab,
-    html:not(.blurb-reveal-done) .scroll-progress,
-    html:not(.blurb-reveal-done) .section-rail {
+    html:not(.blurb-reveal-done) .scroll-progress {
       opacity: 0 !important;
       visibility: hidden !important;
       pointer-events: none !important;
@@ -117,24 +116,6 @@
   <div class="layout">
 
     <header class="site-header">
-      <button type="button" class="header-nav-burger" id="headerNavBurger" aria-expanded="false" aria-controls="sectionRail" aria-label="Open menu" hidden>
-        <span class="header-nav-burger-bar" aria-hidden="true"></span>
-        <span class="header-nav-burger-bar" aria-hidden="true"></span>
-        <span class="header-nav-burger-bar" aria-hidden="true"></span>
-      </button>
-      <div class="header-nav-backdrop" id="headerNavBackdrop" hidden aria-hidden="true"></div>
-      <nav class="section-rail" id="sectionRail" aria-label="Site navigation" aria-hidden="true">
-        <div class="section-rail__sections">
-          <a href="#work" class="section-rail__link" data-section="work">Selected Work</a>
-          <a href="#side-projects" class="section-rail__link" data-section="side-projects">Side projects</a>
-          <a href="#experience" class="section-rail__link" data-section="experience">Experience</a>
-        </div>
-        <div class="section-rail__external">
-          <a href="https://www.linkedin.com/in/alexnguyen3/" class="section-rail__link section-rail__link--external" target="_blank" rel="noopener noreferrer">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          <a href="mailto:alexnguyen431@gmail.com" class="section-rail__link section-rail__link--external">Email<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-          <a href="https://drive.google.com/file/d/169jcILZViYpPeYQcG0c7WqMi_fwMLMbd/view?usp=sharing" class="section-rail__link section-rail__link--external" target="_blank" rel="noopener noreferrer">CV<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </nav>
       <div class="site-header-inner">
         <h1 class="site-header-title">
           <span class="site-header-name alex-profile-rain">Alex Nguyen</span>
@@ -811,10 +792,19 @@
     </main>
   </div>
 
-  <a href="#work" class="fab fab-scroll" id="fabScroll" aria-label="Scroll to Selected Work">
-    <span class="fab-label">Selected Work</span>
-    <svg class="fab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
-  </a>
+  <nav class="fab fab-nav fab-hidden" id="fabNav" aria-label="Site navigation" aria-hidden="true">
+    <a href="#work" class="fab-nav__link" data-section="work">Selected work</a>
+    <span class="fab-nav__sep" aria-hidden="true">•</span>
+    <a href="#side-projects" class="fab-nav__link" data-section="side-projects">Side Projects</a>
+    <span class="fab-nav__sep" aria-hidden="true">•</span>
+    <a href="#experience" class="fab-nav__link" data-section="experience">Experience</a>
+    <span class="fab-nav__external">
+      <span class="fab-nav__sep" aria-hidden="true">•</span>
+      <a href="https://www.linkedin.com/in/alexnguyen3/" class="fab-nav__link fab-nav__link--external" target="_blank" rel="noopener noreferrer">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <span class="fab-nav__sep" aria-hidden="true">•</span>
+      <a href="https://drive.google.com/file/d/169jcILZViYpPeYQcG0c7WqMi_fwMLMbd/view?usp=sharing" class="fab-nav__link fab-nav__link--external" target="_blank" rel="noopener noreferrer">CV<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </span>
+  </nav>
 
   <!-- Phone call overlay -->
   <div class="call-overlay" id="callOverlay" hidden>
@@ -857,6 +847,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=mobile-polish-v33"></script>
+  <script src="script.js?v=mobile-polish-v51"></script>
 </body>
 </html>
