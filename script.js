@@ -669,6 +669,25 @@
   /* ----- Intro peek: Selected Work cards visible at bottom of first viewport ----- */
   var lockedWorkPeekLayout = null;
 
+  /* Keep the blurb a consistent distance below the fixed header on every screen.
+     The CSS --site-header-clearance is only an estimate; on some viewports the
+     real header is taller, leaving the blurb cramped against it. Measure the
+     actual header and drive the clearance (plus breathing room) from it. */
+  var headerClearanceEl = document.querySelector('.site-header');
+  function syncHeaderClearance() {
+    if (!headerClearanceEl) return;
+    if (!window.matchMedia('(max-width: 1024px)').matches) {
+      root.style.removeProperty('--site-header-clearance');
+      return;
+    }
+    var h = headerClearanceEl.getBoundingClientRect().height;
+    if (!h) return;
+    var gap = Math.round(window.innerHeight * 0.03);
+    gap = Math.min(Math.max(gap, 18), 34);
+    root.style.setProperty('--site-header-clearance', Math.round(h + gap) + 'px');
+  }
+  syncHeaderClearance();
+
   function layoutWorkPeek(force) {
     if (
       root.classList.contains('intro-peek-locked') &&
@@ -746,10 +765,11 @@
   function handleBlurbRevealComplete() {
     var isMobile = window.matchMedia('(max-width: 768px)').matches;
     root.classList.remove('intro-peek-locked');
+    syncHeaderClearance();
     if (isMobile) {
-      requestAnimationFrame(function() {
-        window.dispatchEvent(new Event('resize'));
-      });
+      // Carousel layout is settled synchronously in the blurb-reveal-complete
+      // listener; firing resize here retriggers a full relayout mid-fade.
+      // finishMobileIntro schedules the post-fade resize pass instead.
       return;
     }
     runLayoutWorkPeek();
@@ -767,6 +787,7 @@
   window.addEventListener('resize', function() {
     clearTimeout(layoutWorkPeek._timer);
     layoutWorkPeek._timer = setTimeout(function() {
+      syncHeaderClearance();
       if (root.classList.contains('blurb-reveal-done')) {
         layoutWorkPeek(false);
       } else if (
@@ -782,6 +803,7 @@
     clearTimeout(layoutWorkPeek._orientationTimer);
     layoutWorkPeek._orientationTimer = setTimeout(function() {
       root.classList.remove('intro-peek-locked');
+      syncHeaderClearance();
       if (root.classList.contains('blurb-reveal-done')) {
         layoutWorkPeek(true);
       } else {
@@ -791,6 +813,7 @@
   });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function() {
+      syncHeaderClearance();
       if (root.classList.contains('blurb-reveal-done')) layoutWorkPeek();
     });
   }
@@ -1537,9 +1560,26 @@
     }
 
     var resizeTimer;
+    var lockedCarouselViewport = null;
     window.addEventListener('resize', function() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function() {
+        var viewportHeight = window.innerHeight;
+        var viewportWidth = window.innerWidth;
+        var isMobileCarousel = window.matchMedia('(max-width: 768px)').matches;
+        if (
+          isMobileCarousel &&
+          lockedCarouselViewport &&
+          viewportWidth === lockedCarouselViewport.width &&
+          Math.abs(viewportHeight - lockedCarouselViewport.height) < 140
+        ) {
+          return;
+        }
+        lockedCarouselViewport = {
+          height: viewportHeight,
+          width: viewportWidth
+        };
+
         if (root.classList.contains('blurb-reveal-done')) layoutWorkPeek();
         isAnimating = false;
         normalizeLoopPosition(false);
@@ -2628,9 +2668,34 @@
   bindAnchorLinks(sectionRail);
   bindAnchorLinks(document.getElementById('sidebarNav'));
 
-  window.addEventListener('scroll', function() {
-    requestAnimationFrame(updateScrollChrome);
-  }, { passive: true });
+  var scrollChromeRaf = false;
+  var lastHeaderToneAt = 0;
+  var headerToneSettleTimer = null;
+  function onScrollChrome() {
+    if (!scrollChromeRaf) {
+      scrollChromeRaf = true;
+      requestAnimationFrame(function() {
+        scrollChromeRaf = false;
+        updateScrollProgress();
+        updateSectionRail();
+        // Header-tone sampling does elementFromPoint x3 + style reads, which is
+        // too heavy to run every scroll frame on mobile. Throttle it during the
+        // scroll and settle it once scrolling pauses.
+        var now = performance.now();
+        if (now - lastHeaderToneAt >= 110) {
+          lastHeaderToneAt = now;
+          updateSiteHeaderTone();
+        }
+      });
+    }
+    if (headerToneSettleTimer) clearTimeout(headerToneSettleTimer);
+    headerToneSettleTimer = setTimeout(function() {
+      headerToneSettleTimer = null;
+      lastHeaderToneAt = performance.now();
+      updateSiteHeaderTone();
+    }, 140);
+  }
+  window.addEventListener('scroll', onScrollChrome, { passive: true });
   window.addEventListener('resize', function() {
     requestAnimationFrame(updateScrollChrome);
   });
@@ -2717,8 +2782,14 @@
       scrollToAnchor(next.el);
     });
 
+    var fabRaf = false;
     window.addEventListener('scroll', function() {
-      requestAnimationFrame(updateFab);
+      if (fabRaf) return;
+      fabRaf = true;
+      requestAnimationFrame(function() {
+        fabRaf = false;
+        updateFab();
+      });
     }, { passive: true });
     window.addEventListener('resize', function() {
       requestAnimationFrame(updateFab);

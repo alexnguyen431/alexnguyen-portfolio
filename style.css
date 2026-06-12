@@ -3019,8 +3019,9 @@ html:not(.blurb-reveal-done) .main > *:not(.intro-screen) {
 }
 
 html:not(.blurb-reveal-done) .intro-screen {
+  /* svh (small viewport height) is stable as the mobile URL bar shows/hides;
+     dvh grows on scroll and pushed Selected Work down, opening a growing gap. */
   min-height: calc(100svh - var(--work-peek)) !important;
-  min-height: calc(100dvh - var(--work-peek)) !important;
 }
 
 html.site-reveal-measure .main > .work-section:not(.work-section--side) {
@@ -3381,7 +3382,7 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     align-items: stretch;
     box-sizing: border-box;
     padding-top: var(--site-header-clearance);
-    min-height: calc(100dvh - var(--work-peek)) !important;
+    min-height: calc(100svh - var(--work-peek)) !important;
   }
 
   html:not(.mobile-intro-done) .intro-screen .main-hero,
@@ -4115,7 +4116,6 @@ body,
   margin-left: 0;
   margin-right: 0;
   min-height: 100svh;
-  min-height: 100dvh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -4131,7 +4131,6 @@ body,
 
 html.blurb-reveal-done .intro-screen {
   min-height: calc(100svh - var(--work-peek)) !important;
-  min-height: calc(100dvh - var(--work-peek)) !important;
 }
 
 .intro-screen .main-hero {
