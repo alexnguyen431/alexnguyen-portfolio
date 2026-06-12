@@ -3029,28 +3029,8 @@ body.brand-active .sidebar-nav a:hover {
 }
 
 /* Hide page sections until blurb + availability finish their reveal sequence */
-html:not(.blurb-reveal-done):not(.site-reveal-prep) .main > *:not(.intro-screen) {
+html:not(.blurb-reveal-done) .main > *:not(.intro-screen) {
   display: none !important;
-}
-
-/* Mobile prep: mount sections off-screen so carousel layout can settle
-   before the visible fade (avoids display:none → layout → animate in one frame). */
-html.site-reveal-prep:not(.blurb-reveal-done) .main > *:not(.intro-screen) {
-  display: block !important;
-  visibility: hidden !important;
-  position: fixed !important;
-  left: -200vw !important;
-  top: 0 !important;
-  width: 100vw !important;
-  max-width: 100vw !important;
-  pointer-events: none !important;
-}
-
-/* In-flow at opacity 0 for one frame before the fade starts */
-html.blurb-reveal-done:not(.site-reveal-animate) .main > *:not(.intro-screen) {
-  animation: none !important;
-  opacity: 0 !important;
-  transform: none !important;
 }
 
 html:not(.blurb-reveal-done) .intro-screen {
@@ -3677,6 +3657,25 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     --content-reveal-delay: 0.08s;
     --content-reveal-stagger: 0.04s;
     --site-reveal-prep-duration: 0.95s;
+  }
+
+  /* Allow off-screen mount during mobile prep (overrides display:none above). */
+  html:not(.blurb-reveal-done).site-reveal-prep .main > *:not(.intro-screen) {
+    display: block !important;
+    visibility: hidden !important;
+    position: fixed !important;
+    left: -200vw !important;
+    top: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    pointer-events: none !important;
+  }
+
+  /* In-flow at opacity 0 for one frame before the mobile fade starts. */
+  html.blurb-reveal-done:not(.site-reveal-animate) .main > *:not(.intro-screen) {
+    animation: none !important;
+    opacity: 0 !important;
+    transform: none !important;
   }
 
   /* During the intro reveal only a peek of the first section (Selected Work)

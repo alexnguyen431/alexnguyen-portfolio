@@ -110,6 +110,7 @@
 
     setTimeout(function() {
       root.classList.add('blurb-reveal-done');
+      root.classList.remove('site-reveal-prep');
       // Dispatch synchronously so listeners settle the carousel (position +
       // equalized card heights) in this same frame, before the browser paints
       // the first frame of the content-reveal fade. That way the fade plays
