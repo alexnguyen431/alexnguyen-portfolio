@@ -1434,7 +1434,7 @@
 
       var isMobileCarousel = window.matchMedia('(max-width: 768px)').matches;
       if (trackEl.id === 'workCarousel' && isMobileCarousel) {
-        var mobileCap = Math.round(window.innerHeight * 0.78);
+        var mobileCap = Math.round(window.innerHeight * 0.62);
         maxHeight = Math.min(maxHeight, mobileCap);
       }
       var heightPx = Math.ceil(maxHeight) + 'px';

@@ -3819,31 +3819,33 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     display: inline;
   }
 
-  #workCarousel .carousel-slide .bento-card {
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    align-content: stretch;
+  /* Flex column keeps body pinned without stretching media to fill 1fr grid rows */
+  #workCarousel .carousel-slide .bento-card:not(.bento-card--square):not(.bento-card--cash) {
+    display: flex;
+    flex-direction: column;
   }
 
   #workCarousel .carousel-slide .bento-card--square,
   #workCarousel .carousel-slide .bento-card--cash {
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+    align-content: start;
   }
 
-  #workCarousel .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) {
-    grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
-  }
-
-  #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) {
-    --work-phone-stage-height: clamp(188px, 48vw, 248px);
+  #workCarousel .carousel-slide .bento-card--square > .bento-card-body,
+  #workCarousel .carousel-slide .bento-card--cash > .bento-card-body {
+    align-self: end;
   }
 
   #workCarousel .carousel-slide .bento-card-header {
+    flex: 0 0 auto;
     align-self: start;
     min-height: 0;
   }
 
   #workCarousel .carousel-slide .bento-card-body {
-    align-self: end;
+    flex: 0 0 auto;
+    align-self: stretch;
+    margin-top: auto;
     min-height: 0;
   }
 
@@ -3852,16 +3854,52 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   }
 
   #workCarousel .carousel-slide .bento-card-visual {
+    flex: 1 1 auto;
     min-height: 0;
-    align-self: center;
+    height: auto !important;
+    max-height: none;
+    align-self: stretch;
     justify-self: stretch;
-    max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .carousel-slide .bento-card-visual--phones {
+    height: auto !important;
+    flex: none;
+    align-items: center;
   }
 
   #workCarousel .carousel-slide .bento-card-visual--video,
   #workCarousel .carousel-slide .bento-card-visual--stack {
+    height: auto !important;
+    max-height: 100%;
     padding-top: clamp(0.35rem, 1.75cqi, 1rem);
     padding-bottom: clamp(0.35rem, 1.75cqi, 1rem);
+  }
+
+  #workCarousel .carousel-slide .bento-card-visual--phones:not(.bento-card-visual--scroll-x) .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: min(31%, 104px);
+    align-self: center;
+  }
+
+  .bento-card-visual--stack {
+    min-height: 0 !important;
+  }
+
+  #workCarousel .carousel-slide .card-stack--row .card-stack-card {
+    width: clamp(108px, 32cqi, 188px);
+  }
+
+  #workCarousel .carousel-slide .video-frame {
+    width: min(88%, 100%);
+    max-height: min(52vw, 232px);
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   /* Keep the Ogilvy walkthrough centered on phones while preserving the tilt */
