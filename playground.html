@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function() {
+      try {
+        var stored = localStorage.getItem('theme');
+        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var theme = (stored === 'light' || stored === 'dark') ? stored : (prefersLight ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <title>Sandbox — Alex Nguyen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=mobile-polish-v34">
+  <link rel="stylesheet" href="playground.css?v=4">
+</head>
+<body class="playground-page">
+
+  <header class="site-header site-header--sandbox">
+    <nav class="section-rail is-visible" id="sectionRail" aria-label="Site navigation">
+      <div class="section-rail__sections">
+        <a href="/" class="section-rail__link">Home</a>
+      </div>
+      <div class="section-rail__external">
+        <a href="https://www.linkedin.com/in/alexnguyen3/" class="section-rail__link section-rail__link--external" target="_blank" rel="noopener noreferrer">LinkedIn<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="mailto:alexnguyen431@gmail.com" class="section-rail__link section-rail__link--external">Email<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <button type="button" class="theme-toggle section-rail__theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+      </div>
+    </nav>
+    <div class="site-header-inner">
+      <h1 class="site-header-title">
+        <span class="site-header-name">Alex Nguyen</span>
+        <span class="site-header-sep" aria-hidden="true"> - </span>
+        <span class="site-header-role">Product Designer in <span class="vancouver-flag-rain">Vancouver 🇨🇦</span></span>
+      </h1>
+    </div>
+  </header>
+
+  <main
+    class="play-stage"
+    id="playStage"
+    data-tile-w="0"
+    data-tile-h="0"
+    aria-label="Interactive media sandbox. Drag to pan, scroll to zoom, click an item to view full size."
+  >
+    <div class="play-canvas" id="playCanvas"></div>
+    <nav class="play-stage-nav" id="playStageNav" aria-label="Gallery index">
+      <button type="button" class="play-stage-nav__arrow" id="playStagePrev" aria-label="Previous">←</button>
+      <button type="button" class="play-stage-nav__count" id="playStageCount">[001]</button>
+      <button type="button" class="play-stage-nav__arrow" id="playStageNext" aria-label="Next">→</button>
+    </nav>
+    <p class="play-hint" id="playHint">Drag to explore · Scroll to zoom · Tap to open</p>
+  </main>
+
+  <div class="play-lightbox" id="playLightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Media viewer">
+    <button type="button" class="play-lightbox__backdrop" id="playLightboxBackdrop" aria-label="Close"></button>
+    <div class="play-lightbox__inner">
+      <div class="play-lightbox__media" id="playLightboxMedia"></div>
+      <nav class="play-lightbox__nav" aria-label="Gallery navigation">
+        <button type="button" class="play-lightbox__arrow" id="playPrev" aria-label="Previous">←</button>
+        <span class="play-lightbox__count" id="playCount">[001]</span>
+        <button type="button" class="play-lightbox__arrow" id="playNext" aria-label="Next">→</button>
+      </nav>
+    </div>
+  </div>
+
+  <script src="playground.js?v=4"></script>
+</body>
+</html>

@@ -3866,16 +3866,24 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     overflow: visible;
   }
 
-  .carousel-slide .bento-card-visual--phones {
+  .carousel-slide .bento-card-visual--phones.bento-card-visual--scroll-x {
+    flex: 0 0 auto;
+  }
+
+  #workCarousel .carousel-slide .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) {
+    flex: 1 1 auto;
+    min-height: 0;
     height: auto !important;
-    flex: none;
     align-items: center;
+    justify-content: center;
   }
 
   #workCarousel .carousel-slide .bento-card-visual--video,
   #workCarousel .carousel-slide .bento-card-visual--stack {
+    flex: 1 1 auto;
+    min-height: 0;
     height: auto !important;
-    max-height: 100%;
+    max-height: none;
     padding-top: clamp(0.35rem, 1.75cqi, 1rem);
     padding-bottom: clamp(0.35rem, 1.75cqi, 1rem);
   }
@@ -3892,7 +3900,7 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   }
 
   #workCarousel .carousel-slide .card-stack--row .card-stack-card {
-    width: clamp(108px, 32cqi, 188px);
+    width: clamp(136px, 44cqi, 252px);
   }
 
   #workCarousel .carousel-slide .video-frame {
@@ -4378,11 +4386,10 @@ html.blurb-reveal-done .intro-screen {
   z-index: 2;
 }
 
-.site-header::before {
+.site-header::before,
+.site-header::after {
   content: "";
   position: absolute;
-  inset: 0;
-  bottom: -2.5rem;
   z-index: 0;
   pointer-events: none;
   background: linear-gradient(
@@ -4394,8 +4401,42 @@ html.blurb-reveal-done .intro-screen {
   );
   -webkit-backdrop-filter: blur(32px) saturate(1.35);
   backdrop-filter: blur(32px) saturate(1.35);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.25) 78%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.25) 78%, transparent 100%);
+}
+
+.site-header::before {
+  inset: 0;
+  bottom: -2.5rem;
+  mask-image:
+    linear-gradient(to right, #000 0%, #000 42%, rgba(0, 0, 0, 0.72) 62%, rgba(0, 0, 0, 0.28) 78%, transparent 100%),
+    linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.25) 78%, transparent 100%);
+  -webkit-mask-image:
+    linear-gradient(to right, #000 0%, #000 42%, rgba(0, 0, 0, 0.72) 62%, rgba(0, 0, 0, 0.28) 78%, transparent 100%),
+    linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.25) 78%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+@media (min-width: 1025px) {
+  .site-header::after {
+    top: 0;
+    right: 0;
+    bottom: -4.5rem;
+    width: min(21rem, 34vw);
+    mask-image:
+      linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.88) 28%, rgba(0, 0, 0, 0.42) 58%, transparent 100%),
+      linear-gradient(to bottom, #000 0%, #000 18%, rgba(0, 0, 0, 0.82) 42%, rgba(0, 0, 0, 0.35) 68%, transparent 100%);
+    -webkit-mask-image:
+      linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.88) 28%, rgba(0, 0, 0, 0.42) 58%, transparent 100%),
+      linear-gradient(to bottom, #000 0%, #000 18%, rgba(0, 0, 0, 0.82) 42%, rgba(0, 0, 0, 0.35) 68%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}
+
+@media (max-width: 1024px) {
+  .site-header::after {
+    display: none;
+  }
 }
 
 .site-header-title {
@@ -4428,7 +4469,8 @@ html.blurb-reveal-done .intro-screen {
   color: #ffffff;
 }
 
-.site-header--on-dark::before {
+.site-header--on-dark::before,
+.site-header--on-dark::after {
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.16) 0%,
@@ -4518,7 +4560,8 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
     isolation: auto;
   }
 
-  html.header-nav-open .site-header::before {
+  html.header-nav-open .site-header::before,
+  html.header-nav-open .site-header::after {
     display: none;
   }
 

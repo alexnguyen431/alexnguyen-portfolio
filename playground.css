@@ -1,0 +1,316 @@
+/* Sandbox — pannable media canvas */
+
+.playground-page {
+  overflow: hidden;
+  height: 100dvh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.playground-page .site-header--sandbox {
+  pointer-events: none;
+}
+
+.playground-page .site-header--sandbox .site-header-title,
+.playground-page .site-header--sandbox .section-rail__link,
+.playground-page .site-header--sandbox .section-rail__theme-toggle {
+  pointer-events: auto;
+}
+
+.playground-page .section-rail__theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.15rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color var(--transition-base);
+}
+
+.playground-page .section-rail__theme-toggle:hover {
+  color: var(--text-secondary);
+}
+
+.playground-page .site-header--on-dark .section-rail__theme-toggle {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.playground-page .site-header--on-dark .section-rail__theme-toggle:hover {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.play-stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0, transparent 38%, color-mix(in srgb, var(--text-tertiary) 14%, transparent) 38.5%, transparent 39%),
+    radial-gradient(circle at 50% 50%, transparent 0, transparent 68%, color-mix(in srgb, var(--text-tertiary) 10%, transparent) 68.5%, transparent 69%);
+  background-size: 28px 28px;
+  background-color: var(--bg-primary);
+}
+
+.play-stage.is-dragging {
+  cursor: grabbing;
+}
+
+.play-stage.is-lightbox-open {
+  cursor: default;
+}
+
+.play-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  visibility: hidden;
+}
+
+.play-canvas.is-ready {
+  visibility: visible;
+}
+
+.play-item {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border-primary) 80%, transparent);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.play-item img,
+.play-item video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.play-label {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.55rem;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.play-stage-nav {
+  position: fixed;
+  left: 50%;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  pointer-events: auto;
+}
+
+.play-stage-nav__arrow,
+.play-stage-nav__count {
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem 0.35rem;
+  transition: color var(--transition-base);
+}
+
+.play-stage-nav__arrow {
+  font-size: 14px;
+}
+
+.play-stage-nav__arrow:hover,
+.play-stage-nav__count:hover {
+  color: var(--text-primary);
+}
+
+.play-stage-nav__count {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+.play-stage.is-lightbox-open .play-stage-nav {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.play-item__badge {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 9px;
+  pointer-events: none;
+}
+
+.play-hint {
+  position: fixed;
+  left: 50%;
+  bottom: max(3.5rem, calc(env(safe-area-inset-bottom) + 2.25rem));
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  border: 1px solid var(--border-primary);
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: -0.01em;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+  white-space: nowrap;
+}
+
+.play-hint.is-hidden {
+  opacity: 0;
+}
+
+.play-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.play-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.play-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: color-mix(in srgb, var(--bg-primary) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+.play-lightbox__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: min(92vw, 960px);
+  max-height: min(88vh, 900px);
+  padding: 1rem;
+}
+
+.play-lightbox__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: calc(88vh - 4rem);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.play-lightbox__media img,
+.play-lightbox__media video {
+  display: block;
+  max-width: 100%;
+  max-height: calc(88vh - 4rem);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.play-lightbox__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.play-lightbox__arrow {
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  transition: color var(--transition-base);
+}
+
+.play-lightbox__arrow:hover {
+  color: var(--text-primary);
+}
+
+.play-lightbox__count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .play-hint {
+    font-size: 10px;
+    max-width: calc(100vw - 2rem);
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-canvas.is-ready {
+    transition: none;
+  }
+
+  .play-lightbox {
+    transition: none;
+  }
+
+  .play-hint {
+    transition: none;
+  }
+}
