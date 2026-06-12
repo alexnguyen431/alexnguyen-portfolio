@@ -1892,10 +1892,12 @@ body.brand-active .intro-screen .blurb-brand-logo,
     transform: rotate(-2.5deg) translateY(8px);
   }
 
-  @media (min-width: 769px) {
-    #workCarousel .bento-card--ogilvy .video-frame--cw {
-      transform: rotate(2.5deg);
-    }
+  #workCarousel .bento-card--ogilvy .video-frame--cw {
+    transform: rotate(2.5deg);
+  }
+
+  #workCarousel .bento-card--ogilvy .video-frame--ccw {
+    transform: rotate(-2.5deg);
   }
 }
 
@@ -2342,15 +2344,15 @@ html[data-theme="dark"] .timeline-logo--meta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 8px;
-  line-height: 1;
+  padding: 0.45em 0.75em;
   border-radius: 100px;
-  background: var(--bg-tag);
-  color: var(--text-secondary);
+  background: rgba(235, 235, 235, 0.96);
+  color: #111;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -2486,12 +2488,14 @@ html[data-theme="dark"] .timeline-logo--meta {
     clamp(var(--space-md), 3vw, var(--space-lg));
   overflow: hidden;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(var(--space-md), 3vw, var(--space-lg));
 }
 
 .footer-copyright {
   margin: 0;
+  align-self: center;
   display: inline-block;
   width: auto;
   max-width: none;
@@ -2502,6 +2506,56 @@ html[data-theme="dark"] .timeline-logo--meta {
   letter-spacing: -0.045em;
   color: var(--text-primary);
   white-space: nowrap;
+}
+
+.footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.footer-credit {
+  margin: 0;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-tertiary);
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+}
+
+.footer-links .section-rail__link {
+  text-align: left;
+}
+
+.footer-links__sep {
+  color: var(--text-tertiary);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  user-select: none;
+}
+
+@media (max-width: 768px) {
+  .footer-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .footer-links {
+    justify-content: flex-start;
+  }
 }
 
 /* ==========================================
@@ -3348,10 +3402,6 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     margin-top: 0.55em;
   }
 
-  .main-blurb-availability .status-dot {
-    display: none;
-  }
-
   .main-blurb {
     padding-top: 0;
     padding-bottom: 0;
@@ -3770,24 +3820,42 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   }
 
   #workCarousel .carousel-slide .bento-card {
-    grid-template-rows: auto auto auto;
-    align-content: start;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    align-content: stretch;
+  }
+
+  #workCarousel .carousel-slide .bento-card--square,
+  #workCarousel .carousel-slide .bento-card--cash {
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   #workCarousel .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) {
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
   }
 
   #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) {
     --work-phone-stage-height: clamp(188px, 48vw, 248px);
   }
 
+  #workCarousel .carousel-slide .bento-card-header {
+    align-self: start;
+    min-height: 0;
+  }
+
+  #workCarousel .carousel-slide .bento-card-body {
+    align-self: end;
+    min-height: 0;
+  }
+
   #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) .bento-card-body {
     min-height: 0;
   }
 
-  #workCarousel .bento-card-header {
+  #workCarousel .carousel-slide .bento-card-visual {
     min-height: 0;
+    align-self: center;
+    justify-self: stretch;
+    max-height: 100%;
   }
 
   #workCarousel .carousel-slide .bento-card-visual--video,
@@ -3798,14 +3866,16 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
 
   /* Keep the Ogilvy walkthrough centered on phones while preserving the tilt */
   #workCarousel .carousel-slide .bento-card--ogilvy .bento-card-visual--video {
-    justify-content: center;
-    padding-inline: clamp(0.35rem, 1.75cqi, 1rem);
+    display: grid;
+    place-items: center;
+    padding-inline: clamp(0.75rem, 4.5cqi, 1.35rem);
     overflow: visible;
   }
 
   #workCarousel .carousel-slide .bento-card--ogilvy .video-frame {
-    width: min(88%, 100%);
-    margin-inline: auto;
+    width: min(82%, 100%);
+    margin: 0;
+    transform-origin: center center;
   }
 
   #workCarousel .carousel-slide .bento-card--ogilvy .video-frame--cw {
