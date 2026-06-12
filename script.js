@@ -51,6 +51,10 @@
   const mqMobileIntro = window.matchMedia('(max-width: 768px)');
   const reduceMotionIntro = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  function introRevealLayoutReady() {
+    return root.classList.contains('blurb-reveal-done') || root.classList.contains('site-reveal-prep');
+  }
+
   function finishMobileIntro() {
     root.classList.add('mobile-intro-done');
     if (mqMobileIntro.matches) {
@@ -79,7 +83,27 @@
     if (root.classList.contains('site-reveal-prep')) return;
 
     var isMobileIntro = mqMobileIntro.matches;
-    var prepDuration = reduceMotionIntro ? 0 : (isMobileIntro ? 0 : 520);
+
+    // Mobile: mount content off-screen, settle layout, paint at opacity 0,
+    // then start the fade on the next frame so layout + animation never share
+    // a frame (the main source of jank on real devices vs desktop emulation).
+    if (isMobileIntro && !reduceMotionIntro) {
+      root.classList.add('site-reveal-prep');
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          root.classList.add('blurb-reveal-done');
+          window.dispatchEvent(new Event('blurb-reveal-complete'));
+          root.classList.remove('site-reveal-prep');
+          requestAnimationFrame(function() {
+            root.classList.add('site-reveal-animate');
+            setTimeout(finishMobileIntro, 1040);
+          });
+        });
+      });
+      return;
+    }
+
+    var prepDuration = reduceMotionIntro ? 0 : 520;
     if (prepDuration > 0) {
       root.classList.add('site-reveal-prep');
     }
@@ -93,7 +117,7 @@
       // jumps into place mid-animation.
       window.dispatchEvent(new Event('blurb-reveal-complete'));
 
-      var chromeDelay = reduceMotionIntro ? 0 : (isMobileIntro ? 100 : 220);
+      var chromeDelay = reduceMotionIntro ? 0 : 220;
       setTimeout(finishMobileIntro, chromeDelay);
     }, prepDuration);
   }
@@ -1356,7 +1380,7 @@
 
     function settlePosition(animate, skipMedia) {
       if (!getMetrics().ready) {
-        if (!root.classList.contains('blurb-reveal-done')) return;
+        if (!introRevealLayoutReady()) return;
         settlePosition._retries = (settlePosition._retries || 0) + 1;
         if (settlePosition._retries < 48) {
           requestAnimationFrame(function() { settlePosition(animate, skipMedia); });
@@ -1376,7 +1400,7 @@
     var WORK_CAROUSEL_TARGET_HEIGHT = 710;
 
     function equalizeCarouselCardHeights() {
-      if (!root.classList.contains('blurb-reveal-done')) return;
+      if (!introRevealLayoutReady()) return;
 
       var allCards = trackEl.querySelectorAll('.carousel-slide .bento-card');
       allCards.forEach(function(card) {
@@ -1501,14 +1525,15 @@
     window.addEventListener('blurb-reveal-complete', function() {
       var deferMedia = mqMobileIntro.matches;
       // Settle position + card heights synchronously while the revealed
-      // sections are still at opacity 0 (first frame of content-reveal-in), so
-      // the layout is stable for the whole fade. On mobile, skip the video
-      // decode here and run it after the fade so it doesn't stutter the
-      // animation; desktop can afford to load immediately.
+      // sections are still at opacity 0, so the layout is stable for the
+      // whole fade. On mobile, one pass only (no trailing rAF relayout) and
+      // defer video decode until after the fade.
       runCarouselLayoutPass(deferMedia);
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() { runCarouselLayoutPass(deferMedia); });
-      });
+      if (!deferMedia) {
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() { runCarouselLayoutPass(deferMedia); });
+        });
+      }
       if (deferMedia) {
         setTimeout(function() {
           mediaRevealReady = true;
@@ -2798,6 +2823,12 @@
   }
 
   window.addEventListener('blurb-reveal-complete', function() {
+    if (mqMobileIntro.matches) {
+      setTimeout(function() {
+        requestAnimationFrame(updateScrollChrome);
+      }, 1040);
+      return;
+    }
     requestAnimationFrame(updateScrollChrome);
   });
 
