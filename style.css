@@ -1343,7 +1343,25 @@ body.brand-active .intro-screen .blurb-brand-logo,
   padding-inline: 0;
   padding-block: clamp(1rem, 5cqi, 2.5rem);
   grid-template-columns: clamp(1rem, 5cqi, 2.5rem) minmax(0, 1fr) clamp(1rem, 5cqi, 2.5rem);
+}
+
+#workCarousel .carousel-slide .bento-card--cash {
   grid-template-rows: auto auto auto;
+}
+
+#workCarousel .carousel-slide .bento-card--square {
+  grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
+}
+
+#workCarousel .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-header {
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+#workCarousel .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-body {
+  min-height: 0;
+  padding-top: 0;
+  align-self: end;
 }
 
 #workCarousel .carousel-slide .bento-card--square > .bento-card-header,
@@ -1600,7 +1618,6 @@ body.brand-active .intro-screen .blurb-brand-logo,
   }
 }
 
-#workCarousel .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x,
 #workCarousel .carousel-slide .bento-card--cash .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x {
   grid-column: 1 / -1;
   margin-left: 0;
@@ -1615,6 +1632,25 @@ body.brand-active .intro-screen .blurb-brand-logo,
   align-items: center;
   padding-top: calc(clamp(0.35rem, 1.5cqi, 1rem) * var(--work-media-pad-y-scale, 1) + var(--work-scroll-media-pad-extra, 0px));
   padding-bottom: calc(clamp(0.35rem, 1.5cqi, 1rem) * var(--work-media-pad-y-scale, 1) + var(--work-scroll-media-pad-extra, 0px));
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Square: media vertically centered in 1fr row between title and pinned body */
+#workCarousel .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x {
+  grid-column: 1 / -1;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  justify-self: stretch;
+  align-self: center;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: calc(clamp(0.35rem, 1.5cqi, 1rem) * var(--work-media-pad-y-scale, 1));
+  padding-bottom: calc(clamp(0.35rem, 1.5cqi, 1rem) * var(--work-media-pad-y-scale, 1));
   padding-left: 0;
   padding-right: 0;
 }
@@ -3884,15 +3920,24 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     flex-direction: column;
   }
 
-  #workCarousel .carousel-slide .bento-card--square,
   #workCarousel .carousel-slide .bento-card--cash {
     grid-template-rows: auto auto auto;
     align-content: start;
   }
 
+  #workCarousel .carousel-slide .bento-card--square {
+    grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
+    align-content: stretch;
+  }
+
   #workCarousel .carousel-slide .bento-card--square > .bento-card-body,
   #workCarousel .carousel-slide .bento-card--cash > .bento-card-body {
     align-self: end;
+  }
+
+  #workCarousel .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--scroll-x {
+    align-self: center;
+    justify-self: stretch;
   }
 
   #workCarousel .carousel-slide .bento-card-header {
