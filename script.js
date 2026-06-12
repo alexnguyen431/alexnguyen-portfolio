@@ -532,6 +532,33 @@
     var activeCard = null;
     var activeSlide = null;
     var isWorkCarousel = carouselEl.id === 'workCarousel';
+    var brandIntentCard = null;
+    var brandScrollSuppressedUntil = 0;
+
+    if (isWorkCarousel && !window.__workCarouselBrandScrollGuard) {
+      window.__workCarouselBrandScrollGuard = true;
+      window.addEventListener('scroll', function() {
+        brandScrollSuppressedUntil = performance.now() + 280;
+        brandIntentCard = null;
+        clearBrandNow();
+      }, { passive: true });
+    }
+
+    function markBrandIntent(card) {
+      if (!card) return;
+      brandIntentCard = card;
+    }
+
+    function canApplyBrandTheme(card) {
+      if (!isWorkCarousel || !card || !card.dataset.brand) return false;
+      if (performance.now() < brandScrollSuppressedUntil) return false;
+      return brandIntentCard === card;
+    }
+
+    function applyBrandForCard(card) {
+      if (!canApplyBrandTheme(card)) return;
+      applyBrand(card.dataset.brand);
+    }
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
@@ -587,9 +614,7 @@
 
       if (isWorkCarousel) {
         clearBrandNow();
-        if (activeCard && activeCard.dataset.brand) {
-          applyBrand(activeCard.dataset.brand);
-        }
+        applyBrandForCard(activeCard);
       }
     }
 
@@ -628,14 +653,19 @@
 
       card.addEventListener('mouseenter', function(e) {
         rememberPointer(e.clientX, e.clientY);
+        brandIntentCard = null;
         setActiveCard(card, true);
         if (isWorkCarousel) updateCaseStudyPill(card, e.clientX, e.clientY);
       }, { passive: true });
 
       card.addEventListener('mousemove', function(e) {
         rememberPointer(e.clientX, e.clientY);
-        if (activeCard === card && isWorkCarousel) {
-          updateCaseStudyPill(card, e.clientX, e.clientY);
+        markBrandIntent(card);
+        if (activeCard === card) {
+          if (isWorkCarousel) {
+            applyBrandForCard(card);
+            updateCaseStudyPill(card, e.clientX, e.clientY);
+          }
         }
       }, { passive: true });
 
@@ -654,6 +684,8 @@
 
     vpEl.addEventListener('mousemove', function(e) {
       rememberPointer(e.clientX, e.clientY);
+      var card = getCardFromPoint(e.clientX, e.clientY);
+      if (card) markBrandIntent(card);
       syncCarouselHover();
     }, { passive: true });
 
