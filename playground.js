@@ -9,7 +9,7 @@
     { src: 'assets/meta-3.png', type: 'image', aspect: 3 / 4, alt: 'Meta Shops — checkout' },
     { src: 'assets/meta-shop-1.png', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — outfit carousel' },
     { src: 'assets/meta-shop-2.png', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — product tags' },
-    { src: 'assets/meta-shop-3.png', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — product grid' },
+    { src: 'assets/meta-shop-3.png?v=5', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — outdoorvoices shop' },
     { src: 'assets/square-1.png', type: 'image', aspect: 3 / 4, alt: 'Square Online — cart' },
     { src: 'assets/square-oofe-cart-walkthrough.mov', type: 'video', poster: 'assets/square-1.png', aspect: 3 / 4, alt: 'Square Online — OOFE cart walkthrough' },
     { src: 'assets/square-2.png', type: 'image', aspect: 3 / 4, alt: 'Square Online — checkout login' },
