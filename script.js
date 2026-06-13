@@ -1283,6 +1283,9 @@
         tx -= freeScrollOffset;
       }
       if (animate === false) trackEl.style.transition = 'none';
+      if (mqMobileIntro.matches && animate !== false) {
+        trackEl.classList.add('is-sliding');
+      }
       trackEl.style.transform = 'translate3d(' + tx + 'px, 0, 0)';
       if (animate === false) {
         void trackEl.offsetHeight;
@@ -1326,6 +1329,14 @@
       loadCarouselMediaAround(current, 2);
       applyCarouselMediaForCurrent();
       loadVisibleCarouselMedia(vpEl, slideEls);
+      if (mqMobileIntro.matches) {
+        trackEl.classList.remove('is-sliding');
+        if (typeof vpEl._scheduleCarouselHoverSync === 'function') {
+          vpEl._scheduleCarouselHoverSync();
+        }
+        requestAnimationFrame(updateSiteHeaderTone);
+        return;
+      }
       if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
       requestAnimationFrame(function() {
         normalizeLoopPosition(false);
@@ -1405,7 +1416,9 @@
       freeScrollOffset = 0;
       current = wrapCarouselIndex(i);
 
-      loadCarouselMediaAround(current, 3);
+      if (!mqMobileIntro.matches || !animate) {
+        loadCarouselMediaAround(current, 3);
+      }
       setTransform(current, animate);
       if (animate) {
         isAnimating = true;
