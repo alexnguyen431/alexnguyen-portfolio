@@ -58,23 +58,18 @@
   function finishMobileIntro() {
     root.classList.add('mobile-intro-done');
     if (mqMobileIntro.matches) {
-      // The resize listeners run a full synchronous carousel relayout
-      // (offsetHeight over every slide + getBoundingClientRect). Firing it
-      // mid-fade stuttered the content reveal on real phones, and the layout is
-      // already settled synchronously at reveal, so hold this finalizing pass
-      // until the fade has finished.
-      setTimeout(function() {
-        window.dispatchEvent(new Event('resize'));
-      }, 1250);
-    } else {
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          window.dispatchEvent(new Event('resize'));
-        });
-      });
+      // One targeted layout pass after the fade — not a synthetic resize, which
+      // fans out into carousel relayout, phone-scroll, footer fit, etc.
+      setTimeout(runPostIntroLayoutPass, 1250);
+      return;
     }
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        dispatchPortfolioLayout({ pass: 'post-intro' });
+      });
+    });
     setTimeout(function() {
-      window.dispatchEvent(new Event('resize'));
+      dispatchPortfolioLayout({ pass: 'settle' });
     }, 2600);
   }
 
@@ -249,6 +244,12 @@
         var currentWord = wordEls[currentWordIndex];
         requestAnimationFrame(function() {
           currentWord.classList.add('is-visible');
+          currentWord.addEventListener('transitionend', function onRevealWordSettled(e) {
+            if (e.target !== currentWord) return;
+            if (e.propertyName !== 'opacity' && e.propertyName !== 'transform') return;
+            currentWord.removeEventListener('transitionend', onRevealWordSettled);
+            currentWord.classList.add('is-settled');
+          });
           if (onWordVisible) onWordVisible(currentWord, currentWordIndex);
         });
 
@@ -727,6 +728,22 @@
   }
   syncHeaderClearance();
 
+  var PORTFOLIO_LAYOUT_EVENT = 'portfolio-layout';
+
+  function dispatchPortfolioLayout(detail) {
+    window.dispatchEvent(new CustomEvent(PORTFOLIO_LAYOUT_EVENT, {
+      detail: detail || {}
+    }));
+  }
+
+  function runPostIntroLayoutPass() {
+    syncHeaderClearance();
+    if (root.classList.contains('blurb-reveal-done')) {
+      layoutWorkPeek(false);
+    }
+    dispatchPortfolioLayout({ pass: 'post-intro' });
+  }
+
   function layoutWorkPeek(force) {
     if (
       root.classList.contains('intro-peek-locked') &&
@@ -932,6 +949,13 @@
     el.replaceWith(img);
   }
 
+  function resolveCarouselVideoSrc(video) {
+    if (!video) return '';
+    var mobileSrc = video.getAttribute('data-src-mobile');
+    if (mqMobileIntro.matches && mobileSrc) return mobileSrc;
+    return video.getAttribute('data-src') || video.getAttribute('src') || '';
+  }
+
   function syncCloneMediaFromOriginal(clone, original) {
     var origVideos = original.querySelectorAll('video');
     var cloneVideos = clone.querySelectorAll('video');
@@ -947,10 +971,14 @@
         cloneVideo.setAttribute('poster', poster);
       }
 
-      var src = origVideo.getAttribute('src') || origVideo.getAttribute('data-src');
+      var src = resolveCarouselVideoSrc(origVideo);
       if (src) {
         if (!cloneVideo.getAttribute('data-src')) {
-          cloneVideo.setAttribute('data-src', src);
+          cloneVideo.setAttribute('data-src', origVideo.getAttribute('data-src') || src);
+        }
+        var mobileSrc = origVideo.getAttribute('data-src-mobile');
+        if (mobileSrc) {
+          cloneVideo.setAttribute('data-src-mobile', mobileSrc);
         }
         cloneVideo.removeAttribute('data-loaded');
         cloneVideo.removeAttribute('src');
@@ -965,7 +993,7 @@
 
   function restartCarouselVideo(video) {
     if (!video) return;
-    var url = video.getAttribute('data-src');
+    var url = resolveCarouselVideoSrc(video);
     if (!url && !video.src) return;
     if (video.getAttribute('data-loaded') !== 'true') return;
 
@@ -1015,7 +1043,7 @@
       iframe.setAttribute('data-loaded', 'true');
     });
     slide.querySelectorAll('video[data-src]').forEach(function(video) {
-      var url = video.getAttribute('data-src');
+      var url = resolveCarouselVideoSrc(video);
       if (!url) return;
       if (video.getAttribute('data-loaded') === 'true') {
         captureVideoPoster(video);
@@ -1601,35 +1629,42 @@
 
     var resizeTimer;
     var lockedCarouselViewport = null;
+    function onCarouselViewportChange() {
+      var viewportHeight = window.innerHeight;
+      var viewportWidth = window.innerWidth;
+      var isMobileCarousel = window.matchMedia('(max-width: 768px)').matches;
+      if (
+        isMobileCarousel &&
+        lockedCarouselViewport &&
+        viewportWidth === lockedCarouselViewport.width &&
+        Math.abs(viewportHeight - lockedCarouselViewport.height) < 140
+      ) {
+        return;
+      }
+      lockedCarouselViewport = {
+        height: viewportHeight,
+        width: viewportWidth
+      };
+
+      if (root.classList.contains('blurb-reveal-done')) layoutWorkPeek();
+      isAnimating = false;
+      normalizeLoopPosition(false);
+      settlePosition(false);
+      equalizeCarouselCardHeights();
+      loadNearbyCarouselMedia(slideEls, current, 2);
+      ensureCarouselMediaAtIndex();
+      loadVisibleCarouselMedia(vpEl, slideEls);
+      if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
+    }
+
     window.addEventListener('resize', function() {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() {
-        var viewportHeight = window.innerHeight;
-        var viewportWidth = window.innerWidth;
-        var isMobileCarousel = window.matchMedia('(max-width: 768px)').matches;
-        if (
-          isMobileCarousel &&
-          lockedCarouselViewport &&
-          viewportWidth === lockedCarouselViewport.width &&
-          Math.abs(viewportHeight - lockedCarouselViewport.height) < 140
-        ) {
-          return;
-        }
-        lockedCarouselViewport = {
-          height: viewportHeight,
-          width: viewportWidth
-        };
-
-        if (root.classList.contains('blurb-reveal-done')) layoutWorkPeek();
-        isAnimating = false;
-        normalizeLoopPosition(false);
-        settlePosition(false);
-        equalizeCarouselCardHeights();
-        loadNearbyCarouselMedia(slideEls, current, 2);
-        ensureCarouselMediaAtIndex();
-        loadVisibleCarouselMedia(vpEl, slideEls);
-        if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
-      }, 100);
+      resizeTimer = setTimeout(onCarouselViewportChange, 100);
+    });
+    window.addEventListener(PORTFOLIO_LAYOUT_EVENT, function(e) {
+      if (!e.detail || e.detail.pass !== 'post-intro') return;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(onCarouselViewportChange, 0);
     });
 
     var touchStartX = 0;
@@ -2344,49 +2379,68 @@
       document.querySelectorAll('.bento-card-visual--scroll-x').forEach(updateScrollOverflowState);
     });
 
-    if (typeof ResizeObserver !== 'undefined') {
-      document.querySelectorAll('.bento-card--square .phones-scroll-track, .bento-card--cash .phones-scroll-track').forEach(function(track) {
-        var observer = new ResizeObserver(layoutPhoneScrollCards);
-        observer.observe(track);
-        var viewport = track.closest('.bento-card-visual--scroll-x');
-        if (viewport) observer.observe(viewport);
-      });
-
-      var refPhone = document.querySelector(
-        '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--meta .bento-card-visual--phones .phone-mockup'
-      );
-      if (refPhone) {
-        new ResizeObserver(layoutPhoneScrollCards).observe(refPhone);
-      }
-    }
-
-    window.addEventListener('resize', layoutPhoneScrollCards);
-    window.addEventListener('load', layoutPhoneScrollCards);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(layoutPhoneScrollCards);
-    }
-
-    document.querySelectorAll('.bento-card--square video, .bento-card--cash video').forEach(function(video) {
-      video.addEventListener('loadeddata', layoutPhoneScrollCards);
-    });
-
-    requestAnimationFrame(function() {
-      requestAnimationFrame(layoutPhoneScrollCards);
-    });
-
     window.layoutPhoneScrollCards = layoutPhoneScrollCards;
     window.layoutSquarePhoneScroll = layoutPhoneScrollCards;
 
-    if (typeof IntersectionObserver !== 'undefined') {
-      var phoneScrollLayoutObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) layoutPhoneScrollCards();
-        });
-      }, { threshold: 0.01 });
+    var phoneScrollWatchersBooted = false;
+    function bootPhoneScrollWatchers() {
+      if (phoneScrollWatchersBooted) return;
+      phoneScrollWatchersBooted = true;
 
-      document.querySelectorAll('.bento-card--square, .bento-card--cash').forEach(function(card) {
-        phoneScrollLayoutObserver.observe(card);
+      if (typeof ResizeObserver !== 'undefined') {
+        document.querySelectorAll('.bento-card--square .phones-scroll-track, .bento-card--cash .phones-scroll-track').forEach(function(track) {
+          var observer = new ResizeObserver(layoutPhoneScrollCards);
+          observer.observe(track);
+          var viewport = track.closest('.bento-card-visual--scroll-x');
+          if (viewport) observer.observe(viewport);
+        });
+
+        var refPhone = document.querySelector(
+          '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--meta .bento-card-visual--phones .phone-mockup'
+        );
+        if (refPhone) {
+          new ResizeObserver(layoutPhoneScrollCards).observe(refPhone);
+        }
+      }
+
+      window.addEventListener('resize', layoutPhoneScrollCards);
+      window.addEventListener('load', layoutPhoneScrollCards);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(layoutPhoneScrollCards);
+      }
+
+      document.querySelectorAll('.bento-card--square video, .bento-card--cash video').forEach(function(video) {
+        video.addEventListener('loadeddata', layoutPhoneScrollCards);
       });
+
+      requestAnimationFrame(function() {
+        requestAnimationFrame(layoutPhoneScrollCards);
+      });
+
+      if (typeof IntersectionObserver !== 'undefined') {
+        var phoneScrollLayoutObserver = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) layoutPhoneScrollCards();
+          });
+        }, { threshold: 0.01 });
+
+        document.querySelectorAll('.bento-card--square, .bento-card--cash').forEach(function(card) {
+          phoneScrollLayoutObserver.observe(card);
+        });
+      }
+    }
+
+    window.addEventListener(PORTFOLIO_LAYOUT_EVENT, function(e) {
+      if (!e.detail || e.detail.pass !== 'post-intro') return;
+      layoutPhoneScrollCards();
+    });
+
+    if (mqMobileIntro.matches && !root.classList.contains('blurb-reveal-done')) {
+      window.addEventListener('blurb-reveal-complete', function() {
+        setTimeout(bootPhoneScrollWatchers, 1100);
+      }, { once: true });
+    } else {
+      bootPhoneScrollWatchers();
     }
   })();
 
@@ -2667,8 +2721,9 @@
         // Header-tone sampling does elementFromPoint x3 + style reads, which is
         // too heavy to run every scroll frame on mobile. Throttle it during the
         // scroll and settle it once scrolling pauses.
+        var toneThrottle = mqMobileIntro.matches ? 200 : 110;
         var now = performance.now();
-        if (now - lastHeaderToneAt >= 110) {
+        if (now - lastHeaderToneAt >= toneThrottle) {
           lastHeaderToneAt = now;
           updateSiteHeaderTone();
         }
@@ -2685,9 +2740,10 @@
   window.addEventListener('resize', function() {
     requestAnimationFrame(updateScrollChrome);
   });
-  updateScrollChrome();
+  if (root.classList.contains('blurb-reveal-done') || !mqMobileIntro.matches) {
+    updateScrollChrome();
+  }
 
-  /* ----- Footer: scale copyright to full viewport width ----- */
   var footerCopyright = document.querySelector('.footer-copyright');
   var footerEl = footerCopyright ? footerCopyright.closest('.footer') : null;
 
@@ -2717,13 +2773,23 @@
     });
   }
 
-  fitFooterCopyright();
-  window.addEventListener('resize', function() {
-    requestAnimationFrame(fitFooterCopyright);
-  });
-  window.addEventListener('load', fitFooterCopyright);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(fitFooterCopyright);
+  function bootFooterFit() {
+    fitFooterCopyright();
+    window.addEventListener('resize', function() {
+      requestAnimationFrame(fitFooterCopyright);
+    });
+    window.addEventListener('load', fitFooterCopyright);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitFooterCopyright);
+    }
+  }
+
+  if (mqMobileIntro.matches && !root.classList.contains('blurb-reveal-done')) {
+    window.addEventListener('blurb-reveal-complete', function() {
+      setTimeout(bootFooterFit, 1100);
+    }, { once: true });
+  } else {
+    bootFooterFit();
   }
 
   window.addEventListener('blurb-reveal-complete', function() {
@@ -2860,13 +2926,16 @@
           });
         }, { passive: true });
         window.addEventListener('resize', maybeShowAtBottom);
-        // In case they land deep-linked near the bottom
         setTimeout(maybeShowAtBottom, 0);
-        // Fallback: some mobile browsers can miss scroll events during momentum scroll.
-        setInterval(function() {
-          if (callOverlay && callOverlay.classList.contains('call-visible')) return;
-          maybeShowAtBottom();
-        }, 750);
+
+        if (typeof IntersectionObserver !== 'undefined' && footerEl) {
+          var footerBottomObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) maybeShowAtBottom();
+            });
+          }, { root: null, rootMargin: '0px 0px 120px 0px', threshold: 0 });
+          footerBottomObserver.observe(footerEl);
+        }
       }
 
       if (!document.documentElement.classList.contains('blurb-reveal-done')) {
@@ -2876,34 +2945,39 @@
       }
     }
 
-    // Debug: see if clicks reach the right elements
-    try {
-      console.log('[call-overlay] init', {
-        overlay: !!callOverlay,
-        decline: !!callDecline,
-        accept: !!callAccept,
-        incoming: !!callScreenIncoming,
-        message: !!callScreenMessage,
-        closeMsg: !!callCloseMsg
-      });
-    } catch (e) {}
-    document.addEventListener('click', function(e) {
-      try { console.log('[doc click]', e.target); } catch (err) {}
-    }, true);
-    callOverlay.addEventListener('click', function(e) {
-      try { console.log('[overlay click]', { target: e.target, currentTarget: e.currentTarget }); } catch (err) {}
-    }, true);
+    if (callDebug) {
+      try {
+        console.log('[call-overlay] init', {
+          overlay: !!callOverlay,
+          decline: !!callDecline,
+          accept: !!callAccept,
+          incoming: !!callScreenIncoming,
+          message: !!callScreenMessage,
+          closeMsg: !!callCloseMsg
+        });
+      } catch (e) {}
+      document.addEventListener('click', function(e) {
+        try { console.log('[doc click]', e.target); } catch (err) {}
+      }, true);
+      callOverlay.addEventListener('click', function(e) {
+        try { console.log('[overlay click]', { target: e.target, currentTarget: e.currentTarget }); } catch (err) {}
+      }, true);
+    }
 
     if (callDecline) {
       callDecline.addEventListener('click', function(e) {
-        try { console.log('[call-overlay] decline click', e.target); } catch (err) {}
+        if (callDebug) {
+          try { console.log('[call-overlay] decline click', e.target); } catch (err) {}
+        }
         hideCallOverlay();
       });
     }
 
     if (callAccept) {
       callAccept.addEventListener('click', function(e) {
-        try { console.log('[call-overlay] accept click', e.target); } catch (err) {}
+        if (callDebug) {
+          try { console.log('[call-overlay] accept click', e.target); } catch (err) {}
+        }
         if (callScreenMessage) {
           callScreenMessage.hidden = false;
           callScreenMessage.style.display = '';
@@ -2924,7 +2998,9 @@
 
     if (callCloseMsg) {
       callCloseMsg.addEventListener('click', function(e) {
-        try { console.log('[call-overlay] close message click', e.target); } catch (err) {}
+        if (callDebug) {
+          try { console.log('[call-overlay] close message click', e.target); } catch (err) {}
+        }
         hideCallOverlay();
       });
     }
