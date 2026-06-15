@@ -865,7 +865,7 @@ body.brand-active .main-blurb-availability .status-dot {
    ========================================== */
 
 .work-section {
-  margin-bottom: var(--space-xl);
+  margin-bottom: calc(var(--space-xl) / 2);
   overflow: visible;
 }
 
@@ -893,10 +893,34 @@ body.brand-active .main-blurb-availability .status-dot {
   line-height: 1;
 }
 
-/* Side projects block inside Experience: breathing room + gap under title row */
+/* Side projects: single gap from Selected Work above; tight gap to Experience below */
 .work-section--side {
-  margin-top: var(--space-xl);
-  margin-bottom: var(--space-xl);
+  margin-top: 0;
+  margin-bottom: calc(var(--space-xl) / 2);
+}
+
+.work-section:not(.work-section--side) + .work-section--side {
+  margin-top: 0;
+}
+
+.work-section--side + .experience > .section-title {
+  margin-top: 0;
+}
+
+#workCarousel .carousel-viewport {
+  padding-bottom: 32px;
+}
+
+#workCarousel .carousel-slide {
+  padding-bottom: 26px;
+}
+
+#sideProjectsCarousel .carousel-viewport {
+  padding-bottom: 32px;
+}
+
+#sideProjectsCarousel .carousel-slide {
+  padding-bottom: 26px;
 }
 
 .work-section--side .work-section-head {
@@ -2317,7 +2341,7 @@ body.brand-active .carousel-slide .side-project-card .side-project-link {
 html.blurb-reveal-done .experience,
 html.blurb-reveal-done .footer {
   content-visibility: auto;
-  contain-intrinsic-size: auto 800px;
+  contain-intrinsic-size: auto 500px;
 }
 
 .section-title {
@@ -3736,12 +3760,20 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   }
 
   .work-section {
-    margin-bottom: calc(var(--space-xl) / 16);
+    margin-bottom: calc(var(--space-xl) / 32);
   }
 
   .work-section--side {
-    margin-top: calc(var(--space-xl) / 16);
-    margin-bottom: calc(var(--space-xl) / 16);
+    margin-top: 0;
+    margin-bottom: calc(var(--space-xl) / 32);
+  }
+
+  .work-section:not(.work-section--side) + .work-section--side {
+    margin-top: 0;
+  }
+
+  .work-section--side + .experience > .section-title {
+    margin-top: 0;
   }
 
   .section-title {
@@ -4025,9 +4057,14 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     flex: 0 0 100cqi;
     width: 100cqi;
     max-width: 100cqi;
-    padding: 0 0 52px 0;
+    padding: 0 0 26px 0;
     box-sizing: border-box;
     contain: layout style;
+  }
+
+  #workCarousel .carousel-viewport,
+  #sideProjectsCarousel .carousel-viewport {
+    padding-bottom: 8px;
   }
 
   #sideProjectsCarousel .side-project-card .video-frame--cw,
@@ -4864,12 +4901,20 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   }
 
   .work-section {
-    margin-bottom: calc(var(--space-xl) / 16);
+    margin-bottom: calc(var(--space-xl) / 32);
   }
 
   .work-section--side {
-    margin-top: calc(var(--space-xl) / 16);
-    margin-bottom: calc(var(--space-xl) / 16);
+    margin-top: 0;
+    margin-bottom: calc(var(--space-xl) / 32);
+  }
+
+  .work-section:not(.work-section--side) + .work-section--side {
+    margin-top: 0;
+  }
+
+  .work-section--side + .experience > .section-title {
+    margin-top: 0;
   }
 
   .section-title {
