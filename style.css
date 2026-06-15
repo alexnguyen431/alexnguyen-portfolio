@@ -3760,12 +3760,12 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   }
 
   .work-section {
-    margin-bottom: calc(var(--space-xl) / 32);
+    margin-bottom: calc(var(--space-xl) / 2);
   }
 
   .work-section--side {
     margin-top: 0;
-    margin-bottom: calc(var(--space-xl) / 32);
+    margin-bottom: calc(var(--space-xl) / 2);
   }
 
   .work-section:not(.work-section--side) + .work-section--side {
@@ -4064,7 +4064,7 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
 
   #workCarousel .carousel-viewport,
   #sideProjectsCarousel .carousel-viewport {
-    padding-bottom: 8px;
+    padding-bottom: 32px;
   }
 
   #sideProjectsCarousel .side-project-card .video-frame--cw,
@@ -4901,12 +4901,12 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   }
 
   .work-section {
-    margin-bottom: calc(var(--space-xl) / 32);
+    margin-bottom: calc(var(--space-xl) / 2);
   }
 
   .work-section--side {
     margin-top: 0;
-    margin-bottom: calc(var(--space-xl) / 32);
+    margin-bottom: calc(var(--space-xl) / 2);
   }
 
   .work-section:not(.work-section--side) + .work-section--side {
