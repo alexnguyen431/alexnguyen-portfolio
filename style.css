@@ -2364,7 +2364,11 @@ html.blurb-reveal-done .footer {
 }
 
 /* Match title-to-content rhythm with carousel section headers */
-.experience > .section-title,
+.experience > .section-title {
+  line-height: 1;
+  margin-bottom: calc(var(--space-md) / 2);
+}
+
 #education.section-title {
   line-height: 1;
   margin-bottom: var(--space-md);
@@ -2480,13 +2484,14 @@ html.blurb-reveal-done .footer {
 .timeline-logo--revery { background: #5A3A2E; }
 .timeline-logo--block { background: #000000; }
 .timeline-logo--meta {
-  background: #0866FF;
+  background: #ffffff;
   border: 1px solid #d4d4d4;
   box-shadow: none;
 }
 
 html[data-theme="dark"] .timeline-logo--meta {
-  border-color: #555;
+  background: #ffffff;
+  border-color: #d4d4d4;
 }
 .timeline-logo--ogilvy { background: #E41C38; }
 .timeline-logo--drover { background: #252E5D; }
@@ -3760,12 +3765,12 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
   }
 
   .work-section {
-    margin-bottom: calc(var(--space-xl) / 2);
+    margin-bottom: calc(var(--space-xl) / 2 * 0.7);
   }
 
   .work-section--side {
     margin-top: 0;
-    margin-bottom: calc(var(--space-xl) / 2);
+    margin-bottom: calc(var(--space-xl) / 2 * 0.7);
   }
 
   .work-section:not(.work-section--side) + .work-section--side {
@@ -4057,14 +4062,19 @@ html.blurb-reveal-done .fab:not(.fab-hidden) {
     flex: 0 0 100cqi;
     width: 100cqi;
     max-width: 100cqi;
-    padding: 0 0 26px 0;
+    padding: 0 0 calc(26px * 0.7) 0;
     box-sizing: border-box;
     contain: layout style;
   }
 
   #workCarousel .carousel-viewport,
   #sideProjectsCarousel .carousel-viewport {
-    padding-bottom: 32px;
+    padding-bottom: calc(32px * 0.7);
+  }
+
+  #workCarousel .carousel-slide,
+  #sideProjectsCarousel .carousel-slide {
+    padding-bottom: calc(26px * 0.7);
   }
 
   #sideProjectsCarousel .side-project-card .video-frame--cw,
@@ -4901,12 +4911,12 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   }
 
   .work-section {
-    margin-bottom: calc(var(--space-xl) / 2);
+    margin-bottom: calc(var(--space-xl) / 2 * 0.7);
   }
 
   .work-section--side {
     margin-top: 0;
-    margin-bottom: calc(var(--space-xl) / 2);
+    margin-bottom: calc(var(--space-xl) / 2 * 0.7);
   }
 
   .work-section:not(.work-section--side) + .work-section--side {
