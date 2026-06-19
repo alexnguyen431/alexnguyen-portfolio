@@ -3037,6 +3037,11 @@
     var rafId = null;
     var x = 0;
     var y = 0;
+    var targetSelector = '.blurb-name-cursor, .blurb-wave';
+
+    function isTarget(node) {
+      return !!(node && node.closest && node.closest(targetSelector));
+    }
 
     function setPosition(clientX, clientY) {
       x = clientX;
@@ -3063,14 +3068,14 @@
     }
 
     document.addEventListener('mouseover', function(e) {
-      if (!e.target.closest('.blurb-name-cursor')) return;
+      if (!isTarget(e.target)) return;
       show(e.clientX, e.clientY);
     });
 
     document.addEventListener('mouseout', function(e) {
-      if (!e.target.closest('.blurb-name-cursor')) return;
+      if (!isTarget(e.target)) return;
       var related = e.relatedTarget;
-      if (related && related.closest && related.closest('.blurb-name-cursor')) return;
+      if (isTarget(related)) return;
       hide();
     });
 

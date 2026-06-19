@@ -702,7 +702,8 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 }
 
 @media (hover: hover) {
-  .blurb-name-cursor {
+  .blurb-name-cursor,
+  .blurb-wave {
     cursor: none;
   }
 }
