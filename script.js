@@ -3316,7 +3316,8 @@
           type: 'video',
           src: videoSrc,
           label: video.getAttribute('aria-label') || 'Project video',
-          flow: card.classList.contains('card-stack-card--flow')
+          flow: card.classList.contains('card-stack-card--flow'),
+          featured: card.classList.contains('side-project-video-trigger')
         };
       }
 
@@ -3328,7 +3329,21 @@
         type: 'image',
         src: imgSrc,
         label: img.getAttribute('alt') || 'Project image',
-        flow: card.classList.contains('card-stack-card--flow')
+        flow: card.classList.contains('card-stack-card--flow'),
+        featured: false
+      };
+    }
+
+    function getMediaFromVideo(video) {
+      if (!video) return null;
+      var videoSrc = video.getAttribute('src') || video.getAttribute('data-src');
+      if (!videoSrc) return null;
+      return {
+        type: 'video',
+        src: videoSrc,
+        label: video.getAttribute('aria-label') || 'Project video',
+        flow: false,
+        featured: true
       };
     }
 
@@ -3435,17 +3450,14 @@
       return stackEl;
     }
 
-    function openLightbox(stackEl, focusCard) {
-      var sourceStack = resolveSourceStack(stackEl);
-      var cards = sourceStack.querySelectorAll('.card-stack-card');
-      if (!cards.length) return;
-
-      var items = [];
-      cards.forEach(function(card) {
-        var media = getMediaFromCard(card);
-        if (media) items.push(media);
-      });
+    function openLightboxWithItems(items, focusIndex) {
       if (!items.length) return;
+
+      pauseLightboxVideos();
+
+      focusIndex = focusIndex || 0;
+      if (focusIndex < 0) focusIndex = 0;
+      if (focusIndex >= items.length) focusIndex = items.length - 1;
 
       lastFocus = document.activeElement;
       track.innerHTML = '';
@@ -3456,6 +3468,7 @@
 
         if (item.type === 'video') {
           figure.classList.add('asset-lightbox-item--video');
+          if (item.featured) figure.classList.add('asset-lightbox-item--featured');
 
           var video = document.createElement('video');
           video.src = item.src;
@@ -3494,13 +3507,6 @@
         lightbox.classList.add('is-open');
       });
 
-      var focusIndex = 0;
-      if (focusCard) {
-        var clickedCards = stackEl.querySelectorAll('.card-stack-card');
-        var cardIndex = Array.prototype.indexOf.call(clickedCards, focusCard);
-        if (cardIndex >= 0) focusIndex = cardIndex;
-      }
-
       var targetItem = track.children[focusIndex];
       if (targetItem) {
         requestAnimationFrame(function() {
@@ -3521,6 +3527,65 @@
       });
 
       closeBtn.focus();
+    }
+
+    function resolveSourceSideProjectVideoTrigger(trigger) {
+      var slide = trigger.closest('.carousel-slide');
+      if (!slide || !slide.classList.contains('carousel-slide--clone')) return trigger;
+
+      var card = slide.querySelector('.side-project-card');
+      if (!card) return trigger;
+
+      var projectId = card.getAttribute('data-side-project');
+      var title = getCarouselCardTitle(card);
+      var carousel = slide.closest('.carousel');
+      if (!carousel) return trigger;
+
+      var sourceSlides = carousel.querySelectorAll('.carousel-slide:not(.carousel-slide--clone)');
+      var i = sourceSlides.length;
+      while (i--) {
+        var sourceCard = sourceSlides[i].querySelector('.side-project-card');
+        if (!sourceCard) continue;
+        if (projectId && sourceCard.getAttribute('data-side-project') !== projectId) continue;
+        if (!projectId) {
+          var sourceTitle = getCarouselCardTitle(sourceCard);
+          if (sourceTitle !== title) continue;
+        }
+        var sourceTrigger = sourceCard.querySelector('.side-project-video-trigger');
+        if (sourceTrigger) return sourceTrigger;
+      }
+
+      return trigger;
+    }
+
+    function openLightbox(stackEl, focusCard) {
+      var sourceStack = resolveSourceStack(stackEl);
+      var cards = sourceStack.querySelectorAll('.card-stack-card');
+      if (!cards.length) return;
+
+      var items = [];
+      cards.forEach(function(card) {
+        var media = getMediaFromCard(card);
+        if (media) items.push(media);
+      });
+      if (!items.length) return;
+
+      var focusIndex = 0;
+      if (focusCard) {
+        var clickedCards = stackEl.querySelectorAll('.card-stack-card');
+        var cardIndex = Array.prototype.indexOf.call(clickedCards, focusCard);
+        if (cardIndex >= 0) focusIndex = cardIndex;
+      }
+
+      openLightboxWithItems(items, focusIndex);
+    }
+
+    function openSideProjectVideo(trigger) {
+      var sourceTrigger = resolveSourceSideProjectVideoTrigger(trigger);
+      var video = sourceTrigger.querySelector('video');
+      var media = getMediaFromVideo(video);
+      if (!media) return;
+      openLightboxWithItems([media], 0);
     }
 
     function bindInteractiveStack(stackEl) {
@@ -3546,6 +3611,27 @@
     }
 
     document.querySelectorAll('.card-stack--interactive').forEach(bindInteractiveStack);
+
+    function bindSideProjectVideoTrigger(trigger) {
+      if (trigger.dataset.sideProjectVideoBound === 'true') return;
+      trigger.dataset.sideProjectVideoBound = 'true';
+
+      trigger.addEventListener('mousedown', function(e) {
+        e.stopPropagation();
+      });
+
+      function activate(e) {
+        if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        e.stopPropagation();
+        openSideProjectVideo(trigger);
+      }
+
+      trigger.addEventListener('click', activate);
+      trigger.addEventListener('keydown', activate);
+    }
+
+    document.querySelectorAll('.side-project-video-trigger').forEach(bindSideProjectVideoTrigger);
 
     closeBtn.addEventListener('click', function(e) {
       e.preventDefault();
