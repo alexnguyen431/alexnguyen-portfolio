@@ -1653,7 +1653,9 @@ body.brand-active .main-blurb-availability .status-dot {
 }
 
 .carousel-slide .bento-card--square .phone-mockup--desktop-walkthrough.phone-mockup--video video {
-  transform: scale(1.038);
+  object-fit: contain;
+  object-position: top center;
+  transform: none;
 }
 
 .carousel-slide .bento-card--cash .phone-mockup--video video {
