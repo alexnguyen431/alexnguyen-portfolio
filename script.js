@@ -33,6 +33,40 @@
     } catch (err) {}
   }
 
+  function getCarouselCardTitle(card) {
+    if (!card) return '';
+    var title = card.querySelector('.bento-card-title');
+    return title ? title.textContent.trim().replace(/\s+/g, ' ') : '';
+  }
+
+  function getCarouselCardId(card) {
+    if (!card) return 'unknown';
+    if (card.dataset.sideProject) return card.dataset.sideProject;
+
+    var title = getCarouselCardTitle(card);
+    if (!title) return 'unknown';
+
+    return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+
+  function getCarouselSection(card) {
+    var carousel = card && card.closest('.carousel');
+    if (!carousel) return 'unknown';
+    if (carousel.id === 'workCarousel') return 'selected-work';
+    if (carousel.id === 'sideProjectsCarousel') return 'side-projects';
+    return carousel.id || 'unknown';
+  }
+
+  function trackCarouselCardHover(card) {
+    if (!card || card.closest('.carousel-slide--clone')) return;
+
+    trackEvent('carousel-card-hover', {
+      id: getCarouselCardId(card),
+      section: getCarouselSection(card),
+      title: getCarouselCardTitle(card)
+    });
+  }
+
   function getEmailClickLocation(link) {
     if (link.classList.contains('main-blurb-availability')) return 'blurb';
     if (link.classList.contains('call-message-email')) return 'call-overlay';
@@ -656,6 +690,7 @@
         rememberPointer(e.clientX, e.clientY);
         brandIntentCard = null;
         setActiveCard(card, true);
+        trackCarouselCardHover(card);
         if (isWorkCarousel) updateCaseStudyPill(card, e.clientX, e.clientY);
       }, { passive: true });
 
