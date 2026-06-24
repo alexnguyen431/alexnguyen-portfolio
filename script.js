@@ -79,8 +79,21 @@
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a[href^="mailto:"]');
     if (!link) return;
+    if (link.classList.contains('header-email-fab')) {
+      trackEvent('header-email-click', { location: 'header' });
+    }
     trackEvent('email-click', { location: getEmailClickLocation(link) });
   });
+
+  (function initHeaderEmailHoverTracking() {
+    var headerEmail = document.querySelector('.header-email-fab');
+    if (!headerEmail) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    headerEmail.addEventListener('mouseenter', function() {
+      trackEvent('header-email-hover', { location: 'header' });
+    }, { passive: true });
+  })();
 
   /* ----- Main blurb word-by-word reveal (runs early so a later error never blocks transition to full site) ----- */
   const mqMobileIntro = window.matchMedia('(max-width: 768px)');
