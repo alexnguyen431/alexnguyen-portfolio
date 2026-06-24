@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=mobile-polish-v73">
+  <link rel="stylesheet" href="style.css?v=mobile-polish-v81">
   <script>
     (function () {
       try {
@@ -56,6 +56,7 @@
       min-height: calc(100svh - var(--work-peek)) !important;
     }
     html:not(.blurb-reveal-done) .fab,
+    html:not(.blurb-reveal-done) .header-email-fab,
     html:not(.blurb-reveal-done) .scroll-progress {
       opacity: 0 !important;
       visibility: hidden !important;
@@ -116,12 +117,15 @@
   <div class="layout">
 
     <header class="site-header">
-      <div class="site-header-inner">
-        <h1 class="site-header-title">
-          <span class="site-header-name alex-profile-rain">Alex Nguyen</span>
-          <span class="site-header-sep" aria-hidden="true"> - </span>
-          <span class="site-header-role">Product Designer in <span class="vancouver-flag-rain">Vancouver 🇨🇦</span></span>
-        </h1>
+      <div class="site-header-bar">
+        <div class="site-header-inner">
+          <h1 class="site-header-title">
+            <span class="site-header-name alex-profile-rain">Alex Nguyen</span>
+            <span class="site-header-sep" aria-hidden="true"> - </span>
+            <span class="site-header-role">Product Designer in <span class="vancouver-flag-rain">Vancouver 🇨🇦</span></span>
+          </h1>
+        </div>
+        <a href="mailto:alexnguyen431@gmail.com" class="header-email-fab">Email me</a>
       </div>
     </header>
 
@@ -850,6 +854,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=mobile-polish-v73"></script>
+  <script src="script.js?v=mobile-polish-v81"></script>
 </body>
 </html>

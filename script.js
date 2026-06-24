@@ -70,6 +70,7 @@
   function getEmailClickLocation(link) {
     if (link.classList.contains('main-blurb-availability')) return 'blurb';
     if (link.classList.contains('call-message-email')) return 'call-overlay';
+    if (link.classList.contains('header-email-fab')) return 'header';
     if (link.closest('.fab-nav')) return 'fab-nav';
     if (link.closest('.sidebar-nav')) return 'sidebar';
     return 'other';
@@ -554,10 +555,103 @@
   const canHoverFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var latestDocumentPointer = { x: null, y: null };
 
+  function getCarouselCardFromPoint(carouselEl, x, y) {
+    if (!carouselEl || x == null || y == null) return null;
+    var elements = document.elementsFromPoint(x, y);
+    var i = elements.length;
+    while (i--) {
+      var card = elements[i].closest('.carousel-slide .bento-card, .carousel-slide .side-project-card');
+      if (card && carouselEl.contains(card)) return card;
+    }
+    return null;
+  }
+
+  function normalizeWheelDeltas(e, sizeEl) {
+    var el = sizeEl || document.documentElement;
+    var width = el.clientWidth || window.innerWidth;
+    var height = el.clientHeight || window.innerHeight;
+    var deltaX = e.deltaX;
+    var deltaY = e.deltaY;
+    if (e.deltaMode === 1) {
+      deltaX *= 16;
+      deltaY *= 16;
+    } else if (e.deltaMode === 2) {
+      deltaX *= width;
+      deltaY *= height;
+    }
+    if (e.shiftKey && Math.abs(deltaY) > Math.abs(deltaX)) {
+      deltaX = deltaY;
+      deltaY = 0;
+    }
+    return { deltaX: deltaX, deltaY: deltaY };
+  }
+
+  function isHorizontalWheelIntent(deltaX, deltaY) {
+    var absX = Math.abs(deltaX);
+    var absY = Math.abs(deltaY);
+    if (absX < 1) return false;
+    if (absY < 1) return true;
+    if (absX <= absY) return false;
+    // Trackpad vertical scroll often leaks a small horizontal component.
+    if (absY >= 4 && absX < 12) return false;
+    return true;
+  }
+
+  var pointerHoverIntent = (function() {
+    var intentActive = false;
+    var suppressedUntil = 0;
+    var lastX = null;
+    var lastY = null;
+    var SUPPRESS_MS = 520;
+    var MOVE_THRESHOLD = 4;
+
+    function clearCarouselHovers() {
+      document.querySelectorAll('.carousel-viewport').forEach(function(vp) {
+        if (typeof vp._clearCarouselHover === 'function') vp._clearCarouselHover();
+      });
+    }
+
+    function suppress(ms) {
+      intentActive = false;
+      suppressedUntil = performance.now() + (ms || SUPPRESS_MS);
+      root.classList.add('pointer-hover-suppressed');
+      clearCarouselHovers();
+    }
+
+    function allow() {
+      if (!intentActive || performance.now() < suppressedUntil) return false;
+      root.classList.remove('pointer-hover-suppressed');
+      return true;
+    }
+
+    function noteMove(e) {
+      if (lastX !== null && lastY !== null) {
+        var dx = e.clientX - lastX;
+        var dy = e.clientY - lastY;
+        if (Math.abs(dx) + Math.abs(dy) >= MOVE_THRESHOLD) {
+          intentActive = true;
+        }
+      }
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (intentActive && performance.now() >= suppressedUntil) {
+        root.classList.remove('pointer-hover-suppressed');
+      }
+    }
+
+    if (canHoverFinePointer) {
+      window.addEventListener('scroll', function() { suppress(); }, { passive: true });
+      window.addEventListener('wheel', function() { suppress(); }, { passive: true, capture: true });
+    }
+
+    return { allow: allow, suppress: suppress, noteMove: noteMove };
+  })();
+
   if (canHoverFinePointer) {
     document.addEventListener('mousemove', function(e) {
       latestDocumentPointer.x = e.clientX;
       latestDocumentPointer.y = e.clientY;
+      pointerHoverIntent.noteMove(e);
     }, { passive: true });
   }
 
@@ -576,6 +670,7 @@
         brandScrollSuppressedUntil = performance.now() + 280;
         brandIntentCard = null;
         clearBrandNow();
+        pointerHoverIntent.suppress(280);
       }, { passive: true });
     }
 
@@ -625,17 +720,11 @@
     }
 
     function getCardFromPoint(x, y) {
-      var elements = document.elementsFromPoint(x, y);
-      var i = elements.length;
-      while (i--) {
-        var card = elements[i].closest('.carousel-slide .bento-card, .carousel-slide .side-project-card');
-        if (!card || !carouselEl.contains(card)) continue;
-        return card;
-      }
-      return null;
+      return getCarouselCardFromPoint(carouselEl, x, y);
     }
 
     function setActiveCard(card, force) {
+      if (!force && card && !pointerHoverIntent.allow()) return;
       if (!force && card === activeCard) return;
 
       if (activeCard) activeCard.classList.remove('is-card-hovered');
@@ -654,6 +743,10 @@
     }
 
     function syncCarouselHover() {
+      if (!pointerHoverIntent.allow()) {
+        clearHoverOnly();
+        return;
+      }
       var x = latestDocumentPointer.x;
       var y = latestDocumentPointer.y;
       if (x == null || y == null) return;
@@ -688,6 +781,7 @@
 
       card.addEventListener('mouseenter', function(e) {
         rememberPointer(e.clientX, e.clientY);
+        if (!pointerHoverIntent.allow()) return;
         brandIntentCard = null;
         setActiveCard(card, true);
         trackCarouselCardHover(card);
@@ -696,7 +790,9 @@
 
       card.addEventListener('mousemove', function(e) {
         rememberPointer(e.clientX, e.clientY);
+        if (!pointerHoverIntent.allow()) return;
         markBrandIntent(card);
+        setActiveCard(card, true);
         if (activeCard === card) {
           if (isWorkCarousel) {
             applyBrandForCard(card);
@@ -1310,6 +1406,10 @@
       if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
     }
 
+    function setTrackWheeling(active) {
+      trackEl.classList.toggle('is-wheeling', !!active);
+    }
+
     function setTransform(index, animate) {
       var tx = getTransform(index);
       if (animate !== false) {
@@ -1318,7 +1418,7 @@
         tx -= freeScrollOffset;
       }
       if (animate === false) trackEl.style.transition = 'none';
-      if (mqMobileIntro.matches && animate !== false) {
+      if (animate !== false) {
         trackEl.classList.add('is-sliding');
       }
       trackEl.style.transform = 'translate3d(' + tx + 'px, 0, 0)';
@@ -1364,14 +1464,7 @@
       loadCarouselMediaAround(current, 2);
       applyCarouselMediaForCurrent();
       loadVisibleCarouselMedia(vpEl, slideEls);
-      if (mqMobileIntro.matches) {
-        trackEl.classList.remove('is-sliding');
-        if (typeof vpEl._scheduleCarouselHoverSync === 'function') {
-          vpEl._scheduleCarouselHoverSync();
-        }
-        requestAnimationFrame(updateSiteHeaderTone);
-        return;
-      }
+      trackEl.classList.remove('is-sliding');
       if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
       requestAnimationFrame(function() {
         normalizeLoopPosition(false);
@@ -1447,6 +1540,10 @@
       if (animate === undefined) animate = true;
       if (!getMetrics().ready) return;
       if (animate && isAnimating) return;
+
+      if (animate && canHoverFinePointer) {
+        pointerHoverIntent.suppress(TRANSITION_MS + 120);
+      }
 
       freeScrollOffset = 0;
       current = wrapCarouselIndex(i);
@@ -1824,15 +1921,15 @@
       loadCarouselMediaAround(current, 3);
     }
 
-    function normalizeWheelDelta(e) {
-      var deltaX = e.deltaX;
-      if (e.deltaMode === 1) {
-        deltaX *= 16;
-      } else if (e.deltaMode === 2) {
-        deltaX *= vpEl.clientWidth;
+    function resetWheelScrollState() {
+      if (wheelEndTimer) {
+        clearTimeout(wheelEndTimer);
+        wheelEndTimer = null;
       }
-      if (Math.abs(deltaX) < 1) return 0;
-      return deltaX;
+      isWheelScrolling = false;
+      wheelDragOffset = 0;
+      wheelCommittedSteps = 0;
+      setTrackWheeling(false);
     }
 
     function snapCarouselToCurrentInstant() {
@@ -1913,6 +2010,7 @@
       wheelEndTimer = null;
       if (!isWheelScrolling) return;
       isWheelScrolling = false;
+      setTrackWheeling(false);
 
       if (!isCarouselWheelSnap()) {
         wheelDragOffset = 0;
@@ -1965,14 +2063,23 @@
     vpEl.addEventListener('wheel', function(e) {
       if (!getMetrics().ready) return;
 
-      var delta = normalizeWheelDelta(e);
-      if (!delta) return;
+      var deltas = normalizeWheelDeltas(e, vpEl);
+      if (!isHorizontalWheelIntent(deltas.deltaX, deltas.deltaY)) {
+        if (isWheelScrolling) {
+          resetWheelScrollState();
+          setTransform(current, true);
+        }
+        return;
+      }
+
+      var delta = deltas.deltaX;
 
       e.preventDefault();
 
       if (!isWheelScrolling) {
         isWheelScrolling = true;
         wheelCommittedSteps = 0;
+        setTrackWheeling(true);
         stop();
         snapCarouselToCurrentInstant();
       }
@@ -2257,6 +2364,7 @@
       if (!card) return;
 
       card.addEventListener('mouseenter', function() {
+        if (!pointerHoverIntent.allow()) return;
         layoutPhoneScrollCards();
         updateScrollOverflowState(viewport);
         if (!canViewportScrollX(viewport)) return;
@@ -2326,6 +2434,7 @@
       }
 
       function start() {
+        if (!pointerHoverIntent.allow()) return;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         userTookOver = false;
 
@@ -2378,17 +2487,10 @@
       viewport.addEventListener('wheel', function(e) {
         if (!canViewportScrollX(viewport)) return;
 
-        var deltaX = e.deltaX;
-        if (e.deltaMode === 1) deltaX *= 16;
-        else if (e.deltaMode === 2) deltaX *= viewport.clientWidth;
+        var deltas = normalizeWheelDeltas(e, viewport);
+        if (!isHorizontalWheelIntent(deltas.deltaX, deltas.deltaY)) return;
 
-        if (!deltaX && e.shiftKey) {
-          deltaX = e.deltaY;
-          if (e.deltaMode === 1) deltaX *= 16;
-          else if (e.deltaMode === 2) deltaX *= viewport.clientWidth;
-        }
-
-        if (!deltaX) return;
+        var deltaX = deltas.deltaX;
 
         var atLeft = viewport.scrollLeft <= 0;
         var atRight = viewport.scrollLeft >= viewport.scrollWidth - viewport.clientWidth - 1;
