@@ -4810,10 +4810,11 @@ html.blurb-reveal-done .intro-screen {
   color: var(--text-primary);
   border: 1px solid var(--border-primary);
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.1;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.05;
   letter-spacing: -0.02em;
+  text-transform: none;
   text-decoration: none;
   white-space: nowrap;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
@@ -4823,7 +4824,7 @@ html.blurb-reveal-done .intro-screen {
     transform var(--transition-base),
     box-shadow var(--transition-base),
     background 0.4s ease,
-    color 0.4s ease,
+    color 0.35s ease,
     border-color 0.4s ease;
 }
 
@@ -5133,7 +5134,8 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   .header-email-fab {
     position: static;
     flex-shrink: 0;
-    font-size: 0.8125rem;
+    font-size: 14px;
+    line-height: 1.2;
     padding: 9px 14px;
   }
 
