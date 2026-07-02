@@ -1369,12 +1369,19 @@
     slide.querySelectorAll('.card-stack-card img, .phone-mockup img, .video-frame img').forEach(bindCarouselImageReadyState);
   }
 
-  function loadVisibleCarouselMedia(vpEl, slideEls) {
+  function isCarouselSlideVisibleInViewport(vpEl, slide, minRatio) {
+    if (!vpEl || !slide) return false;
     var vpRect = vpEl.getBoundingClientRect();
+    var rect = slide.getBoundingClientRect();
+    if (rect.width <= 0) return false;
+    var visibleWidth = Math.min(rect.right, vpRect.right) - Math.max(rect.left, vpRect.left);
+    var threshold = minRatio == null ? 0.12 : minRatio;
+    return visibleWidth > rect.width * threshold;
+  }
+
+  function loadVisibleCarouselMedia(vpEl, slideEls) {
     slideEls.forEach(function(slide) {
-      var rect = slide.getBoundingClientRect();
-      var visibleWidth = Math.min(rect.right, vpRect.right) - Math.max(rect.left, vpRect.left);
-      if (visibleWidth > rect.width * 0.12) {
+      if (isCarouselSlideVisibleInViewport(vpEl, slide)) {
         loadCarouselSlideMedia(slide);
       }
     });
@@ -1614,21 +1621,13 @@
     }
 
     function applyCarouselMediaForCurrent() {
-      var realIdx = getRealSlideIndex(current);
-      var activeSlide = slideEls[current] || originalSlides[realIdx];
-      var activeIsClone = !!(activeSlide && activeSlide.classList.contains('carousel-slide--clone'));
-
-      originalSlides.forEach(function(slide, slideIdx) {
-        if (!activeIsClone && slideIdx === realIdx) {
+      slideEls.forEach(function(slide) {
+        if (isCarouselSlideVisibleInViewport(vpEl, slide)) {
           ensureCarouselSlideMediaPlaying(slide);
         } else {
           pauseCarouselSlideMedia(slide);
         }
       });
-
-      if (activeIsClone) {
-        ensureCarouselSlideMediaPlaying(activeSlide);
-      }
     }
 
     function ensureCarouselMediaAtIndex() {
@@ -1931,7 +1930,10 @@
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
             play();
-            if (mediaRevealReady) loadVisibleCarouselMedia(vpEl, slideEls);
+            if (mediaRevealReady) {
+              loadVisibleCarouselMedia(vpEl, slideEls);
+              applyCarouselMediaForCurrent();
+            }
           } else {
             stop();
           }
