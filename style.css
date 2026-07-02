@@ -908,20 +908,20 @@ body.brand-active .main-blurb-availability .status-dot {
   margin-top: 0;
 }
 
-#workCarousel .carousel-viewport {
-  padding-bottom: 32px;
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-viewport {
+  padding-bottom: 80px;
 }
 
-#workCarousel .carousel-slide {
-  padding-bottom: 26px;
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide {
+  padding-bottom: 56px;
 }
 
 #sideProjectsCarousel .carousel-viewport {
-  padding-bottom: 32px;
+  padding-bottom: 80px;
 }
 
 #sideProjectsCarousel .carousel-slide {
-  padding-bottom: 26px;
+  padding-bottom: 56px;
 }
 
 .work-section--side .work-section-head {
@@ -1080,7 +1080,7 @@ body.brand-active .main-blurb-availability .status-dot {
     box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-#workCarousel .carousel-slide .bento-card {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card {
   transition:
     transform 1.05s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 1.05s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1092,7 +1092,7 @@ body.brand-active .main-blurb-availability .status-dot {
     z-index: 4;
   }
 
-  #workCarousel .carousel-slide .bento-card.is-card-hovered {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card.is-card-hovered {
     transform: scale3d(1.025, 1.025, 1);
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.16);
     overflow: visible;
@@ -1104,8 +1104,8 @@ body.brand-active .main-blurb-availability .status-dot {
     overflow: visible;
   }
 
-  #workCarousel .bento-card.is-card-hovered .video-frame--cw,
-  #workCarousel .bento-card.is-card-hovered .video-frame--ccw,
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .video-frame--cw,
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .video-frame--ccw,
   #sideProjectsCarousel .side-project-card.is-card-hovered .video-frame--cw,
   #sideProjectsCarousel .side-project-card.is-card-hovered .video-frame--ccw {
     transform: rotate(0deg) translateY(0) translateZ(0);
@@ -1141,7 +1141,7 @@ body.brand-active .main-blurb-availability .status-dot {
   z-index: 2;
 }
 
-#workCarousel .bento-card-header,
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-header,
 #sideProjectsCarousel .bento-card-header {
   display: flex;
   flex-direction: column;
@@ -1154,7 +1154,7 @@ body.brand-active .main-blurb-availability .status-dot {
   z-index: 2;
 }
 
-#workCarousel .bento-card-year-pill,
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-year-pill,
 #sideProjectsCarousel .bento-card-year-pill {
   display: inline-flex;
   align-items: center;
@@ -1171,12 +1171,12 @@ body.brand-active .main-blurb-availability .status-dot {
   white-space: nowrap;
 }
 
-#workCarousel .bento-card-header .bento-card-title,
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-header .bento-card-title,
 #sideProjectsCarousel .bento-card-header .bento-card-title {
   margin-bottom: 0;
 }
 
-#workCarousel .bento-card-title {
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-title {
   font-size: clamp(1.25rem, 9cqi, 2.75rem);
   line-height: 0.95;
   letter-spacing: -0.02em;
@@ -1293,11 +1293,11 @@ body.brand-active .main-blurb-availability .status-dot {
   line-height: 1.1;
 }
 
-#workCarousel .bento-card-stats strong {
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-stats strong {
   letter-spacing: -0.02em;
 }
 
-#workCarousel .case-study-pill {
+:is(#workCarousel, .work-carousel-lightbox-context) .case-study-pill {
   position: absolute;
   left: var(--case-study-pill-x, 50%);
   top: var(--case-study-pill-y, calc(100% - var(--space-sm)));
@@ -1305,18 +1305,16 @@ body.brand-active .main-blurb-availability .status-dot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 18px;
-  border-radius: 100px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+  border-radius: 50%;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.96);
   color: #0a0a0a;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
   opacity: 0;
   transform: translate(-50%, calc(-100% + 8px));
   pointer-events: none;
@@ -1324,13 +1322,19 @@ body.brand-active .main-blurb-availability .status-dot {
   transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
+.case-study-pill svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
 @media (hover: hover) {
-  #workCarousel .bento-card,
-  #workCarousel .bento-card * {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card,
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card * {
     cursor: none;
   }
 
-  #workCarousel .bento-card.is-card-hovered .case-study-pill {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .case-study-pill {
     opacity: 1;
     transform: translate(-50%, -100%);
   }
@@ -1386,63 +1390,63 @@ body.brand-active .main-blurb-availability .status-dot {
   transform: none;
 }
 
-#workCarousel.carousel--work {
+:is(#workCarousel, .work-carousel-lightbox-context).carousel--work {
   --work-media-pad-y-scale: 0.9025;
   --work-scroll-media-pad-extra: 0px;
 }
 
-#workCarousel .carousel-slide .bento-card {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card {
   display: grid;
   grid-template-rows: auto 1fr auto;
   align-content: start;
 }
 
-#workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card:has(.bento-card-visual--phones) {
   --work-phone-stage-height: calc(clamp(252px, 54cqi, 292px) * var(--work-media-pad-y-scale, 1));
 }
 
-#workCarousel .carousel-slide .bento-card--square,
-#workCarousel .carousel-slide .bento-card--cash {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash {
   padding-inline: 0;
   padding-block: clamp(1rem, 5cqi, 2.5rem);
   grid-template-columns: clamp(1rem, 5cqi, 2.5rem) minmax(0, 1fr) clamp(1rem, 5cqi, 2.5rem);
 }
 
-#workCarousel .carousel-slide .bento-card--cash {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash {
   grid-template-rows: auto auto auto;
 }
 
-#workCarousel .carousel-slide .bento-card--square {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square {
   grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
 }
 
-#workCarousel .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-header {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-header {
   min-height: 0;
   margin-bottom: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-body {
   min-height: 0;
   padding-top: 0;
   align-self: end;
 }
 
-#workCarousel .carousel-slide .bento-card--square > .bento-card-header,
-#workCarousel .carousel-slide .bento-card--square > .bento-card-body,
-#workCarousel .carousel-slide .bento-card--cash > .bento-card-header,
-#workCarousel .carousel-slide .bento-card--cash > .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square > .bento-card-header,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square > .bento-card-body,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash > .bento-card-header,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash > .bento-card-body {
   grid-column: 2;
 }
 
-#workCarousel .carousel-slide .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-body {
   margin-top: 0;
 }
 
-#workCarousel .bento-card-header {
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-header {
   min-height: clamp(5rem, 21cqi, 6.75rem);
 }
 
-#workCarousel .carousel-slide .bento-card-visual--phones.bento-card-visual--scroll-x {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--phones.bento-card-visual--scroll-x {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -1453,36 +1457,36 @@ body.brand-active .main-blurb-availability .status-dot {
   align-self: center;
 }
 
-#workCarousel .carousel-slide .bento-card-visual--video,
-#workCarousel .carousel-slide .bento-card-visual--stack {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--video,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--stack {
   padding-top: calc(clamp(0.5rem, 2.75cqi, 2rem) * var(--work-media-pad-y-scale, 1));
   padding-bottom: calc(clamp(0.5rem, 2.75cqi, 2rem) * var(--work-media-pad-y-scale, 1));
 }
 
-#workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card:has(.bento-card-visual--phones) .bento-card-body {
   min-height: clamp(6.85rem, 26.5cqi, 8.85rem);
 }
 
-#workCarousel .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) {
   grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
 }
 
-#workCarousel .carousel-slide .bento-card--ogilvy:has(.bento-card-visual--video) {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy:has(.bento-card-visual--video) {
   --work-video-stage-height: calc(clamp(228px, 50cqi, 336px) * var(--work-media-pad-y-scale, 1));
   grid-template-rows: auto minmax(var(--work-video-stage-height), 1fr) auto;
 }
 
-#workCarousel .carousel-slide .bento-card--ogilvy:has(.bento-card-visual--video) .bento-card-header {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy:has(.bento-card-visual--video) .bento-card-header {
   min-height: 0;
   margin-bottom: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--ogilvy:has(.bento-card-visual--video) .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy:has(.bento-card-visual--video) .bento-card-body {
   min-height: 0;
   padding-top: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--ogilvy .bento-card-visual--video {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy .bento-card-visual--video {
   align-self: center;
   justify-self: stretch;
   width: 100%;
@@ -1492,7 +1496,7 @@ body.brand-active .main-blurb-availability .status-dot {
   padding-bottom: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--ogilvy .video-frame {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy .video-frame {
   width: auto;
   max-width: min(96%, 100%);
   height: auto;
@@ -1500,22 +1504,22 @@ body.brand-active .main-blurb-availability .status-dot {
   aspect-ratio: 16 / 9;
 }
 
-#workCarousel .carousel-slide .bento-card--f1-alexa:has(.bento-card-visual--stack) {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa:has(.bento-card-visual--stack) {
   --work-stack-stage-height: calc(clamp(240px, 50cqi, 372px) * var(--work-media-pad-y-scale, 1));
   grid-template-rows: auto minmax(var(--work-stack-stage-height), 1fr) auto;
 }
 
-#workCarousel .carousel-slide .bento-card--f1-alexa:has(.bento-card-visual--stack) .bento-card-header {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa:has(.bento-card-visual--stack) .bento-card-header {
   min-height: 0;
   margin-bottom: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--f1-alexa:has(.bento-card-visual--stack) .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa:has(.bento-card-visual--stack) .bento-card-body {
   min-height: 0;
   padding-top: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--f1-alexa .bento-card-visual--stack {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa .bento-card-visual--stack {
   align-self: center;
   justify-self: stretch;
   width: 100%;
@@ -1525,21 +1529,21 @@ body.brand-active .main-blurb-availability .status-dot {
   padding-bottom: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--f1-alexa .card-stack--row .card-stack-card {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa .card-stack--row .card-stack-card {
   width: clamp(188px, 48cqi, 352px);
 }
 
-#workCarousel .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) .bento-card-header {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) .bento-card-header {
   min-height: 0;
   margin-bottom: 0;
 }
 
-#workCarousel .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--meta:has(.bento-card-visual--phones:not(.bento-card-visual--scroll-x)) .bento-card-body {
   min-height: 0;
   padding-top: 0;
 }
 
-#workCarousel .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) {
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) {
   transform: none;
   align-self: center;
   justify-self: stretch;
@@ -1551,7 +1555,7 @@ body.brand-active .main-blurb-availability .status-dot {
   padding-bottom: 0;
 }
 
-#workCarousel .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) .phone-mockup {
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) .phone-mockup {
   flex: 1 1 0;
   min-width: 0;
   max-width: min(36%, max(64px, 30cqi));
@@ -1560,8 +1564,8 @@ body.brand-active .main-blurb-availability .status-dot {
   align-self: center;
 }
 
-#workCarousel .carousel-slide .bento-card-visual--video,
-#workCarousel .carousel-slide .bento-card-visual--stack {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--video,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--stack {
   align-self: stretch;
   height: 100%;
   min-height: 0;
@@ -1570,16 +1574,16 @@ body.brand-active .main-blurb-availability .status-dot {
   justify-content: center;
 }
 
-#workCarousel .carousel-slide .bento-card-visual--stack {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--stack {
   min-height: 0;
 }
 
-#workCarousel .carousel-slide .video-frame--cw,
-#workCarousel .carousel-slide .video-frame--ccw {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .video-frame--cw,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .video-frame--ccw {
   transform: rotate(2.5deg);
 }
 
-#workCarousel .carousel-slide .video-frame--ccw {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .video-frame--ccw {
   transform: rotate(-2.5deg);
 }
 
@@ -1590,6 +1594,7 @@ body.brand-active .main-blurb-availability .status-dot {
   align-self: center;
 }
 .bento-card-visual--phones .phone-mockup {
+  position: relative;
   flex: 1;
   max-width: min(28%, 160px);
   aspect-ratio: 475 / 1024;
@@ -1624,6 +1629,7 @@ body.brand-active .main-blurb-availability .status-dot {
   border-radius: 0;
   object-fit: cover;
   transform-origin: center center;
+  background: #111;
 }
 
 /* Meta walkthrough includes a device frame in the source — zoom to screen-only */
@@ -1686,7 +1692,7 @@ body.brand-active .main-blurb-availability .status-dot {
   }
 }
 
-#workCarousel .carousel-slide .bento-card--cash .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x {
   grid-column: 1 / -1;
   margin-left: 0;
   margin-right: 0;
@@ -1705,7 +1711,7 @@ body.brand-active .main-blurb-availability .status-dot {
 }
 
 /* Square: media vertically centered in 1fr row between title and pinned body */
-#workCarousel .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--phones.bento-card-visual--scroll-x {
   grid-column: 1 / -1;
   margin-left: 0;
   margin-right: 0;
@@ -1832,7 +1838,7 @@ body.brand-active .main-blurb-availability .status-dot {
   overflow: visible;
 }
 
-#workCarousel .bento-card--ogilvy .video-frame--cw {
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card--ogilvy .video-frame--cw {
   transform: rotate(2.5deg);
 }
 
@@ -1954,6 +1960,15 @@ body.brand-active .main-blurb-availability .status-dot {
   border-radius: 8px;
 }
 
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-visual:not(:has(.card-stack--interactive)) {
+  cursor: pointer;
+}
+
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-visual:not(:has(.card-stack--interactive)) .phone-mockup,
+:is(#workCarousel, .work-carousel-lightbox-context) .bento-card-visual:not(:has(.card-stack--interactive)) .video-frame {
+  cursor: pointer;
+}
+
 .card-stack--row .card-stack-card {
   position: relative;
   flex: 0 0 auto;
@@ -1968,7 +1983,11 @@ body.brand-active .main-blurb-availability .status-dot {
   transition:
     transform 0.55s cubic-bezier(0.33, 1, 0.38, 1),
     margin-left 0.55s cubic-bezier(0.33, 1, 0.38, 1);
-  will-change: transform, margin-left;
+}
+
+.bento-card--f1-alexa .card-stack-card video {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .card-stack--row .card-stack-card:nth-child(1) {
@@ -1997,31 +2016,92 @@ body.brand-active .main-blurb-availability .status-dot {
   background: #111;
 }
 
+@keyframes media-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+:is(.phone-mockup, .video-frame, .card-stack-card, .asset-lightbox-item).is-media-loading {
+  background-color: #e2e2e2;
+}
+
+:is(.phone-mockup, .video-frame, .card-stack-card, .asset-lightbox-item).is-media-loading::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #e2e2e2 0%,
+    #ececec 38%,
+    #d4d4d4 50%,
+    #ececec 62%,
+    #e2e2e2 100%
+  );
+  background-size: 220% 100%;
+  animation: media-shimmer 1.2s ease-in-out infinite;
+}
+
+.asset-lightbox-item--flow.is-media-loading {
+  min-width: min(48vw, 360px);
+  min-height: min(36vh, 260px);
+  background-color: #e8e8e8;
+}
+
+.card-stack-card.is-media-loading {
+  background-color: #e0e0e0;
+}
+
+:is(.phone-mockup, .video-frame, .card-stack-card, .asset-lightbox-item).is-media-loading :is(video, img:not(.video-frame-poster):not(.phone-mockup-poster)) {
+  opacity: 0;
+}
+
+:is(.phone-mockup, .video-frame, .card-stack-card, .asset-lightbox-item).is-media-ready :is(video, img:not(.video-frame-poster):not(.phone-mockup-poster)) {
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.bento-card-visual--phones .phone-mockup.is-media-loading {
+  background-color: #e2e2e2;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.carousel-slide .video-frame.is-media-loading {
+  background-color: #2a2a2a;
+}
+
 .card-stack--row .card-stack-card--flow img {
   object-fit: contain;
   background: #fff;
 }
 
 @media (hover: hover) {
-  #workCarousel .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(1),
-  #workCarousel .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(1) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .card-stack--row .card-stack-card,
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card {
+    will-change: transform, margin-left;
+  }
+
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(1),
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(1) {
     transform: rotate(5deg) scale(1.1);
   }
 
-  #workCarousel .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(2),
-  #workCarousel .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(2) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(2),
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(2) {
     transform: rotate(-5deg) scale(1.1);
   }
 
-  #workCarousel .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(3),
-  #workCarousel .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(3) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(3),
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(3) {
     transform: rotate(5deg) scale(1.1);
   }
 
-  #workCarousel .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(2),
-  #workCarousel .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(2),
-  #workCarousel .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(3),
-  #workCarousel .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(3) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(2),
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(2),
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card.is-card-hovered .card-stack--row .card-stack-card:nth-child(3),
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide.is-slide-hovered .card-stack--row .card-stack-card:nth-child(3) {
     margin-left: -10%;
   }
 }
@@ -2031,11 +2111,11 @@ body.brand-active .main-blurb-availability .status-dot {
     min-height: clamp(108px, 42cqi, 236px);
   }
 
-  #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card:has(.bento-card-visual--phones) {
     --work-phone-stage-height: calc(clamp(228px, 50cqi, 268px) * var(--work-media-pad-y-scale, 1));
   }
 
-  #workCarousel .bento-card-header {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card-header {
     min-height: clamp(4.5rem, 19cqi, 6rem);
   }
 }
@@ -2062,11 +2142,11 @@ body.brand-active .main-blurb-availability .status-dot {
     transform: rotate(-2.5deg) translateY(8px) translateZ(0);
   }
 
-  #workCarousel .bento-card--ogilvy .video-frame--cw {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card--ogilvy .video-frame--cw {
     transform: rotate(2.5deg) translateZ(0);
   }
 
-  #workCarousel .bento-card--ogilvy .video-frame--ccw {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card--ogilvy .video-frame--ccw {
     transform: rotate(-2.5deg) translateZ(0);
   }
 }
@@ -3303,6 +3383,7 @@ html:not(.blurb-reveal-done) .section-rail {
 }
 
 .fab-nav__track {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
@@ -3320,6 +3401,20 @@ html:not(.blurb-reveal-done) .section-rail {
     background 0.4s ease,
     border-color 0.4s ease,
     box-shadow 0.4s ease;
+}
+
+.fab-nav__indicator {
+  position: absolute;
+  top: 0.3rem;
+  left: 0;
+  height: calc(100% - 0.6rem);
+  border-radius: 999px;
+  background: var(--fab-nav-active-bg);
+  z-index: 0;
+  pointer-events: none;
+  transition:
+    transform 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.42s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fab-nav__track::-webkit-scrollbar {
@@ -4208,14 +4303,14 @@ html.blurb-reveal-done .header-email-fab {
     contain: layout style;
   }
 
-  #workCarousel .carousel-viewport,
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-viewport,
   #sideProjectsCarousel .carousel-viewport {
-    padding-bottom: calc(32px * 0.7);
+    padding-bottom: 56px;
   }
 
-  #workCarousel .carousel-slide,
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide,
   #sideProjectsCarousel .carousel-slide {
-    padding-bottom: calc(26px * 0.7);
+    padding-bottom: 40px;
   }
 
   #sideProjectsCarousel .side-project-card .video-frame--cw,
@@ -4227,7 +4322,7 @@ html.blurb-reveal-done .header-email-fab {
     transform: rotate(-2.5deg) translateZ(0);
   }
 
-  #workCarousel .bento-card-title,
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card-title,
   #sideProjectsCarousel .side-project-card .bento-card-title {
     font-size: clamp(1.4rem, 10cqi, 2.75rem);
   }
@@ -4249,49 +4344,49 @@ html.blurb-reveal-done .header-email-fab {
   }
 
   /* Flex column keeps body pinned without stretching media to fill 1fr grid rows */
-  #workCarousel .carousel-slide .bento-card:not(.bento-card--square):not(.bento-card--cash) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card:not(.bento-card--square):not(.bento-card--cash) {
     display: flex;
     flex-direction: column;
   }
 
-  #workCarousel .carousel-slide .bento-card--cash {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash {
     grid-template-rows: auto auto auto;
     align-content: start;
   }
 
-  #workCarousel .carousel-slide .bento-card--square {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square {
     grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
     align-content: stretch;
   }
 
-  #workCarousel .carousel-slide .bento-card--square > .bento-card-body,
-  #workCarousel .carousel-slide .bento-card--cash > .bento-card-body {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square > .bento-card-body,
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash > .bento-card-body {
     align-self: end;
   }
 
-  #workCarousel .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--scroll-x {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--scroll-x {
     align-self: center;
     justify-self: stretch;
   }
 
-  #workCarousel .carousel-slide .bento-card-header {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-header {
     flex: 0 0 auto;
     align-self: start;
     min-height: 0;
   }
 
-  #workCarousel .carousel-slide .bento-card-body {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-body {
     flex: 0 0 auto;
     align-self: stretch;
     margin-top: auto;
     min-height: 0;
   }
 
-  #workCarousel .carousel-slide .bento-card:has(.bento-card-visual--phones) .bento-card-body {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card:has(.bento-card-visual--phones) .bento-card-body {
     min-height: 0;
   }
 
-  #workCarousel .carousel-slide .bento-card-visual {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual {
     flex: 1 1 auto;
     min-height: 0;
     height: auto !important;
@@ -4308,7 +4403,7 @@ html.blurb-reveal-done .header-email-fab {
     flex: 0 0 auto;
   }
 
-  #workCarousel .carousel-slide .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) {
     flex: 1 1 auto;
     min-height: 0;
     height: auto !important;
@@ -4316,8 +4411,8 @@ html.blurb-reveal-done .header-email-fab {
     justify-content: center;
   }
 
-  #workCarousel .carousel-slide .bento-card-visual--video,
-  #workCarousel .carousel-slide .bento-card-visual--stack {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--video,
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--stack {
     flex: 1 1 auto;
     min-height: 0;
     height: auto !important;
@@ -4326,7 +4421,7 @@ html.blurb-reveal-done .header-email-fab {
     padding-bottom: clamp(0.35rem, 1.75cqi, 1rem);
   }
 
-  #workCarousel .carousel-slide .bento-card-visual--phones:not(.bento-card-visual--scroll-x) .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--phones:not(.bento-card-visual--scroll-x) .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
     flex: 1 1 0;
     min-width: 0;
     max-width: min(31%, 104px);
@@ -4337,7 +4432,7 @@ html.blurb-reveal-done .header-email-fab {
     min-height: 0 !important;
   }
 
-  #workCarousel .carousel-slide .bento-card--f1-alexa .bento-card-visual--stack {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa .bento-card-visual--stack {
     flex: 1 1 auto;
     min-height: 0 !important;
     height: auto !important;
@@ -4346,11 +4441,11 @@ html.blurb-reveal-done .header-email-fab {
     justify-content: center;
   }
 
-  #workCarousel .carousel-slide .bento-card--f1-alexa .card-stack--row .card-stack-card {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--f1-alexa .card-stack--row .card-stack-card {
     width: clamp(148px, 46cqi, 268px);
   }
 
-  #workCarousel .carousel-slide .video-frame {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .video-frame {
     width: min(88%, 100%);
     max-height: min(52vw, 232px);
     height: auto;
@@ -4358,7 +4453,7 @@ html.blurb-reveal-done .header-email-fab {
   }
 
   /* Ogilvy video: same flex-center pattern as Meta — body pinned, media in the gap */
-  #workCarousel .carousel-slide .bento-card--ogilvy .bento-card-visual--video {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy .bento-card-visual--video {
     flex: 1 1 auto;
     min-height: 0;
     height: auto !important;
@@ -4369,7 +4464,7 @@ html.blurb-reveal-done .header-email-fab {
     overflow: visible;
   }
 
-  #workCarousel .carousel-slide .bento-card--ogilvy .video-frame {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy .video-frame {
     width: auto;
     max-width: min(94%, 100%);
     height: auto;
@@ -4379,11 +4474,11 @@ html.blurb-reveal-done .header-email-fab {
     transform-origin: center center;
   }
 
-  #workCarousel .carousel-slide .bento-card--ogilvy .video-frame--cw {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy .video-frame--cw {
     transform: rotate(2.5deg);
   }
 
-  #workCarousel .carousel-slide .bento-card--ogilvy .video-frame--ccw {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--ogilvy .video-frame--ccw {
     transform: rotate(-2.5deg);
   }
 
@@ -5262,11 +5357,18 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 .asset-lightbox-scroller {
   flex: 1;
   min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  padding: clamp(72px, 10vh, 96px) 0 clamp(32px, 6vh, 64px);
+  padding: clamp(72px, 10vh, 96px) clamp(24px, 5vw, 72px) clamp(32px, 6vh, 64px);
+}
+
+.asset-lightbox-scroller.is-content-overflowing {
+  justify-content: flex-start;
 }
 
 .asset-lightbox-track {
@@ -5274,12 +5376,20 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   align-items: center;
   gap: clamp(12px, 2vw, 20px);
   width: max-content;
-  min-height: min(72vh, 720px);
+  min-height: 0;
   margin: 0 auto;
-  padding: 0 clamp(24px, 5vw, 72px);
+  padding: 0;
+  box-sizing: border-box;
+  opacity: 1;
+  transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.asset-lightbox-track.is-fading-out {
+  opacity: 0;
 }
 
 .asset-lightbox-item {
+  position: relative;
   flex: 0 0 auto;
   margin: 0;
   border-radius: clamp(16px, 2vw, 24px);
@@ -5288,11 +5398,11 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-.asset-lightbox-item:not(.asset-lightbox-item--video):not(.asset-lightbox-item--flow) {
+.asset-lightbox-item:not(.asset-lightbox-item--video):not(.asset-lightbox-item--flow):not(.asset-lightbox-item--card-scale) {
   height: min(72vh, 720px);
 }
 
-.asset-lightbox-item:not(.asset-lightbox-item--video) img {
+.asset-lightbox-item:not(.asset-lightbox-item--video):not(.asset-lightbox-item--card-scale) img {
   display: block;
   height: 100%;
   width: auto;
@@ -5306,6 +5416,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
   height: auto;
   overflow: visible;
   background: #111;
@@ -5319,6 +5430,8 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   max-width: min(42vw, 420px);
   object-fit: contain;
   background: #111;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .asset-lightbox-item--video.asset-lightbox-item--featured video {
@@ -5366,6 +5479,15 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   flex-shrink: 0;
 }
 
+.asset-lightbox-unmute--icon-only {
+  gap: 0;
+  padding: 10px;
+}
+
+.asset-lightbox-unmute--icon-only span {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .asset-lightbox-scroller {
     padding-top: clamp(64px, 9vh, 80px);
@@ -5387,12 +5509,328 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   }
 }
 
+.asset-lightbox-scroller:has(.asset-lightbox-item--card-scale) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(72px, 10vh, 96px) clamp(24px, 5vw, 72px) clamp(24px, 4vh, 40px);
+}
+
+.asset-lightbox.has-case-study-note .asset-lightbox-scroller:has(.asset-lightbox-item--card-scale) {
+  padding-bottom: clamp(16px, 2vh, 24px);
+}
+
+.asset-lightbox-scroller.is-content-overflowing:has(.asset-lightbox-item--card-scale),
+.asset-lightbox-scroller.is-content-overflowing:not(:has(.asset-lightbox-item--card-scale)) {
+  justify-content: flex-start;
+}
+
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-track:has(.asset-lightbox-item--card-scale),
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-track {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-item--card-scale {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-item--card-scale .bento-card-visual--phones,
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-item--card-scale .phones-scroll-track,
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-item--card-scale .square-phone-row,
+.asset-lightbox-scroller.is-content-overflowing .asset-lightbox-item--card-scale .cash-phone-row {
+  justify-content: flex-start !important;
+}
+
+.asset-lightbox-track:has(.asset-lightbox-item--card-scale) {
+  min-height: 0;
+  width: auto;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.asset-lightbox-case-study-note {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0;
+  padding: clamp(28px, 4vh, 40px) clamp(24px, 5vw, 72px) clamp(20px, 3vh, 28px);
+  text-align: center;
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+  white-space: nowrap;
+}
+
+.asset-lightbox-case-study-note[hidden] {
+  display: none !important;
+}
+
+.asset-lightbox.has-work-switcher .asset-lightbox-case-study-note {
+  padding-bottom: clamp(88px, 13vh, 112px);
+}
+
+.asset-lightbox.has-work-switcher .asset-lightbox-scroller {
+  padding-bottom: clamp(24px, 4vh, 40px);
+}
+
+.asset-lightbox.has-work-switcher .asset-lightbox-scroller:has(.asset-lightbox-item--card-scale) {
+  padding-bottom: clamp(16px, 2vh, 24px);
+}
+
+.asset-lightbox-item--card-scale {
+  --lb-phone-height: min(56vh, 500px);
+  --lb-phone-width: calc(var(--lb-phone-height) * 475 / 1024);
+  --lb-square-desktop-width: calc(var(--lb-phone-height) * 2562 / 2032);
+  --lb-cash-cart-desktop-width: calc(var(--lb-phone-height) * 2898 / 1874);
+  --lb-cash-checkout-desktop-width: calc(var(--lb-phone-height) * 2898 / 1896);
+  --lb-phone-gap: clamp(14px, 1.4vw, 22px);
+  flex: 0 0 auto;
+  margin: 0 auto;
+  display: block !important;
+  width: auto !important;
+  min-width: min-content !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.asset-lightbox-item--card-scale .work-carousel-lightbox-context,
+.asset-lightbox-item--card-scale .carousel-slide {
+  display: contents !important;
+}
+
+.asset-lightbox-item--card-scale .work-carousel-lightbox-context {
+  pointer-events: none;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone {
+  transform: none !important;
+  box-shadow: none;
+  pointer-events: auto;
+  overflow: visible !important;
+  background: transparent !important;
+  display: block !important;
+  width: auto !important;
+  min-width: min-content !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  container-type: normal !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone--visual-only {
+  display: block !important;
+  padding: 0;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone.bento-card--meta,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone.bento-card--square,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone.bento-card--cash,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone.bento-card--ogilvy,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone.bento-card--f1-alexa {
+  background: transparent !important;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual--phones {
+  min-height: var(--lb-phone-height) !important;
+  height: auto !important;
+  max-height: none !important;
+  flex: none !important;
+  aspect-ratio: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--lb-phone-gap) !important;
+  padding: 0 !important;
+  width: max-content !important;
+  max-width: none !important;
+  margin: 0;
+  container-type: normal !important;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual--phones,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual--stack,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual--video {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone .bento-card-visual--scroll-x {
+  overflow: visible !important;
+  width: max-content !important;
+  max-width: none !important;
+  justify-content: center !important;
+}
+
+.asset-lightbox-item--card-scale .phones-scroll-track {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--lb-phone-gap) !important;
+  width: max-content !important;
+  min-width: auto !important;
+  height: auto !important;
+  min-height: var(--lb-phone-height) !important;
+  padding: 0 !important;
+}
+
+.asset-lightbox-item--card-scale .square-phone-row,
+.asset-lightbox-item--card-scale .cash-phone-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--lb-phone-gap) !important;
+  width: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.asset-lightbox-item--card-scale .phones-scroll-track {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.asset-lightbox-item--card-scale .bento-card--cash .phones-scroll-track {
+  padding-left: clamp(40px, 6vw, 80px) !important;
+}
+
+.asset-lightbox-item--card-scale .bento-card--cash .phone-mockup:not(.phone-mockup--desktop-walkthrough),
+.asset-lightbox-item--card-scale .bento-card--cash .phone-mockup--desktop-walkthrough {
+  border-radius: clamp(28px, 2.6vw, 38px) !important;
+}
+
+.asset-lightbox-item--card-scale .bento-card-visual--phones .phone-mockup,
+.asset-lightbox-item--card-scale :is(.work-carousel-lightbox-context) .bento-card-visual--phones .phone-mockup {
+  flex: 0 0 auto !important;
+  aspect-ratio: auto !important;
+  max-width: none !important;
+}
+
+.asset-lightbox-item--card-scale .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
+  flex: 0 0 auto !important;
+  width: var(--lb-phone-width) !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: var(--lb-phone-height) !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  align-self: center !important;
+  border-radius: clamp(18px, 1.6vw, 24px) !important;
+  border-width: 2px !important;
+}
+
+.asset-lightbox-item--card-scale .phone-mockup--desktop-walkthrough {
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  height: var(--lb-phone-height) !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  align-self: center !important;
+  border: 2px solid rgba(0, 0, 0, 0.14) !important;
+  border-radius: clamp(18px, 1.6vw, 24px) !important;
+  background: #fff;
+  box-shadow: none;
+  filter: none !important;
+  overflow: hidden;
+}
+
+.asset-lightbox-item--card-scale .bento-card--square .phone-mockup--desktop-walkthrough {
+  width: var(--lb-square-desktop-width) !important;
+}
+
+.asset-lightbox-item--card-scale .bento-card--cash .phones-scroll-track > .phone-mockup--desktop-walkthrough:nth-child(2) {
+  width: var(--lb-cash-cart-desktop-width) !important;
+}
+
+.asset-lightbox-item--card-scale .bento-card--cash .phones-scroll-track > .phone-mockup--desktop-walkthrough:nth-child(3) {
+  width: var(--lb-cash-checkout-desktop-width) !important;
+}
+
+.asset-lightbox-item--card-scale .phone-mockup img,
+.asset-lightbox-item--card-scale .phone-mockup video,
+.asset-lightbox-item--card-scale .phone-mockup .phone-mockup-poster {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+.asset-lightbox-item--card-scale .bento-card--meta .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
+  border-radius: clamp(26px, 2.4vw, 36px) !important;
+}
+
+.asset-lightbox-item--card-scale .bento-card--meta .phone-mockup--video video {
+  object-fit: cover !important;
+  object-position: calc(50% - 0.5px) center !important;
+  transform: scale(1.052) !important;
+  transform-origin: center center;
+}
+
+.asset-lightbox-item--card-scale .bento-card--square .phone-mockup--video:not(.phone-mockup--desktop-walkthrough) video {
+  object-fit: cover !important;
+  transform: scale(1.01) !important;
+  transform-origin: center center;
+}
+
+.asset-lightbox-item--card-scale .phone-mockup--desktop-walkthrough.phone-mockup--video video {
+  object-fit: contain !important;
+  object-position: center center !important;
+  transform: none !important;
+  background: #fff;
+}
+
+.asset-lightbox-item--card-scale .bento-card--cash .phone-mockup--desktop-walkthrough.phone-mockup--video video {
+  object-fit: cover !important;
+  object-position: center center !important;
+  transform: scale(1.025) !important;
+  transform-origin: center center;
+  background: #fff;
+}
+
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone > .bento-card-header,
+.asset-lightbox-item--card-scale .asset-lightbox-card-clone > .bento-card-body {
+  display: none !important;
+}
+
+.asset-lightbox-item--card-scale .phone-mockup--video .asset-lightbox-unmute,
+.asset-lightbox-item--card-scale .video-frame .asset-lightbox-unmute {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 4;
+  pointer-events: auto;
+}
+
 .asset-lightbox-item--flow {
   height: auto;
   align-self: center;
   overflow: visible;
   background: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.asset-lightbox-item--flow.is-media-ready {
+  background: #fff;
 }
 
 .asset-lightbox-item--flow img {
@@ -5407,6 +5845,104 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 @media (prefers-reduced-motion: reduce) {
   .asset-lightbox {
     transition: none;
+  }
+
+  .asset-lightbox-track {
+    transition: none;
+  }
+
+  .fab-nav__indicator {
+    transition: none;
+  }
+
+  .asset-lightbox-work-switcher__indicator {
+    transition: none;
+  }
+
+  .case-study-pill {
+    transition: none !important;
+  }
+
+  :is(.phone-mockup, .video-frame, .card-stack-card, .asset-lightbox-item).is-media-loading::before {
+    animation: none;
+  }
+
+  :is(.phone-mockup, .video-frame, .card-stack-card, .asset-lightbox-item).is-media-ready :is(video, img:not(.video-frame-poster):not(.phone-mockup-poster)) {
+    transition: none;
+  }
+}
+
+.asset-lightbox-work-switcher {
+  position: fixed;
+  bottom: max(var(--space-md), env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  max-width: calc(100vw - 2 * var(--space-md));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.asset-lightbox.is-open .asset-lightbox-work-switcher:not([hidden]) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.asset-lightbox-work-switcher[hidden] {
+  display: none !important;
+}
+
+.asset-lightbox-work-switcher__track {
+  position: relative;
+}
+
+.asset-lightbox-work-switcher__indicator {
+  position: absolute;
+  top: 0.3rem;
+  left: 0;
+  height: calc(100% - 0.6rem);
+  border-radius: 999px;
+  background: var(--fab-nav-active-bg);
+  z-index: 0;
+  pointer-events: none;
+  transition:
+    transform 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.asset-lightbox-work-switcher__btn {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  margin: 0;
+  padding: 0.55rem 0.95rem;
+  background: transparent;
+  cursor: pointer;
+  color: var(--fab-nav-link);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: color 0.35s ease, background 0.35s ease;
+}
+
+.asset-lightbox-work-switcher__btn:hover {
+  color: var(--fab-nav-link-hover);
+}
+
+.asset-lightbox-work-switcher__btn.is-active {
+  background: var(--fab-nav-active-bg);
+  color: var(--fab-nav-active-text);
+}
+
+@media (max-width: 768px) {
+  .asset-lightbox-work-switcher__btn {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 
