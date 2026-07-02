@@ -67,6 +67,24 @@
     });
   }
 
+  function trackLightboxView(card, details) {
+    if (!card) return;
+
+    var payload = {
+      section: getCarouselSection(card),
+      id: getCarouselCardId(card),
+      title: getCarouselCardTitle(card)
+    };
+
+    if (details) {
+      Object.keys(details).forEach(function(key) {
+        payload[key] = details[key];
+      });
+    }
+
+    trackEvent('lightbox-view', payload);
+  }
+
   function getEmailClickLocation(link) {
     if (link.classList.contains('main-blurb-availability')) return 'blurb';
     if (link.classList.contains('call-message-email')) return 'call-overlay';
@@ -4112,23 +4130,37 @@
 
     function openLightboxWithGroupedVisual(sourceVisual, sourceCard, focusNode) {
       if (!sourceVisual || !sourceCard) return;
-      if (!getMediaContainersInVisual(sourceCard).length) return;
+      var containers = getMediaContainersInVisual(sourceCard);
+      if (!containers.length) return;
 
       var wasOpen = isLightboxCurrentlyOpen();
+      var itemCount = containers.length;
 
       function applyGroupedVisual() {
         mountGroupedVisualLightbox(sourceVisual, sourceCard, focusNode);
         updateWorkLightboxSwitcher(sourceCard);
       }
 
+      function trackGroupedView(action) {
+        trackLightboxView(sourceCard, {
+          action: action,
+          layout: 'card-scale',
+          itemCount: itemCount
+        });
+      }
+
       if (wasOpen) {
-        animateLightboxContentSwap(applyGroupedVisual);
+        animateLightboxContentSwap(function() {
+          applyGroupedVisual();
+          trackGroupedView('switch');
+        });
         return;
       }
 
       pauseLightboxVideos();
       lastFocus = document.activeElement;
       applyGroupedVisual();
+      trackGroupedView('open');
       revealGroupedLightbox(null, track.querySelector('figure'));
     }
 
@@ -4460,7 +4492,7 @@
       }
     }
 
-    function openLightboxWithItems(items, focusIndex, workCard) {
+    function openLightboxWithItems(items, focusIndex, sourceCard) {
       if (!items.length) return;
 
       focusIndex = focusIndex || 0;
@@ -4468,25 +4500,42 @@
       if (focusIndex >= items.length) focusIndex = items.length - 1;
 
       var wasOpen = isLightboxCurrentlyOpen();
+      var focusedItem = items[focusIndex] || items[0];
+
+      function trackGalleryView(action) {
+        if (!sourceCard) return;
+        trackLightboxView(sourceCard, {
+          action: action,
+          layout: 'gallery',
+          itemIndex: focusIndex,
+          itemCount: items.length,
+          mediaType: focusedItem ? focusedItem.type : 'unknown',
+          mediaLabel: focusedItem ? focusedItem.label : ''
+        });
+      }
 
       function applyItems() {
-        mountLightboxItems(items, focusIndex, workCard);
+        mountLightboxItems(items, focusIndex, sourceCard);
 
-        if (workCard && workCard.closest('#workCarousel')) {
-          updateWorkLightboxSwitcher(workCard);
+        if (sourceCard && sourceCard.closest('#workCarousel')) {
+          updateWorkLightboxSwitcher(sourceCard);
         } else {
           hideWorkLightboxSwitcher();
         }
       }
 
       if (wasOpen) {
-        animateLightboxContentSwap(applyItems);
+        animateLightboxContentSwap(function() {
+          applyItems();
+          trackGalleryView('switch');
+        });
         return;
       }
 
       pauseLightboxVideos();
       lastFocus = document.activeElement;
       applyItems();
+      trackGalleryView('open');
 
       lightbox.hidden = false;
       lightbox.setAttribute('aria-hidden', 'false');
@@ -4557,7 +4606,8 @@
       var video = sourceTrigger.querySelector('video');
       var media = getMediaFromVideo(video);
       if (!media) return;
-      openLightboxWithItems([media], 0);
+      var card = sourceTrigger.closest('.side-project-card');
+      openLightboxWithItems([media], 0, card);
     }
 
     function bindInteractiveStack(stackEl) {
