@@ -3240,39 +3240,25 @@ html:not(.blurb-reveal-done) .section-rail {
   z-index: 100;
   display: inline-flex;
   align-items: center;
-  gap: 0;
-  padding: 10px 20px;
-  border-radius: 100px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border-primary);
-  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.1;
-  text-transform: none;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-  transition:
-    opacity var(--transition-base),
-    transform var(--transition-base),
-    box-shadow var(--transition-base),
-    background 0.4s ease,
-    color 0.4s ease,
-    border-color 0.4s ease;
   max-width: calc(100vw - 2 * var(--space-md));
   box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base);
 }
 
 .fab:hover {
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.2);
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateX(-50%);
 }
 
 .fab:focus-within {
   outline: none;
-  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--text-tertiary);
 }
 
 .fab.fab-hidden {
@@ -3281,21 +3267,96 @@ html:not(.blurb-reveal-done) .section-rail {
   transform: translateX(-50%) translateY(8px);
 }
 
+.fab-nav {
+  --fab-nav-surface: color-mix(in srgb, var(--bg-card) 76%, transparent);
+  --fab-nav-border: color-mix(in srgb, var(--border-primary) 88%, transparent);
+  --fab-nav-link: var(--text-secondary);
+  --fab-nav-link-hover: var(--text-primary);
+  --fab-nav-active-bg: #fff;
+  --fab-nav-active-text: #111;
+}
+
+.fab-nav--on-dark {
+  --fab-nav-surface: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  --fab-nav-border: rgba(255, 255, 255, 0.16);
+  --fab-nav-link: rgba(255, 255, 255, 0.82);
+  --fab-nav-link-hover: #fff;
+  --fab-nav-active-bg: #fff;
+  --fab-nav-active-text: #111;
+}
+
+.fab-nav--on-light {
+  --fab-nav-surface: rgba(255, 255, 255, 0.46);
+  --fab-nav-border: rgba(0, 0, 0, 0.07);
+  --fab-nav-link: rgba(0, 0, 0, 0.62);
+  --fab-nav-link-hover: rgba(0, 0, 0, 0.88);
+  --fab-nav-active-bg: rgba(235, 235, 235, 0.96);
+  --fab-nav-active-text: #111;
+}
+
+.fab-nav--on-light .fab-nav__track {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+}
+
+.fab-nav__track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  max-width: 100%;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: var(--fab-nav-surface);
+  border: 1px solid var(--fab-nav-border);
+  backdrop-filter: blur(32px) saturate(1.35);
+  -webkit-backdrop-filter: blur(32px) saturate(1.35);
+  overflow-x: auto;
+  scrollbar-width: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  transition:
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.fab-nav__track::-webkit-scrollbar {
+  display: none;
+}
+
 .fab-nav__link {
-  color: var(--text-secondary);
-  font-weight: 600;
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  color: var(--fab-nav-link);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 0.4s ease, font-weight var(--transition-base);
+  transition: color 0.35s ease, background 0.35s ease;
+}
+
+.fab-nav__label {
+  position: relative;
+  z-index: 1;
 }
 
 .fab-nav__link:hover {
-  color: var(--text-primary);
+  color: var(--fab-nav-link-hover);
 }
 
 .fab-nav__link.is-active {
+  background: var(--fab-nav-active-bg);
+  color: var(--fab-nav-active-text);
   font-weight: 700;
-  color: var(--text-primary);
 }
 
 .fab-nav__link--external {
@@ -3317,19 +3378,10 @@ html:not(.blurb-reveal-done) .section-rail {
   margin-left: 6px;
 }
 
-.fab-nav__sep {
-  margin: 0 0.4em;
-  color: var(--text-tertiary);
-  font-weight: 400;
-  transition: color 0.4s ease;
-  flex-shrink: 0;
-  user-select: none;
-  pointer-events: none;
-}
-
 .fab-nav__external {
   display: inline-flex;
   align-items: center;
+  gap: 0.2rem;
 }
 
 @media (max-width: 768px) {
@@ -3337,13 +3389,14 @@ html:not(.blurb-reveal-done) .section-rail {
     display: none;
   }
 
-  .fab.fab-nav {
-    font-size: 0.8125rem;
-    padding: 9px 14px;
+  .fab-nav__track {
+    backdrop-filter: blur(12px) saturate(1.15);
+    -webkit-backdrop-filter: blur(12px) saturate(1.15);
   }
 
-  .fab-nav__sep {
-    margin: 0 0.32em;
+  .fab-nav__link {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 

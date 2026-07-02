@@ -1485,6 +1485,7 @@
         loadVisibleCarouselMedia(vpEl, slideEls);
         if (typeof vpEl._scheduleCarouselHoverSync === 'function') vpEl._scheduleCarouselHoverSync();
         updateSiteHeaderTone();
+        updateFabTone();
       });
     }
 
@@ -2651,6 +2652,19 @@
     scrollProgressBar.style.width = (progress * 100) + '%';
   }
 
+  function updateFabTone() {
+    if (!fabNav || fabNav.classList.contains('fab-hidden')) return;
+
+    var rect = fabNav.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+
+    var sampleX = rect.left + rect.width * 0.5;
+    var sampleY = rect.top + rect.height * 0.5;
+    var onDark = sampleNeedsLightTextAt(sampleX, sampleY, [fabNav]);
+    fabNav.classList.toggle('fab-nav--on-dark', onDark);
+    fabNav.classList.toggle('fab-nav--on-light', !onDark);
+  }
+
   function updateFabNav() {
     if (!fabNav) return;
     var showNav = hasReachedWorkSection();
@@ -2678,6 +2692,8 @@
         link.removeAttribute('aria-current');
       }
     });
+
+    updateFabTone();
   }
 
   var siteHeader = document.querySelector('.site-header');
@@ -2816,13 +2832,20 @@
   function scheduleSiteHeaderToneRefresh() {
     if (typeof updateSiteHeaderTone !== 'function') return;
     if (headerToneRefreshTimer) clearTimeout(headerToneRefreshTimer);
-    requestAnimationFrame(updateSiteHeaderTone);
+    requestAnimationFrame(function() {
+      updateSiteHeaderTone();
+      updateFabTone();
+    });
     [120, 280, 480].forEach(function(delay) {
-      window.setTimeout(updateSiteHeaderTone, delay);
+      window.setTimeout(function() {
+        updateSiteHeaderTone();
+        updateFabTone();
+      }, delay);
     });
     headerToneRefreshTimer = window.setTimeout(function() {
       headerToneRefreshTimer = null;
       updateSiteHeaderTone();
+      updateFabTone();
     }, 520);
   }
 
