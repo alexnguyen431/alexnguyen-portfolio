@@ -2843,8 +2843,10 @@
     }
 
     indicator.hidden = false;
-    indicator.style.width = activeEl.offsetWidth + 'px';
-    indicator.style.transform = 'translate3d(' + activeEl.offsetLeft + 'px, 0, 0)';
+    var trackRect = track.getBoundingClientRect();
+    var activeRect = activeEl.getBoundingClientRect();
+    indicator.style.width = activeRect.width + 'px';
+    indicator.style.transform = 'translate3d(' + (activeRect.left - trackRect.left) + 'px, 0, 0)';
   }
 
   function scrollFabTrackToActive(track, activeEl) {
@@ -2871,6 +2873,12 @@
       if (fabNavIndicator) fabNavIndicator.hidden = true;
       return;
     }
+    if (fabNav.classList.contains('fab-suspended-by-call')) {
+      fabNavIndicator.hidden = true;
+      return;
+    }
+    var activeEl = fabNavTrack.querySelector('.fab-nav__link.is-active');
+    if (activeEl) scrollFabTrackToActive(fabNavTrack, activeEl);
     syncFabNavIndicator(fabNavTrack, fabNavIndicator);
   }
 
@@ -2884,6 +2892,7 @@
 
   function updateFabNav() {
     if (!fabNav) return;
+    var suspendedByCall = fabNav.classList.contains('fab-suspended-by-call');
     var showNav = hasReachedWorkSection();
     if (!showNav) {
       fabNav.classList.add('fab-hidden');
@@ -2896,8 +2905,10 @@
       return;
     }
 
-    fabNav.classList.remove('fab-hidden');
-    fabNav.setAttribute('aria-hidden', 'false');
+    if (!suspendedByCall) {
+      fabNav.classList.remove('fab-hidden');
+      fabNav.setAttribute('aria-hidden', 'false');
+    }
 
     var activeIndex = getCurrentSectionIndex();
     fabNav.querySelectorAll('.fab-nav__link[data-section]').forEach(function(link) {
@@ -2910,6 +2921,11 @@
         link.removeAttribute('aria-current');
       }
     });
+
+    if (suspendedByCall) {
+      if (fabNavIndicator) fabNavIndicator.hidden = true;
+      return;
+    }
 
     updateFabTone();
     requestAnimationFrame(syncMainFabIndicator);
@@ -3249,6 +3265,11 @@
       callScreenMessage.style.display = 'none';
     }
     callOverlay.hidden = false;
+    if (fabNav) {
+      fabNav.classList.add('fab-suspended-by-call', 'fab-hidden');
+      fabNav.setAttribute('aria-hidden', 'true');
+      if (fabNavIndicator) fabNavIndicator.hidden = true;
+    }
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
         callOverlay.classList.add('call-visible');
@@ -3279,6 +3300,8 @@
         callScreenMessage.hidden = true;
         callScreenMessage.style.display = 'none';
       }
+      if (fabNav) fabNav.classList.remove('fab-suspended-by-call');
+      updateFabNav();
     }, 700);
     try { console.log('[call-overlay] hide'); } catch (e) {}
   }
