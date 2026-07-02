@@ -27,8 +27,15 @@
   function trackEvent(name, data) {
     try {
       var tracker = window.umami;
-      if (tracker && typeof tracker.track === 'function') {
-        tracker.track(name, data);
+      if (!tracker) return;
+
+      if (typeof tracker.track === 'function') {
+        tracker.track(name, data || undefined);
+        return;
+      }
+
+      if (typeof tracker === 'function') {
+        tracker(name, data || undefined);
       }
     } catch (err) {}
   }
