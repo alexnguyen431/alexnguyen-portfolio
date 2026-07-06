@@ -1638,10 +1638,19 @@ body.brand-active .main-blurb-availability .status-dot {
   transform: scale(1.05);
 }
 
+.carousel-slide .bento-card--meta .phone-mockup--screen-inset video {
+  object-position: calc(50% - 0.5px) center;
+  transform: scale(1.048);
+}
+
 @media (min-width: 1024px) {
   .carousel-slide .bento-card--meta .phone-mockup--video video {
     object-position: calc(50% - 0.5px) center;
     transform: scale(1.052);
+  }
+
+  .carousel-slide .bento-card--meta .phone-mockup--screen-inset video {
+    transform: scale(1.05);
   }
 }
 
@@ -1649,6 +1658,10 @@ body.brand-active .main-blurb-availability .status-dot {
   .carousel-slide .bento-card--meta .phone-mockup--video video {
     object-position: calc(50% - 0.5px) center;
     transform: scale(1.062);
+  }
+
+  .carousel-slide .bento-card--meta .phone-mockup--screen-inset video {
+    transform: scale(1.058);
   }
 }
 
@@ -5793,6 +5806,13 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   transform-origin: center center;
 }
 
+.asset-lightbox-item--card-scale .bento-card--meta .phone-mockup--screen-inset video {
+  object-fit: cover !important;
+  object-position: calc(50% - 0.5px) center !important;
+  transform: scale(1.05) !important;
+  transform-origin: center center;
+}
+
 .asset-lightbox-item--card-scale .bento-card--square .phone-mockup--video:not(.phone-mockup--desktop-walkthrough) video {
   object-fit: cover !important;
   transform: scale(1.01) !important;
@@ -5863,6 +5883,10 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   }
 
   .asset-lightbox-work-switcher__indicator {
+    transition: none;
+  }
+
+  .asset-lightbox-project-nav__pill {
     transition: none;
   }
 
@@ -5948,6 +5972,130 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 
 @media (max-width: 768px) {
   .asset-lightbox-work-switcher__btn {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+.asset-lightbox-project-nav {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.asset-lightbox-project-nav[hidden] {
+  display: none !important;
+}
+
+.asset-lightbox-project-nav__zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: min(22vw, 280px);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.asset-lightbox-project-nav__zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.asset-lightbox-project-nav__zone--prev::before {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.07) 0%, rgba(0, 0, 0, 0.025) 42%, transparent 100%);
+  box-shadow: inset 18px 0 36px -14px rgba(0, 0, 0, 0.14);
+}
+
+.asset-lightbox-project-nav__zone--next::before {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.07) 0%, rgba(0, 0, 0, 0.025) 42%, transparent 100%);
+  box-shadow: inset -18px 0 36px -14px rgba(0, 0, 0, 0.14);
+}
+
+.asset-lightbox-project-nav__zone.is-zone-hovered::before {
+  opacity: 1;
+}
+
+.asset-lightbox-project-nav__zone--prev {
+  left: 0;
+}
+
+.asset-lightbox-project-nav__zone--next {
+  right: 0;
+}
+
+.asset-lightbox-project-nav__zone[hidden],
+.asset-lightbox-project-nav__zone:disabled {
+  display: none;
+}
+
+.asset-lightbox-project-nav__pill {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #0a0a0a;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.12s ease;
+  will-change: left, top, opacity;
+}
+
+.asset-lightbox-project-nav__pill-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.asset-lightbox-project-nav__pill-arrow svg {
+  display: block;
+}
+
+.asset-lightbox-project-nav__pill.is-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .asset-lightbox.has-work-switcher.is-open .asset-lightbox-project-nav__zone:not([hidden]):not(:disabled) {
+    cursor: none;
+  }
+
+  .asset-lightbox-project-nav__pill {
+    transition: opacity 0.12s ease;
+  }
+}
+
+@media (max-width: 768px) {
+  .asset-lightbox-project-nav__zone {
+    width: min(28vw, 120px);
+  }
+
+  .asset-lightbox-project-nav__pill {
     font-size: 0.8125rem;
     padding: 0.5rem 0.75rem;
   }

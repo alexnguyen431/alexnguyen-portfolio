@@ -3711,6 +3711,10 @@
     var workSwitcherTrack = document.getElementById('assetLightboxWorkSwitcherTrack');
     var workSwitcherIndicator = document.getElementById('assetLightboxWorkSwitcherIndicator');
     var caseStudyNote = document.getElementById('assetLightboxCaseStudyNote');
+    var projectNav = document.getElementById('assetLightboxProjectNav');
+    var projectNavPrev = document.getElementById('assetLightboxProjectNavPrev');
+    var projectNavNext = document.getElementById('assetLightboxProjectNavNext');
+    var projectNavPill = document.getElementById('assetLightboxProjectNavPill');
     if (!lightbox || !track || !scroller || !closeBtn) return;
 
     var lastFocus = null;
@@ -3722,6 +3726,11 @@
     var pendingLightboxPlayback = [];
     var activeLightboxItemIndex = 0;
     var lightboxReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var projectNavPillRafId = null;
+    var projectNavPillX = 0;
+    var projectNavPillY = 0;
+    var projectNavPillActiveZone = null;
+    var projectNavSupportsHover = window.matchMedia('(hover: hover)').matches;
 
     var workLightboxSwitchLabels = {
       'meta-commerce-shops-cart': 'Shops: Cart',
@@ -3757,6 +3766,7 @@
       lightbox.classList.remove('has-work-switcher');
       if (workSwitcherIndicator) workSwitcherIndicator.hidden = true;
       hideCaseStudyLightboxNote();
+      syncProjectNavZones();
     }
 
     function hideCaseStudyLightboxNote() {
@@ -3808,6 +3818,133 @@
       });
 
       showCaseStudyLightboxNote(activeCard);
+      syncProjectNavZones();
+    }
+
+    function getWorkLightboxProjectState() {
+      if (!workCarouselCards.length || !workSwitcher || workSwitcher.hidden) return null;
+
+      var activeBtn = workSwitcherTrack.querySelector('.asset-lightbox-work-switcher__btn.is-active');
+      if (!activeBtn) return null;
+
+      var activeId = activeBtn.dataset.workCardId;
+      var currentIndex = -1;
+
+      workCarouselCards.forEach(function(card, index) {
+        if (getCarouselCardId(card) === activeId) currentIndex = index;
+      });
+
+      if (currentIndex < 0) return null;
+
+      return {
+        currentIndex: currentIndex,
+        total: workCarouselCards.length
+      };
+    }
+
+    function hideProjectNavPill() {
+      projectNavPillActiveZone = null;
+      if (!projectNavPill) return;
+      projectNavPill.classList.remove('is-visible');
+      projectNavPill.hidden = true;
+      projectNavPill.innerHTML = '';
+      if (projectNavPrev) projectNavPrev.classList.remove('is-zone-hovered');
+      if (projectNavNext) projectNavNext.classList.remove('is-zone-hovered');
+    }
+
+    var projectNavArrowPrev = '<span class="asset-lightbox-project-nav__pill-arrow" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+    var projectNavArrowNext = '<span class="asset-lightbox-project-nav__pill-arrow" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+
+    function setProjectNavPillPosition(clientX, clientY) {
+      if (!projectNavPill) return;
+      projectNavPillX = clientX;
+      projectNavPillY = clientY;
+      if (projectNavPillRafId) return;
+      projectNavPillRafId = requestAnimationFrame(function() {
+        projectNavPill.style.left = projectNavPillX + 'px';
+        projectNavPill.style.top = projectNavPillY + 'px';
+        projectNavPillRafId = null;
+      });
+    }
+
+    function showProjectNavPill(zone, label, direction, clientX, clientY) {
+      if (!projectNavPill || !projectNavSupportsHover || isLightboxContentSwitching) return;
+      projectNavPillActiveZone = zone;
+      if (direction < 0) {
+        projectNavPill.innerHTML = projectNavArrowPrev + '<span class="asset-lightbox-project-nav__pill-label">' + label + '</span>';
+      } else {
+        projectNavPill.innerHTML = '<span class="asset-lightbox-project-nav__pill-label">' + label + '</span>' + projectNavArrowNext;
+      }
+      projectNavPill.hidden = false;
+      projectNavPill.classList.add('is-visible');
+      zone.classList.add('is-zone-hovered');
+      setProjectNavPillPosition(clientX, clientY);
+    }
+
+    function syncProjectNavZones() {
+      if (!projectNav || !projectNavPrev || !projectNavNext) return;
+
+      var state = getWorkLightboxProjectState();
+
+      if (!state || lightbox.hidden) {
+        projectNav.hidden = true;
+        projectNav.setAttribute('aria-hidden', 'true');
+        projectNavPrev.hidden = true;
+        projectNavNext.hidden = true;
+        hideProjectNavPill();
+        return;
+      }
+
+      var hasPrev = state.currentIndex > 0;
+      var hasNext = state.currentIndex < state.total - 1;
+
+      projectNav.hidden = !(hasPrev || hasNext);
+      projectNav.setAttribute('aria-hidden', projectNav.hidden ? 'true' : 'false');
+      projectNavPrev.hidden = !hasPrev;
+      projectNavPrev.disabled = !hasPrev;
+      projectNavNext.hidden = !hasNext;
+      projectNavNext.disabled = !hasNext;
+
+      if (!hasPrev && projectNavPillActiveZone === projectNavPrev) hideProjectNavPill();
+      if (!hasNext && projectNavPillActiveZone === projectNavNext) hideProjectNavPill();
+    }
+
+    function bindProjectNavZone(zone, label, direction) {
+      if (!zone) return;
+
+      zone.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (zone.disabled || zone.hidden || isLightboxContentSwitching) return;
+        var navDirection = parseInt(zone.dataset.direction, 10);
+        if (!navDirection) return;
+        if (navigateWorkLightboxProject(navDirection)) {
+          hideProjectNavPill();
+        }
+      });
+
+      if (!projectNavSupportsHover) return;
+
+      zone.addEventListener('pointerenter', function(e) {
+        if (zone.disabled || zone.hidden || isLightboxContentSwitching) return;
+        showProjectNavPill(zone, label, direction, e.clientX, e.clientY);
+      });
+
+      zone.addEventListener('pointermove', function(e) {
+        if (projectNavPillActiveZone !== zone || zone.disabled || zone.hidden || isLightboxContentSwitching) return;
+        setProjectNavPillPosition(e.clientX, e.clientY);
+      });
+
+      zone.addEventListener('pointerleave', function() {
+        zone.classList.remove('is-zone-hovered');
+        if (projectNavPillActiveZone === zone) hideProjectNavPill();
+      });
+    }
+
+    function initProjectNavZones() {
+      if (!projectNav) return;
+      bindProjectNavZone(projectNavPrev, 'Previous project', -1);
+      bindProjectNavZone(projectNavNext, 'Next project', 1);
     }
 
     function syncLightboxContentAlignment() {
@@ -3836,6 +3973,7 @@
       isLightboxContentSwitching = true;
       deferLightboxPlayback = true;
       pendingLightboxPlayback = [];
+      hideProjectNavPill();
       track.classList.add('is-fading-out');
 
       clearTimeout(lightboxContentSwitchTimer);
@@ -3849,6 +3987,7 @@
             isLightboxContentSwitching = false;
             flushLightboxPlayback();
             syncLightboxContentAlignment();
+            syncProjectNavZones();
           });
         });
       }, 240);
@@ -4105,6 +4244,7 @@
       body.style.overflow = 'hidden';
       requestAnimationFrame(function() {
         lightbox.classList.add('is-open');
+        syncProjectNavZones();
       });
 
       if (figure) {
@@ -4386,6 +4526,7 @@
       pendingLightboxPlayback = [];
       track.classList.remove('is-fading-out');
       hideWorkLightboxSwitcher();
+      syncProjectNavZones();
       scroller.classList.remove('is-content-overflowing');
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
@@ -4549,6 +4690,7 @@
       body.style.overflow = 'hidden';
       requestAnimationFrame(function() {
         lightbox.classList.add('is-open');
+        syncProjectNavZones();
       });
 
       closeBtn.focus();
@@ -4733,5 +4875,6 @@
     });
 
     initWorkLightboxSwitcher();
+    initProjectNavZones();
   })();
 })();

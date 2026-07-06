@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=work-media-lightbox-v42">
+  <link rel="stylesheet" href="style.css?v=work-media-lightbox-v46">
   <script>
     (function () {
       try {
@@ -207,7 +207,7 @@
                     <video data-src="assets/meta-add-to-cart-walkthrough.mov" data-src-mobile="assets/mobile/meta-add-to-cart-walkthrough.mp4" data-poster="assets/meta-1.png?v=2" poster="assets/meta-1.png?v=2" muted loop playsinline autoplay preload="metadata" aria-label="Meta Shops - Add to cart walkthrough"></video>
                   </div>
                   <div class="phone-mockup"><img src="assets/meta-2.png?v=4" alt="Meta Shops - Cart" /></div>
-                  <div class="phone-mockup phone-mockup--video">
+                  <div class="phone-mockup phone-mockup--video phone-mockup--screen-inset">
                     <video data-src="assets/meta-cart-signals-walkthrough.mov" data-src-mobile="assets/mobile/meta-cart-signals-walkthrough.mp4" data-poster="assets/meta-3.png?v=2" poster="assets/meta-3.png?v=2" muted loop playsinline autoplay preload="metadata" aria-label="Meta Shops - Cart signals walkthrough"></video>
                   </div>
                 </div>
@@ -848,9 +848,14 @@
           <span class="fab-nav__indicator asset-lightbox-work-switcher__indicator" id="assetLightboxWorkSwitcherIndicator" hidden aria-hidden="true"></span>
         </div>
       </nav>
+      <div class="asset-lightbox-project-nav" id="assetLightboxProjectNav" hidden aria-hidden="true">
+        <button type="button" class="asset-lightbox-project-nav__zone asset-lightbox-project-nav__zone--prev" id="assetLightboxProjectNavPrev" data-direction="-1" hidden aria-label="Previous project"></button>
+        <button type="button" class="asset-lightbox-project-nav__zone asset-lightbox-project-nav__zone--next" id="assetLightboxProjectNavNext" data-direction="1" hidden aria-label="Next project"></button>
+        <span class="asset-lightbox-project-nav__pill" id="assetLightboxProjectNavPill" hidden aria-hidden="true"></span>
+      </div>
     </div>
   </div>
 
-  <script src="script.js?v=work-media-lightbox-v42"></script>
+  <script src="script.js?v=work-media-lightbox-v44"></script>
 </body>
 </html>
