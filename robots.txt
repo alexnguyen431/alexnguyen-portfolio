@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+User-agent: Googlebot-Image
+Disallow: /assets/
+Allow: /og-image.png
+Allow: /apple-touch-icon.png
+Allow: /android-chrome-512x512.png
