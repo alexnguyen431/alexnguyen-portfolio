@@ -1355,6 +1355,11 @@ body.brand-active .main-blurb-availability .status-dot {
   box-shadow: none;
   filter: none;
 }
+
+.carousel-slide .bento-card--cash .cash-phone-row .phone-mockup img {
+  transform: scale(1.006);
+  transform-origin: center center;
+}
 .carousel-slide .bento-card--cash .bento-card-title { color: #fff; }
 .carousel-slide .bento-card--cash .bento-card-sub,
 .carousel-slide .bento-card--cash .bento-card-desc { color: rgba(255, 255, 255, 0.9); }
@@ -1562,6 +1567,23 @@ body.brand-active .main-blurb-availability .status-dot {
   width: auto;
   height: auto;
   align-self: center;
+}
+
+@media (min-width: 769px) {
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) {
+    --meta-phone-media-scale: 0.94;
+    gap: calc(clamp(4px, 1.75cqi, 10px) * var(--meta-phone-media-scale));
+  }
+
+  :is(#workCarousel, .work-carousel-lightbox-context) .bento-card--meta .bento-card-visual--phones:not(.bento-card-visual--scroll-x) .phone-mockup {
+    max-width: min(
+      calc(36% * var(--meta-phone-media-scale)),
+      max(
+        calc(64px * var(--meta-phone-media-scale)),
+        calc(30cqi * var(--meta-phone-media-scale))
+      )
+    );
+  }
 }
 
 :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card-visual--video,
@@ -1816,6 +1838,11 @@ body.brand-active .main-blurb-availability .status-dot {
 
 .carousel-slide .bento-card--square .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
   filter: none;
+}
+
+.carousel-slide .bento-card--square .phone-mockup--desktop-walkthrough {
+  filter: none;
+  box-shadow: none;
 }
 .carousel-slide .bento-card--meta .bento-card-title { color: #fff; }
 .carousel-slide .bento-card--meta .bento-card-sub,
@@ -5606,6 +5633,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 .asset-lightbox-item--card-scale {
   --lb-phone-height: min(56vh, 500px);
   --lb-phone-width: calc(var(--lb-phone-height) * 475 / 1024);
+  --lb-phone-radius: clamp(13.5px, calc(var(--lb-phone-width) * 0.133), 26.5px);
   --lb-square-desktop-width: calc(var(--lb-phone-height) * 2562 / 2032);
   --lb-cash-cart-desktop-width: calc(var(--lb-phone-height) * 2898 / 1874);
   --lb-cash-checkout-desktop-width: calc(var(--lb-phone-height) * 2898 / 1896);
@@ -5734,11 +5762,6 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   padding-left: clamp(40px, 6vw, 80px) !important;
 }
 
-.asset-lightbox-item--card-scale .bento-card--cash .phone-mockup:not(.phone-mockup--desktop-walkthrough),
-.asset-lightbox-item--card-scale .bento-card--cash .phone-mockup--desktop-walkthrough {
-  border-radius: clamp(28px, 2.6vw, 38px) !important;
-}
-
 .asset-lightbox-item--card-scale .bento-card-visual--phones .phone-mockup,
 .asset-lightbox-item--card-scale :is(.work-carousel-lightbox-context) .bento-card-visual--phones .phone-mockup {
   flex: 0 0 auto !important;
@@ -5755,7 +5778,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   max-height: none !important;
   aspect-ratio: auto !important;
   align-self: center !important;
-  border-radius: clamp(18px, 1.6vw, 24px) !important;
+  border-radius: var(--lb-phone-radius) !important;
   border-width: 2px !important;
 }
 
@@ -5768,7 +5791,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   aspect-ratio: auto !important;
   align-self: center !important;
   border: 2px solid rgba(0, 0, 0, 0.14) !important;
-  border-radius: clamp(18px, 1.6vw, 24px) !important;
+  border-radius: var(--lb-phone-radius) !important;
   background: #fff;
   box-shadow: none;
   filter: none !important;
@@ -5795,8 +5818,20 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   object-fit: cover;
 }
 
-.asset-lightbox-item--card-scale .bento-card--meta .phone-mockup:not(.phone-mockup--desktop-walkthrough) {
-  border-radius: clamp(26px, 2.4vw, 36px) !important;
+@media (min-width: 769px) {
+  .asset-lightbox-item--card-scale:has(.bento-card--square),
+  .asset-lightbox-item--card-scale:has(.bento-card--cash) {
+    --lb-phone-height: min(53.872vh, 481px);
+  }
+
+  .asset-lightbox-item--card-scale:has(.bento-card--meta) {
+    --lb-phone-height: min(52.64vh, 470px);
+  }
+}
+
+.asset-lightbox-item--card-scale:has([data-work-card-id="meta-commerce-shops-cart"]) .phone-mockup {
+  --lb-phone-radius: clamp(28px, calc(var(--lb-phone-width) * 0.155), 38px);
+  border-radius: var(--lb-phone-radius) !important;
 }
 
 .asset-lightbox-item--card-scale .bento-card--meta .phone-mockup--video video {
@@ -5826,12 +5861,22 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   background: #fff;
 }
 
+.asset-lightbox-item--card-scale .bento-card--cash .cash-phone-row .phone-mockup img {
+  transform: scale(1.006) !important;
+  transform-origin: center center;
+}
+
 .asset-lightbox-item--card-scale .bento-card--cash .phone-mockup--desktop-walkthrough.phone-mockup--video video {
   object-fit: cover !important;
   object-position: center center !important;
   transform: scale(1.025) !important;
   transform-origin: center center;
   background: #fff;
+}
+
+.asset-lightbox-item--card-scale .bento-card--square .phone-mockup--desktop-walkthrough {
+  filter: none !important;
+  box-shadow: none !important;
 }
 
 .asset-lightbox-item--card-scale .asset-lightbox-card-clone > .bento-card-header,

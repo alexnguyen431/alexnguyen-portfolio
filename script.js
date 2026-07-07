@@ -2317,6 +2317,7 @@
     var CASH_CART_DESKTOP_ASPECT = 2898 / 1874;
     var CASH_CHECKOUT_DESKTOP_ASPECT = 2898 / 1896;
     var PHONE_MOCKUP_ASPECT = 1024 / 475;
+    var SCROLL_CARD_MEDIA_SCALE = 0.962;
 
     function getDesktopAspect(desktop) {
       if (desktop.closest('.bento-card--cash')) {
@@ -2370,6 +2371,12 @@
       return width >= 8 ? width : 0;
     }
 
+    function getScrollCardMediaScale(row) {
+      if (!row || !row.closest('.bento-card--square, .bento-card--cash')) return 1;
+      if (window.matchMedia('(max-width: 768px)').matches) return 1;
+      return SCROLL_CARD_MEDIA_SCALE;
+    }
+
     function measureStandardPhoneWidth(row, viewport) {
       var phones = row.querySelectorAll('.phone-mockup');
       if (!phones.length) return 0;
@@ -2395,6 +2402,8 @@
       }
 
       if (phoneW < 8) return 0;
+
+      phoneW = Math.round(phoneW * getScrollCardMediaScale(row));
 
       phones.forEach(function(phone) {
         phone.style.flex = '0 0 auto';
@@ -4178,6 +4187,7 @@
       card.className = sourceCard.className + ' asset-lightbox-card-clone asset-lightbox-card-clone--visual-only';
       card.classList.remove('fade-in', 'is-card-hovered');
       card.removeAttribute('style');
+      card.dataset.workCardId = getCarouselCardId(sourceCard);
 
       var visualClone = sourceVisual.cloneNode(true);
       var stack = visualClone.querySelector('.card-stack--interactive');

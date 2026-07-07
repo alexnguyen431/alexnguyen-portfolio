@@ -7,7 +7,7 @@
     { src: 'assets/meta-2.png', type: 'image', aspect: 3 / 4, alt: 'Meta Shops — cart' },
     { src: 'assets/meta-cart-signals-walkthrough.mov', type: 'video', poster: 'assets/meta-3.png', aspect: 3 / 4, alt: 'Meta Shops — cart signals walkthrough' },
     { src: 'assets/meta-3.png', type: 'image', aspect: 3 / 4, alt: 'Meta Shops — checkout' },
-    { src: 'assets/meta-shop-1.png', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — outfit carousel' },
+    { src: 'assets/meta-shop-1.png?v=4', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — outfit carousel' },
     { src: 'assets/meta-shop-2.png', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — product tags' },
     { src: 'assets/meta-shop-3.png?v=5', type: 'image', aspect: 3 / 4, alt: 'Complete the Look — outdoorvoices shop' },
     { src: 'assets/square-1.png', type: 'image', aspect: 3 / 4, alt: 'Square Online — cart' },
