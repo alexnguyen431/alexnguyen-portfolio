@@ -3743,7 +3743,7 @@
 
     var workLightboxSwitchLabels = {
       'meta-commerce-shops-cart': 'Shops: Cart',
-      'square-online-buyer-experience': 'Square: Checkout',
+      'square-online-checkout': 'Square: Checkout',
       'cash-app-online-ordering-profiles': 'Cash App: Ordering profiles',
       'ogilvy-experience-design': 'Ogilvy XD',
       'meta-commerce-complete-the-look': 'Shops: Complete the look',
