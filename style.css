@@ -1415,22 +1415,17 @@ body.brand-active .main-blurb-availability .status-dot {
   padding-inline: 0;
   padding-block: clamp(1rem, 5cqi, 2.5rem);
   grid-template-columns: clamp(1rem, 5cqi, 2.5rem) minmax(0, 1fr) clamp(1rem, 5cqi, 2.5rem);
-}
-
-:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash {
-  grid-template-rows: auto auto auto;
-}
-
-:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square {
   grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
 }
 
-:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-header {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-header,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash:has(.bento-card-visual--scroll-x) .bento-card-header {
   min-height: 0;
   margin-bottom: 0;
 }
 
-:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-body {
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square:has(.bento-card-visual--scroll-x) .bento-card-body,
+:is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash:has(.bento-card-visual--scroll-x) .bento-card-body {
   min-height: 0;
   padding-top: 0;
   align-self: end;
@@ -4396,12 +4391,8 @@ html.blurb-reveal-done .header-email-fab {
     flex-direction: column;
   }
 
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square,
   :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash {
-    grid-template-rows: auto auto auto;
-    align-content: start;
-  }
-
-  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square {
     grid-template-rows: auto minmax(var(--work-phone-stage-height), 1fr) auto;
     align-content: stretch;
   }
@@ -4411,7 +4402,8 @@ html.blurb-reveal-done .header-email-fab {
     align-self: end;
   }
 
-  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--scroll-x {
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--square .bento-card-visual.bento-card-visual--scroll-x,
+  :is(#workCarousel, .work-carousel-lightbox-context) .carousel-slide .bento-card--cash .bento-card-visual.bento-card-visual--scroll-x {
     align-self: center;
     justify-self: stretch;
   }
