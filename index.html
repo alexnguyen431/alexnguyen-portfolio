@@ -13,7 +13,17 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="ea9a6261-e89d-4eda-878a-5b702aa92a39"></script>
+  <script>
+    (function() {
+      var host = location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') return;
+      var s = document.createElement('script');
+      s.defer = true;
+      s.src = 'https://cloud.umami.is/script.js';
+      s.setAttribute('data-website-id', 'ea9a6261-e89d-4eda-878a-5b702aa92a39');
+      document.head.appendChild(s);
+    })();
+  </script>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -57,7 +67,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=work-media-lightbox-v64">
+  <link rel="stylesheet" href="style.css?v=work-media-lightbox-v72">
   <script>
     (function () {
       try {
@@ -873,11 +883,13 @@
       <div class="asset-lightbox-project-nav" id="assetLightboxProjectNav" hidden aria-hidden="true">
         <button type="button" class="asset-lightbox-project-nav__zone asset-lightbox-project-nav__zone--prev" id="assetLightboxProjectNavPrev" data-direction="-1" hidden aria-label="Previous project"></button>
         <button type="button" class="asset-lightbox-project-nav__zone asset-lightbox-project-nav__zone--next" id="assetLightboxProjectNavNext" data-direction="1" hidden aria-label="Next project"></button>
-        <span class="asset-lightbox-project-nav__pill" id="assetLightboxProjectNavPill" hidden aria-hidden="true"></span>
       </div>
+    </div>
+    <div class="asset-lightbox-project-nav__pill-host" id="assetLightboxProjectNavPillHost" hidden aria-hidden="true">
+      <div class="asset-lightbox-project-nav__pill" id="assetLightboxProjectNavPill"></div>
     </div>
   </div>
 
-  <script src="script.js?v=work-media-lightbox-v67"></script>
+  <script src="script.js?v=work-media-lightbox-v73"></script>
 </body>
 </html>

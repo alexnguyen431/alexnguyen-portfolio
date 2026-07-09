@@ -35,6 +35,7 @@
 
   --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --anchor-scroll-offset: calc(var(--site-header-height, 9rem) + 0.5rem);
+  --blurb-font-size: 46.8px;
 }
 
 [data-theme="dark"] {
@@ -546,7 +547,7 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 .main-blurb,
 .main-blurb-availability {
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 52px;
+  font-size: var(--blurb-font-size);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -3925,7 +3926,7 @@ html.blurb-reveal-done .header-email-fab {
 
   .main-blurb,
   .main-blurb-availability {
-    font-size: calc(52px * 0.50);
+    font-size: calc(var(--blurb-font-size) * 0.50);
     line-height: 1.08;
   }
 
@@ -5347,7 +5348,13 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   background: #fff;
   opacity: 0;
   pointer-events: none;
+  overflow: visible;
   transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html.is-asset-lightbox-open,
+html.is-asset-lightbox-open body {
+  overflow-x: visible;
 }
 
 .asset-lightbox[hidden] {
@@ -6021,6 +6028,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  overflow: visible;
 }
 
 .asset-lightbox-project-nav[hidden] {
@@ -6037,30 +6045,11 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   margin: 0;
   background: transparent;
   pointer-events: auto;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .asset-lightbox-project-nav__zone::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-}
-
-.asset-lightbox-project-nav__zone--prev::before {
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.07) 0%, rgba(0, 0, 0, 0.025) 42%, transparent 100%);
-  box-shadow: inset 18px 0 36px -14px rgba(0, 0, 0, 0.14);
-}
-
-.asset-lightbox-project-nav__zone--next::before {
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.07) 0%, rgba(0, 0, 0, 0.025) 42%, transparent 100%);
-  box-shadow: inset -18px 0 36px -14px rgba(0, 0, 0, 0.14);
-}
-
-.asset-lightbox-project-nav__zone.is-zone-hovered::before {
-  opacity: 1;
+  display: none;
 }
 
 .asset-lightbox-project-nav__zone--prev {
@@ -6069,6 +6058,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 
 .asset-lightbox-project-nav__zone--next {
   right: 0;
+  top: calc(24px + 44px + 20px);
 }
 
 .asset-lightbox-project-nav__zone[hidden],
@@ -6076,12 +6066,23 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   display: none;
 }
 
-.asset-lightbox-project-nav__pill {
+.asset-lightbox-project-nav__pill-host {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 2;
-  display: inline-flex;
+  z-index: 10003;
+  pointer-events: none;
+  overflow: visible;
+  padding: 36px;
+  will-change: left, top;
+}
+
+.asset-lightbox-project-nav__pill {
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: auto;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.42rem;
@@ -6091,6 +6092,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   color: #0a0a0a;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  filter: none;
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1rem;
   font-weight: 700;
@@ -6099,9 +6101,8 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, -50%);
+  transform: none;
   transition: opacity 0.12s ease;
-  will-change: left, top, opacity;
 }
 
 .asset-lightbox-project-nav__pill-arrow {

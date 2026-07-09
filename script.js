@@ -24,7 +24,13 @@
     colorSchemeMql.addListener(syncThemeFromSystem);
   }
 
+  function isLocalhost() {
+    var host = window.location.hostname;
+    return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+  }
+
   function trackEvent(name, data) {
+    if (isLocalhost()) return;
     try {
       var tracker = window.umami;
       if (!tracker) return;
@@ -3966,6 +3972,65 @@
     var projectNavPillY = 0;
     var projectNavPillActiveZone = null;
     var projectNavSupportsHover = window.matchMedia('(hover: hover)').matches;
+    var projectNavPillHost = null;
+    var projectNavPillAnchor = null;
+    var lightboxScrollLockY = 0;
+
+    function lockLightboxPageScroll() {
+      lightboxScrollLockY = window.scrollY || window.pageYOffset || 0;
+      document.documentElement.classList.add('is-asset-lightbox-open');
+      body.style.position = 'fixed';
+      body.style.top = (-lightboxScrollLockY) + 'px';
+      body.style.left = '0';
+      body.style.right = '0';
+      body.style.width = '100%';
+    }
+
+    function unlockLightboxPageScroll() {
+      document.documentElement.classList.remove('is-asset-lightbox-open');
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      window.scrollTo(0, lightboxScrollLockY);
+    }
+
+    function ensureProjectNavPillHost() {
+      if (projectNavPillHost) return;
+
+      projectNavPillHost = document.getElementById('assetLightboxProjectNavPillHost');
+      if (!projectNavPillHost || !projectNavPill) return;
+
+      projectNavPillAnchor = {
+        parent: lightbox,
+        nextSibling: null
+      };
+    }
+
+    function ensureProjectNavPillPortaled() {
+      ensureProjectNavPillHost();
+      if (!projectNavPillHost) return;
+      if (projectNavPillHost.parentElement !== document.body) {
+        document.body.appendChild(projectNavPillHost);
+      }
+    }
+
+    function restoreProjectNavPillHome() {
+      if (!projectNavPillHost || !projectNavPillAnchor || !projectNavPillAnchor.parent) return;
+      hideProjectNavPill();
+      if (projectNavPillHost.parentElement === document.body) {
+        if (projectNavPillAnchor.nextSibling) {
+          projectNavPillAnchor.parent.insertBefore(projectNavPillHost, projectNavPillAnchor.nextSibling);
+        } else {
+          projectNavPillAnchor.parent.appendChild(projectNavPillHost);
+        }
+      }
+    }
+
+    function getProjectNavPillPositionTarget() {
+      return projectNavPillHost || projectNavPill;
+    }
 
     var workLightboxSwitchLabels = {
       'meta-commerce-shops-cart': 'Shops: Cart',
@@ -4079,41 +4144,68 @@
 
     function hideProjectNavPill() {
       projectNavPillActiveZone = null;
+      if (projectNavPillHost) projectNavPillHost.hidden = true;
       if (!projectNavPill) return;
       projectNavPill.classList.remove('is-visible');
-      projectNavPill.hidden = true;
       projectNavPill.innerHTML = '';
       if (projectNavPrev) projectNavPrev.classList.remove('is-zone-hovered');
       if (projectNavNext) projectNavNext.classList.remove('is-zone-hovered');
     }
 
+    function isPointerNearCloseButton(clientX, clientY) {
+      if (!closeBtn) return false;
+      var rect = closeBtn.getBoundingClientRect();
+      var pad = 18;
+      return (
+        clientX >= rect.left - pad &&
+        clientX <= rect.right + pad &&
+        clientY >= rect.top - pad &&
+        clientY <= rect.bottom + pad
+      );
+    }
+
+    function shouldSuppressProjectNavHover(zone, clientX, clientY) {
+      return zone === projectNavNext && isPointerNearCloseButton(clientX, clientY);
+    }
+
     var projectNavArrowPrev = '<span class="asset-lightbox-project-nav__pill-arrow" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
     var projectNavArrowNext = '<span class="asset-lightbox-project-nav__pill-arrow" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
 
+    var projectNavPillHostPadding = 36;
+
     function setProjectNavPillPosition(clientX, clientY) {
-      if (!projectNavPill) return;
+      var positionTarget = getProjectNavPillPositionTarget();
+      if (!positionTarget) return;
       projectNavPillX = clientX;
       projectNavPillY = clientY;
       if (projectNavPillRafId) return;
       projectNavPillRafId = requestAnimationFrame(function() {
-        projectNavPill.style.left = projectNavPillX + 'px';
-        projectNavPill.style.top = projectNavPillY + 'px';
+        var halfW = projectNavPill ? projectNavPill.offsetWidth / 2 : 0;
+        var halfH = projectNavPill ? projectNavPill.offsetHeight / 2 : 0;
+        positionTarget.style.left = (projectNavPillX - halfW - projectNavPillHostPadding) + 'px';
+        positionTarget.style.top = (projectNavPillY - halfH - projectNavPillHostPadding) + 'px';
         projectNavPillRafId = null;
       });
     }
 
     function showProjectNavPill(zone, label, direction, clientX, clientY) {
       if (!projectNavPill || !projectNavSupportsHover || isLightboxContentSwitching) return;
+      ensureProjectNavPillPortaled();
       projectNavPillActiveZone = zone;
       if (direction < 0) {
         projectNavPill.innerHTML = projectNavArrowPrev + '<span class="asset-lightbox-project-nav__pill-label">' + label + '</span>';
       } else {
         projectNavPill.innerHTML = '<span class="asset-lightbox-project-nav__pill-label">' + label + '</span>' + projectNavArrowNext;
       }
-      projectNavPill.hidden = false;
+      if (projectNavPillHost) {
+        projectNavPillHost.hidden = false;
+        projectNavPillHost.setAttribute('aria-hidden', 'false');
+      }
       projectNavPill.classList.add('is-visible');
-      zone.classList.add('is-zone-hovered');
       setProjectNavPillPosition(clientX, clientY);
+      requestAnimationFrame(function() {
+        setProjectNavPillPosition(clientX, clientY);
+      });
     }
 
     function syncProjectNavZones() {
@@ -4162,16 +4254,20 @@
 
       zone.addEventListener('pointerenter', function(e) {
         if (zone.disabled || zone.hidden || isLightboxContentSwitching) return;
+        if (shouldSuppressProjectNavHover(zone, e.clientX, e.clientY)) return;
         showProjectNavPill(zone, label, direction, e.clientX, e.clientY);
       });
 
       zone.addEventListener('pointermove', function(e) {
+        if (shouldSuppressProjectNavHover(zone, e.clientX, e.clientY)) {
+          if (projectNavPillActiveZone === zone) hideProjectNavPill();
+          return;
+        }
         if (projectNavPillActiveZone !== zone || zone.disabled || zone.hidden || isLightboxContentSwitching) return;
         setProjectNavPillPosition(e.clientX, e.clientY);
       });
 
       zone.addEventListener('pointerleave', function() {
-        zone.classList.remove('is-zone-hovered');
         if (projectNavPillActiveZone === zone) hideProjectNavPill();
       });
     }
@@ -4477,8 +4573,9 @@
     function revealGroupedLightbox(focusVideo, figure) {
       lightbox.hidden = false;
       lightbox.setAttribute('aria-hidden', 'false');
-      body.style.overflow = 'hidden';
+      lockLightboxPageScroll();
       requestAnimationFrame(function() {
+        ensureProjectNavPillPortaled();
         lightbox.classList.add('is-open');
         syncProjectNavZones();
       });
@@ -4763,10 +4860,12 @@
       track.classList.remove('is-fading-out');
       hideWorkLightboxSwitcher();
       syncProjectNavZones();
+      hideProjectNavPill();
+      restoreProjectNavPillHome();
       scroller.classList.remove('is-content-overflowing');
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
-      body.style.overflow = '';
+      unlockLightboxPageScroll();
       track.innerHTML = '';
       activeLightboxItemIndex = 0;
 
@@ -4923,8 +5022,9 @@
 
       lightbox.hidden = false;
       lightbox.setAttribute('aria-hidden', 'false');
-      body.style.overflow = 'hidden';
+      lockLightboxPageScroll();
       requestAnimationFrame(function() {
+        ensureProjectNavPillPortaled();
         lightbox.classList.add('is-open');
         syncProjectNavZones();
       });
@@ -5111,6 +5211,7 @@
     });
 
     initWorkLightboxSwitcher();
+    ensureProjectNavPillHost();
     initProjectNavZones();
   })();
 })();
