@@ -2367,7 +2367,21 @@
       return gutter;
     }
 
+    function clearMetaPhoneMediaInlineStyles() {
+      document.querySelectorAll(
+        '#workCarousel .carousel-slide .bento-card--meta .bento-card-visual--phones .phone-mockup, .work-carousel-lightbox-context .bento-card--meta .bento-card-visual--phones .phone-mockup'
+      ).forEach(function(phone) {
+        phone.style.flex = '';
+        phone.style.width = '';
+        phone.style.maxWidth = '';
+        phone.style.height = '';
+        phone.style.aspectRatio = '';
+      });
+    }
+
     function getReferencePhoneWidth() {
+      clearMetaPhoneMediaInlineStyles();
+
       var refPhone = document.querySelector(
         '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--meta .bento-card-visual--phones .phone-mockup'
       );
@@ -2507,6 +2521,33 @@
       });
     }
 
+    function syncMetaPhoneMediaToScrollPhones() {
+      var sample = document.querySelector(
+        '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--square .square-phone-row .phone-mockup:not(.phone-mockup--desktop-walkthrough)'
+      ) || document.querySelector(
+        '#workCarousel .carousel-slide:not(.carousel-slide--clone) .bento-card--cash .cash-phone-row .phone-mockup:not(.phone-mockup--desktop-walkthrough)'
+      );
+
+      var phoneW = sample
+        ? Math.round(parseFloat(sample.style.width) || sample.getBoundingClientRect().width)
+        : 0;
+      var phoneH = sample ? Math.round(sample.getBoundingClientRect().height) : 0;
+
+      if (phoneW < 8) return;
+
+      document.querySelectorAll(
+        '#workCarousel .carousel-slide .bento-card--meta .bento-card-visual--phones .phone-mockup, .work-carousel-lightbox-context .bento-card--meta .bento-card-visual--phones .phone-mockup'
+      ).forEach(function(phone) {
+        phone.style.flex = '0 0 auto';
+        phone.style.width = phoneW + 'px';
+        phone.style.maxWidth = 'none';
+        if (phoneH >= 8) {
+          phone.style.height = phoneH + 'px';
+          phone.style.aspectRatio = 'auto';
+        }
+      });
+    }
+
     function layoutPhoneScrollCards() {
       document.querySelectorAll('.bento-card--square .phones-scroll-track, .bento-card--cash .phones-scroll-track').forEach(function(track) {
         var row = track.querySelector('.phones-scroll-row');
@@ -2527,6 +2568,8 @@
         }
         updateScrollOverflowState(viewport);
       });
+
+      syncMetaPhoneMediaToScrollPhones();
     }
 
     function measureWorkCarouselMaxCardHeight() {

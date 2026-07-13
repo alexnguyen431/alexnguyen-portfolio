@@ -5821,12 +5821,9 @@ html.is-asset-lightbox-open body {
 
 @media (min-width: 769px) {
   .asset-lightbox-item--card-scale:has(.bento-card--square),
-  .asset-lightbox-item--card-scale:has(.bento-card--cash) {
-    --lb-phone-height: min(53.872vh, 481px);
-  }
-
+  .asset-lightbox-item--card-scale:has(.bento-card--cash),
   .asset-lightbox-item--card-scale:has(.bento-card--meta) {
-    --lb-phone-height: min(52.64vh, 470px);
+    --lb-phone-height: min(53.872vh, 481px);
   }
 }
 
