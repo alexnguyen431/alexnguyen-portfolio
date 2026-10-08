@@ -304,18 +304,29 @@ a.status-pill:hover {
 }
 
 .status-dot {
+  position: relative;
+  z-index: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: #00D54B;
   flex-shrink: 0;
-  animation: pulse 2s ease-in-out infinite;
 }
 
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #00D54B;
+  pointer-events: none;
+  animation: pulse-out 2s ease-out infinite;
+}
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 213, 75, 0.5); }
-  50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0, 213, 75, 0); }
+@keyframes pulse-out {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
 /* ==========================================
@@ -605,8 +616,6 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 .main-blurb-availability .status-dot {
   width: 0.42em;
   height: 0.42em;
-  animation: pulse-blurb 2s ease-in-out infinite;
-  box-shadow: 0 0 0 0 rgba(0, 213, 75, 0.5);
 }
 
 .main-blurb-availability.is-revealing .status-dot,
@@ -758,19 +767,9 @@ html[data-theme="light"] .theme-toggle .icon-moon {
   60% { transform: rotate(0deg); }
 }
 
-@keyframes pulse-blurb {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 213, 75, 0.5); }
-  50% { opacity: 0.7; box-shadow: 0 0 0 0.32em rgba(0, 213, 75, 0); }
-}
-
-body.brand-active .main-blurb-availability .status-dot {
+body.brand-active .main-blurb-availability .status-dot,
+body.brand-active .main-blurb-availability .status-dot::after {
   background: #ffffff;
-  animation: pulse-blurb-brand 2s ease-in-out infinite;
-}
-
-@keyframes pulse-blurb-brand {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55); }
-  50% { opacity: 0.85; box-shadow: 0 0 0 0.32em rgba(255, 255, 255, 0); }
 }
 
 /* ==========================================
@@ -1638,16 +1637,39 @@ body.brand-active .main-blurb-availability .status-dot {
   position: relative;
 }
 
+.bento-card-visual--phones .phone-mockup--video .phone-mockup-poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.bento-card-visual--phones .phone-mockup--video.is-media-playing .phone-mockup-poster {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
 .bento-card-visual--phones .phone-mockup--video video {
   position: absolute;
   inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   display: block;
   border-radius: 0;
   object-fit: cover;
   transform-origin: center center;
-  background: #111;
+  background: transparent;
+}
+
+.bento-card-visual--phones .phone-mockup--video.is-media-ready:not(.is-media-playing) video,
+.bento-card-visual--phones .phone-mockup--video.is-media-loading video {
+  opacity: 0;
+}
+
+.bento-card-visual--phones .phone-mockup--video.is-media-playing video {
+  opacity: 1;
+  transition: opacity 0.35s ease;
 }
 
 /* Meta walkthrough includes a device frame in the source — zoom to screen-only */
@@ -2735,13 +2757,14 @@ html[data-theme="dark"] .timeline-logo--meta {
 }
 
 .timeline-section-label {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-tertiary);
-  margin: 0 0 var(--space-sm);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
   font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm);
 }
 
 .timeline-projects p {
@@ -4165,6 +4188,10 @@ html.blurb-reveal-done .header-email-fab {
   .experience .timeline-desc,
   .experience .timeline-projects p {
     font-size: 0.875rem;
+  }
+
+  .experience .timeline-section-label {
+    font-size: 1rem;
   }
 
   .experience .timeline-dot {

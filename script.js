@@ -1072,7 +1072,7 @@
 
   function markMediaLoading(container) {
     if (!container) return;
-    container.classList.remove('is-media-ready');
+    container.classList.remove('is-media-ready', 'is-media-playing');
     container.classList.add('is-media-loading');
   }
 
@@ -1080,6 +1080,40 @@
     if (!container) return;
     container.classList.remove('is-media-loading');
     container.classList.add('is-media-ready');
+  }
+
+  function markMediaPlaying(container) {
+    if (!container) return;
+    container.classList.remove('is-media-loading');
+    container.classList.add('is-media-ready', 'is-media-playing');
+  }
+
+  function ensureStaticPosterImage(video) {
+    if (!video) return null;
+    var frame = video.closest('.phone-mockup--video, .video-frame');
+    if (!frame) return null;
+    if (frame.classList.contains('phone-mockup--desktop-walkthrough')) return null;
+
+    var poster = video.getAttribute('data-poster') || video.getAttribute('poster');
+    if (!poster) return null;
+
+    var isPhone = frame.classList.contains('phone-mockup--video');
+    var selector = isPhone ? '.phone-mockup-poster' : '.video-frame-poster';
+    var existing = frame.querySelector(selector);
+    if (existing) {
+      if (existing.getAttribute('src') !== poster) existing.src = poster;
+      return existing;
+    }
+
+    var img = document.createElement('img');
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.className = isPhone ? 'phone-mockup-poster' : 'video-frame-poster';
+    img.loading = 'eager';
+    img.decoding = 'async';
+    img.src = poster;
+    frame.insertBefore(img, video);
+    return img;
   }
 
   function bindMediaReadyState(mediaEl) {
@@ -1094,12 +1128,30 @@
       markMediaReady(container);
     }
 
+    function onPlaying() {
+      markMediaPlaying(container);
+      markVideoFramePlaying(mediaEl);
+    }
+
     if (mediaEl.tagName === 'VIDEO') {
+      var posterImg = ensureStaticPosterImage(mediaEl);
+      if (posterImg) {
+        if (posterImg.complete && posterImg.naturalWidth > 0) {
+          onReady();
+        } else {
+          posterImg.addEventListener('load', onReady, { once: true });
+          posterImg.addEventListener('error', onReady, { once: true });
+        }
+      }
+
       if (!mediaEl.paused && mediaEl.readyState >= 2) {
-        onReady();
+        onPlaying();
         return;
       }
-      mediaEl.addEventListener('playing', onReady, { once: true });
+      mediaEl.addEventListener('playing', onPlaying, { once: true });
+      mediaEl.addEventListener('loadeddata', function() {
+        if (!container.classList.contains('is-media-playing')) onReady();
+      }, { once: true });
       mediaEl.addEventListener('error', onReady, { once: true });
       return;
     }
@@ -1119,7 +1171,7 @@
 
   function resetMediaLoadingState(container) {
     if (!container) return;
-    container.classList.remove('is-media-ready', 'is-media-loading');
+    container.classList.remove('is-media-ready', 'is-media-loading', 'is-media-playing');
     container.querySelectorAll('video, img').forEach(function(el) {
       el.removeAttribute('data-media-ready-bound');
     });
@@ -1391,16 +1443,22 @@
         captureVideoPoster(video);
       }, { once: true });
       video.addEventListener('playing', function() {
+        markMediaPlaying(getMediaLoadingContainer(video));
         markVideoFramePlaying(video);
       }, { once: true });
       video.src = url;
       video.setAttribute('data-loaded', 'true');
+      function tryPlayVideo() {
+        video.play().then(function() {
+          markMediaPlaying(getMediaLoadingContainer(video));
+        }).catch(function() {
+          markMediaReady(getMediaLoadingContainer(video));
+        });
+      }
       if (video.closest('.bento-card--f1-alexa .card-stack-card:nth-child(2)')) {
-        window.setTimeout(function() {
-          video.play().catch(function() {});
-        }, 320);
+        window.setTimeout(tryPlayVideo, 320);
       } else {
-        video.play().catch(function() {});
+        tryPlayVideo();
       }
     });
     slide.querySelectorAll('.card-stack-card img, .phone-mockup img, .video-frame img').forEach(bindCarouselImageReadyState);
